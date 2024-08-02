@@ -1,0 +1,18 @@
+.refund-policy-page {
+    text-align: left;
+    padding: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+  
+  .refund-policy-page h1,
+  .refund-policy-page h3 {
+    text-align: center;
+  }
+  
+  .refund-policy-page p,
+  .refund-policy-page ul,
+  .refund-policy-page ol {
+    text-align: left;
+  }
+  

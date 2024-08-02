@@ -1,0 +1,129 @@
+/* src/DefaultLayout.css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: aqua;
+  padding: 10px 20px; /* Adjust padding as needed */
+}
+
+.navbar-logo {
+  margin-left: 5%; /* Shift logo 5% from the left */
+}
+
+.navbar-logo img {
+  height: 40px; /* Adjust the logo size as needed */
+}
+
+.navbar-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center; /* Center the navigation links */
+  align-items: center;
+}
+
+
+
+.navbar-list li {
+  margin: 0 10px; /* Space between items */
+}
+
+.navbar-list li a {
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.navbar-list li a:hover {
+  background-color: rgba(155, 209, 223, 0.877);
+}
+
+.navbar-login {
+  margin-right: 5%; /* Shift login icon 5% from the right */
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  flex: 1;
+}
+
+.footer {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Update the footer styles in your CSS file */
+footer.bg-primary {
+  background-color: aqua;
+  color: black;
+}
+
+/* Update the styles for the social media icons */
+.social-link-icon {
+  margin-right: 10px; /* Add margin between icons if needed */
+}
+
+/* Add the hamburger icon style */
+.navbar-hamburger {
+  display: none; /* Hide the hamburger icon by default */
+  cursor: pointer;
+  margin-right: 5%; /* Shift hamburger icon 5% from the right */
+}
+
+@media only screen and (max-width: 768px) {
+  /* Show the hamburger icon on small screens */
+  .navbar-hamburger {
+    display: block;
+  }
+
+  /* Hide the navbar-list by default on small screens */
+  .navbar-list {
+    display: none;
+  }
+
+  /* Show the navbar-list when active on small screens */
+  .navbar-list.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px; /* Adjust this value as needed */
+    left: 0;
+    width: 100%;
+    background-color: aqua;
+    padding: 10px 0;
+  }
+
+  /* Style the items in the navbar-list for small screens */
+  .navbar-list li {
+    margin: 10px 0;
+    text-align: center;
+  }
+
+  /* Hide the login icon on small screens */
+  .navbar-login {                                         
+    display: none;
+  }
+
+  /* Display the login icon at the end of the menu list on small screens */
+  .navbar-list li.login-item {
+    display: block;
+  }
+}
+
+/* Custom styles for logged-in users */
+.logged-in .navbar-list {
+  justify-content: flex-end;
+}
+
+.logged-in .navbar-login {
+  display: flex; /* Show login icon */
+  margin-right: 0;
+  margin-left: auto; /* Ensure login item is on the right */
+}

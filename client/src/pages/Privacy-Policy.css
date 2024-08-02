@@ -1,0 +1,18 @@
+.privacy-policy-page {
+    text-align: left;
+    padding: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+  
+  .privacy-policy-page h1,
+  .privacy-policy-page h3 {
+    text-align: center;
+  }
+  
+  .privacy-policy-page p,
+  .privacy-policy-page ul,
+  .privacy-policy-page ol {
+    text-align: left;
+  }
+  

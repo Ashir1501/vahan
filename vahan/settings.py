@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'vahan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'vahan',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',
@@ -133,3 +133,11 @@ STATICFILES_DIRS = [STATIC_DIR]
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'usersApp.Account'
+MEDIA_URL = '/ride_images/'
+
+CAR_MEDIA_URL = '/car_images/'
+CAR_MEDIA_ROOT = BASE_DIR / 'car_images'
+
+DRIVER_MEDIA_URL = '/driver_images/'
+DRIVER_MEDIA_ROOT = BASE_DIR / 'driver_images'

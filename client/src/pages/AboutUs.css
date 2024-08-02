@@ -1,0 +1,19 @@
+.aboutus {
+    text-align: left;
+    padding: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+    
+  }
+  
+  .aboutus h2,
+  .aboutus h3 {
+    text-align: center;
+  }
+  
+  .aboutus p,
+  .aboutus ul,
+  .aboutus ol {
+    text-align: left;
+  }
+  
