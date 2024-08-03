@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from random import randint
 # Create your models here.
 class MyAccountManager(BaseUserManager):
-    def create_user(self, name, phone_number, email,user_type,OTP_verification,password=None):
+    def create_user(self, name, phone_number, email,user_type,OTP_verification=None,password=None):
         if not email:
             raise ValueError("User Must Have an Email Address")
         
@@ -28,7 +28,7 @@ class MyAccountManager(BaseUserManager):
         user = self.create_user(
             email = self.normalize_email(email),
             phone_number = phone_number,
-            OTP_verification = randint(1000,9999),
+            OTP_verification = None,
             user_type = "Admin",
             name=name,
             password=password
@@ -46,7 +46,7 @@ class Account(AbstractBaseUser):
     name = models.CharField(max_length = 150, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length = 10, unique=True)
-    OTP_verification = models.PositiveIntegerField()
+    OTP_verification = models.PositiveIntegerField(null=True)
 
     vendor = 'Vendor'
     customer = "Customer"
