@@ -28,6 +28,9 @@ class Payment(models.Model):
     advance_payment_percent = models.CharField(max_length=10, choices=PAYMENT_PERCENT_CHOICE)
     advance_payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICE)
     pending_paymeny_Type = models.CharField(max_length=20, choices=PENDING_PAYMENT_TYPE_CHOICE)
+    advance_payment_date = models.DateTimeField()
+    pending_payment_date = models.DateTimeField()
+
 
     def __str__(self):
         return f"payment-{self.ride}"

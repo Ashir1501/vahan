@@ -29,7 +29,7 @@ class Ride(models.Model):
 
 class Extra(models.Model):
     ride = models.ForeignKey(Ride, on_delete=models.CASCADE)
-    new_destination = models.CharField(max_length=100)
+    new_destination = models.CharField(max_length=100, default="none")
     kms = models.IntegerField()
     duration = models.DurationField()
     toll_fare = models.IntegerField(null=True,blank=True)
