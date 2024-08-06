@@ -17,9 +17,10 @@
       </button>
      </div>
     </div>
-    {% if request.resolver_match.url_name == 'adminHome' %}
+    
     <!-- Display content for the home page -->
     <div class="flex items-stretch" id="megamenu_container">
+        {% if request.resolver_match.url_name == 'adminHome' %}
         <div class="flex items-stretch" data-reparent="true" data-reparent-mode="prepend|lg:prepend" data-reparent-target="body|lg:#megamenu_container">
          <div class="hidden lg:flex lg:items-stretch" data-drawer="true" data-drawer-class="drawer drawer-start fixed z-10 top-0 bottom-0 w-full mr-5 max-w-[250px] p-5 lg:p-0 overflow-auto" data-drawer-enable="true|lg:false" id="megamenu_wrapper">
           <div class="menu flex-col lg:flex-row gap-5 lg:gap-7.5" data-menu="true" id="megamenu">
@@ -1386,8 +1387,9 @@
           </div>
          </div>
         </div>
-    </div>
     {% endif %}
+    </div>
+    
     <div class="flex items-center gap-2 lg:gap-3.5">
      <button class="btn btn-icon btn-icon-lg size-9 rounded-full hover:bg-primary-light hover:text-primary text-gray-500" data-modal-toggle="#search_modal">
       <i class="ki-filled ki-magnifier">

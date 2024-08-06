@@ -1,0 +1,188 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+<div>
+    <button class="btn btn-light mb-5 ms-5" data-collapse="#collapsible_content">
+        Create New Car
+    </button>
+    <div class="card transition-all duration-300 hidden" id="collapsible_content">
+        <div class="card-header">
+            <h3 class="card-title">New Car</h3>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                    <label class="form-label max-w-32">
+                        Car Type
+                        <span class="text-danger">*</span>
+                    </label>
+                    <select class="select" name="select">
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                </div>
+                <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                    <label class="form-label max-w-32">
+                        Vendor
+                        <span class="text-danger">*</span>
+                    </label>
+                    <select class="select" name="select">
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                        <label class="form-label max-w-32">
+                            Registration Number:
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input class="input" name="text" placeholder="Registration Number" type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-5">
+                <div class="form-group ms-5">
+                    <label for="fileInputFront" class="form-label">Front pic</label>
+                    <input class="form-control-file form-control-sm" id="fileInputFront" type="file">
+                </div>
+                <div class="form-group">
+                    <label for="fileInputBack" class="form-label">Back pic</label>
+                    <input class="form-control-file form-control-sm" id="fileInputBack" type="file">
+                </div>
+                <div class="form-group ms-5">
+                    <label for="fileInputRC" class="form-label">RC Photo</label>
+                    <input class="form-control-file form-control-sm" id="fileInputRC" type="file">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cars List -->
+<div style="margin: 10px;">
+    <div class="grid">
+        <div class="card card-grid min-w-full">
+            <div class="card-header py-5 flex-wrap">
+                <h3 class="card-title">Cars List</h3>
+                <div class="flex gap-6">
+                    <div class="relative">
+                        <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                        <input class="input input-sm pl-8" placeholder="Search Cars" id="searchCar" type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div data-datatable="true" data-datatable-page-size="5">
+                    <div class="scrollable-x-auto">
+                        <table class="table table-auto table-border" id="grid_table">
+                            <thead>
+                                <tr>
+                                    <th class="min-w-[175px]">Member</th>
+                                    <th class="min-w-[150px]">Location</th>
+                                    <th class="min-w-[125px]">Status</th>
+                                    <th class="w-[80px]"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            <img alt="" class="h-9 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/avatars/300-3.png"/>
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">Tyler Hero</a>
+                                                <span class="text-2sm text-gray-600">26 tasks</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1.5">
+                                            <img alt="flag" class="h-4 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/flags/estonia.svg"/>
+                                            <span class="leading-none text-gray-700">Estonia</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-light">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            <img alt="" class="h-9 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/avatars/300-2.png"/>
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">Esther Howard</a>
+                                                <span class="text-2sm text-gray-600">639 tasks</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1.5">
+                                            <img alt="flag" class="h-4 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/flags/malaysia.svg"/>
+                                            <span class="leading-none text-gray-700">Malaysia</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-warning">Pending</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-light">Edit</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                        <div class="flex items-center gap-2">
+                            Show
+                            <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                            per page
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span data-datatable-info="true"></span>
+                            <div class="pagination" data-datatable-pagination="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Cars List end -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchCar');
+        const table = document.getElementById('grid_table');
+        const tableRows = table.querySelectorAll('tbody tr');
+
+        // Logging to debug
+        console.log('Search Input:', searchInput);
+        console.log('Table Rows:', tableRows);
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            console.log('Search Term:', searchTerm);
+
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let rowContainsSearchTerm = false;
+
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                        rowContainsSearchTerm = true;
+                    }
+                });
+
+                row.style.display = rowContainsSearchTerm ? '' : 'none';
+            });
+        });
+    });
+</script>
+
+{% endblock %}
