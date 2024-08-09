@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from random import randint
 # Create your models here.
 class MyAccountManager(BaseUserManager):
-    def create_user(self, name, phone_number, email,user_type,OTP_verification=None,password=None):
+    def create_user(self, phone_number, email,user_type,OTP=None,password=None, first_name=None, last_name=None):
         if not email:
             raise ValueError("User Must Have an Email Address")
         
@@ -13,9 +13,10 @@ class MyAccountManager(BaseUserManager):
 
         user = self.model(
             email = self.normalize_email(email),
-            name = name,
+            first_name = first_name,
+            last_name = last_name,
             phone_number = phone_number,
-            OTP_verification = OTP_verification,
+            OTP = OTP,
             user_type = user_type,
         )
 
@@ -24,13 +25,14 @@ class MyAccountManager(BaseUserManager):
         return user
 
 
-    def create_superuser(self, phone_number, email, password=None, name=None):
+    def create_superuser(self, phone_number, email, password=None, first_name=None, last_name=None):
         user = self.create_user(
             email = self.normalize_email(email),
             phone_number = phone_number,
-            OTP_verification = None,
+            OTP = None,
             user_type = "Admin",
-            name=name,
+            first_name=first_name,
+            last_name = last_name,
             password=password
         )
 
@@ -43,23 +45,28 @@ class MyAccountManager(BaseUserManager):
 class Account(AbstractBaseUser):
 
     #required fields
-    name = models.CharField(max_length = 150, null=True, blank=True)
+    first_name = models.CharField(max_length = 150, null=True, blank=True)
+    last_name = models.CharField(max_length = 150, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length = 10, unique=True)
-    OTP_verification = models.PositiveIntegerField(null=True)
+    OTP = models.PositiveIntegerField(null=True)
 
     vendor = 'Vendor'
+    admin = "Admin"
+    driver = "Driver"
     customer = "Customer"
 
     CHOICES = (
         (vendor,vendor),
+        (admin,admin),
+        (driver,driver),
         (customer,customer)
     )
     #non required fields
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True, null=True)
     last_login = models.DateField(null=True)
-    user_type = models.CharField(max_length=255, choices=CHOICES, default=customer)
+    user_type = models.CharField(max_length=255, choices=CHOICES, default=CHOICES[3][0])
     is_admin = models.BooleanField(default = False)
     is_staff = models.BooleanField(default = False)
     is_active = models.BooleanField(default = False)
@@ -81,3 +88,23 @@ class Account(AbstractBaseUser):
     
     def has_module_perms(self, add_label):
         return True
+
+class AccountDetail(models.Model):
+    GENDER_CHOICES = [
+        ("Male","Male"),
+        ("Female","Female"),
+        ("Other","Other"),
+        ("None","None")
+    ]
+    user_id = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='accountDetail')
+    photo = models.ImageField(upload_to='user_images', null=True, blank=True)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default=GENDER_CHOICES[3][0])
+    driving_licence = models.ImageField(upload_to='user_images', null=True, blank=True)
+    aadhar_card = models.ImageField(upload_to='user_images', null=True, blank=True)
+    join_date = models.DateField(null=True, blank=True)
+    exit_date = models.DateField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    updated_by = models.ForeignKey(Account,null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.user_id.first_name}-{self.user_id.last_name}"

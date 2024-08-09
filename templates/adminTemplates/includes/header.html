@@ -17,14 +17,15 @@
       </button>
      </div>
     </div>
-    {% if request.resolver_match.url_name == 'adminHome' %}
+    
     <!-- Display content for the home page -->
     <div class="flex items-stretch" id="megamenu_container">
+        {% if request.resolver_match.url_name == 'adminHome' %}
         <div class="flex items-stretch" data-reparent="true" data-reparent-mode="prepend|lg:prepend" data-reparent-target="body|lg:#megamenu_container">
          <div class="hidden lg:flex lg:items-stretch" data-drawer="true" data-drawer-class="drawer drawer-start fixed z-10 top-0 bottom-0 w-full mr-5 max-w-[250px] p-5 lg:p-0 overflow-auto" data-drawer-enable="true|lg:false" id="megamenu_wrapper">
           <div class="menu flex-col lg:flex-row gap-5 lg:gap-7.5" data-menu="true" id="megamenu">
            <div class="menu-item active">
-            <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold" href="html/demo1.html">
+            <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold" href="{% url 'adminHome' %}">
              <span class="menu-title text-nowrap">
               Home
              </span>
@@ -1386,8 +1387,26 @@
           </div>
          </div>
         </div>
+        {% endif %}
+        {% if request.resolver_match.url_name == 'user-list' %}
+        <div class="flex [.header_&amp;]:below-lg:hidden items-center gap-1.25 text-xs lg:text-sm font-medium mb-2.5 lg:mb-0" data-reparent="true" data-reparent-mode="prepend|lg:prepend" data-reparent-target="#content_container|lg:#header_container">
+            <div class="menu-item active">
+                <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold" href="{% url 'adminHome' %}">
+                 <span class="menu-title text-nowrap">
+                  Home
+                 </span>
+                </a>
+            </div>
+            <i class="ki-filled ki-right text-gray-500 text-3xs">
+            </i>
+            <span class="text-gray-700">
+             User List
+            </span>
+           </div>
+        {% endif %}
     </div>
-    {% endif %}
+
+    
     <div class="flex items-center gap-2 lg:gap-3.5">
      <button class="btn btn-icon btn-icon-lg size-9 rounded-full hover:bg-primary-light hover:text-primary text-gray-500" data-modal-toggle="#search_modal">
       <i class="ki-filled ki-magnifier">

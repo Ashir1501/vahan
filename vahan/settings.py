@@ -139,5 +139,5 @@ MEDIA_URL = '/ride_images/'
 CAR_MEDIA_URL = '/car_images/'
 CAR_MEDIA_ROOT = BASE_DIR / 'car_images'
 
-DRIVER_MEDIA_URL = '/driver_images/'
-DRIVER_MEDIA_ROOT = BASE_DIR / 'driver_images'
+USER_MEDIA_URL = '/user_images/'
+USER_MEDIA_ROOT = BASE_DIR / 'user_images'

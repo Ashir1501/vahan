@@ -25,4 +25,4 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.CAR_MEDIA_URL, document_root=settings.CAR_MEDIA_ROOT)
-urlpatterns += static(settings.DRIVER_MEDIA_URL, document_root=settings.DRIVER_MEDIA_URL)
+urlpatterns += static(settings.USER_MEDIA_URL, document_root=settings.USER_MEDIA_URL)
