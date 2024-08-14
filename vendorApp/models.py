@@ -1,21 +1,6 @@
 from django.db import models
 from usersApp.models import Account
 # Create your models here.
-class Driver(models.Model):
-    name = models.CharField(max_length=150)
-    vendor_id = models.ForeignKey(Account, on_delete=models.CASCADE)
-    phone = models.CharField(max_length = 10, unique=True)
-    licence = models.ImageField(upload_to='driver_images', default=None)
-    aadhar_card = models.ImageField(upload_to='driver_images', default=None)
-    join_date = models.DateField()
-    exit_date = models.DateField()
-    otp = models.CharField(max_length=10)
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='acc')
-
-    def __str__(self):
-        return f"{self.name}-{self.vendor_id.name}"
 
 class CarType(models.Model):
     car_model = models.CharField(max_length=50)

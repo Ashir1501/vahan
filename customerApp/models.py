@@ -1,5 +1,5 @@
 from django.db import models
-from vendorApp.models import Route, Driver, Car
+from vendorApp.models import Route, Car
 from usersApp.models import Account
 # Create your models here.
 
@@ -11,7 +11,7 @@ class Ride(models.Model):
         ('completed','completed')
     )
 
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='rides')
     customer = models.ForeignKey(Account, on_delete=models.CASCADE)
     pickup_date = models.DateField()
     pickup_at = models.TimeField()
