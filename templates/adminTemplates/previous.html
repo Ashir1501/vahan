@@ -1,0 +1,160 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div>   
+            <div style="margin: 10px;">
+                <div class="container-fixed">
+                    <div class="grid gap-5 lg:gap-7.5">
+                        <div class="card card-grid min-w-full">
+                            <div class="card-header py-5 flex-wrap">
+                                <h3 class="card-title">
+                                    Previous Rides
+                                    <!-- <div style="display: inline-block;" class="ml-5">
+                                        <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCarType()">
+                                            <i class="ki-filled ki-cross-circle"></i>
+                                            Cancel
+                                        </button>
+                                    </div> -->
+                                </h3>
+                                <div class="flex gap-6">
+                                    <div class="relative">
+                                        <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                        <input class="input input-sm pl-8" onkeyup="filterTableTypeprevious()" placeholder="Search" id="searchprevious" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div data-datatable="true" data-datatable-page-size="5">
+                                    <div class="scrollable-x-auto">
+                                        <table class="table table-auto table-border" data-datatable-table="true" id="previous_table">
+                                            <thead>
+                                                <tr>
+                                                    <!-- <th class="w-[60px]">
+                                                        <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
+                                                    </th> -->
+                                                    <th class="w-[60px]">
+
+                                                    </th>
+                                                   
+                                                    <th class="w-[80px]"> 
+                                                        <span class="sort asc">
+                                                            <span class="sort-label">
+                                                                Driver Name
+                                                            </span>
+                                                            <span class="sort-icon">
+                                                            </span>
+                                                        </span>
+                                                        
+                                                    </th>
+                                                    <th class="w-[80px]"> 
+                                                        <span class="sort asc">
+                                                            <span class="sort-label">
+                                                                customer Name
+                                                            </span>
+                                                            <span class="sort-icon">
+                                                            </span>
+                                                        </span>
+                                                        
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for rideData in ridesData %}
+                                                {% if rideData.ride_status == 'completed'  %}
+                                                <tr>
+                                                    <!-- <td>
+                                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX" value="" />
+                                                    </td> -->
+                                                    <td>
+                                                        {% if rideData.is_extra == True  %}
+                                                        <button class="btn btn-sm btn-light"
+                                                            data-modal-toggle="#CarsUpdateModal-{{CarsData.id}}">
+                                                            Extra
+                                                        </button>
+                                                        {% endif %}
+                                                    </td>
+                                                   
+                                                    <td>
+                                                        <div class="flex items-center gap-2.5">
+                                                            <div class="flex flex-col gap-0.5">
+                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.driver.name }}</a>
+                                                                <!-- <span class="text-2sm text-gray-600">jk</span> -->
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="flex items-center gap-2.5">
+                                                            <div class="flex flex-col gap-0.5">
+                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.customer.name }}</a>
+                                                                <span class="text-2sm text-gray-600">jk</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                             
+                                                {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                        <div class="flex items-center gap-2">
+                                            Show
+                                            <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                            per page
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span data-datatable-info="true"></span>
+                                            <div class="pagination" data-datatable-pagination="true"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+</div>
+<script>
+
+function filterTableTypeprevious() {
+    // Get the value of the input field
+    var input = document.getElementById('searchprevious');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('previous_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+
+</script>
+{% endblock %}

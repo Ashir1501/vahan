@@ -1,0 +1,632 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+ 
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+
+    <script>
+        console.log('{{message}}')
+        Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+    {% endif %}
+    {% if message.tags == 'error' %}
+    <script>
+   
+        Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 2000
+        });
+    </script>
+    {% endif %}
+    {% endfor %}
+
+{% endif %}
+
+<div>
+    <div>
+        <div>
+            <button class="btn btn-light mb-5 ms-5" data-collapse="#collapsible_content">
+                Create New Routes
+            </button>
+            <div class="card transition-all duration-300 hidden" id="collapsible_content">
+                <div class="card-header">
+                    <h3 class="card-title">New Car</h3>
+                </div>
+                <form action="{% url 'add-route' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                
+                    <div class="card-body">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+                
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    Trip Type<span class="text-danger">*</span>
+                                </label>
+                                <select class="select w-full" name="tripType"> 
+                                    <option value="oneway">Oneway</option>
+                                    <option value="roundtrip">Roundtrip</option>
+                                    <option value="local">Local</option>
+                                    <option value="airport_pickup">Airport Pickup</option>
+                                    <option value="airport_drop">Airport Drop</option>
+                                </select>
+                            </div>
+                
+                            <!-- Car Type Input with Dropdown -->
+                            <div class="dropdown-container">
+                                <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                    <label class="form-label max-w-32">
+                                        Cars Type:
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <!-- Ensure car types are submitted as a list -->
+                                    <input class="input car-model-input" name="carsTypeId" placeholder="Cars Type" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required/>
+                                </div>
+                                <div id="car-model-results" class="dropdown-results"></div>
+                            </div>
+                
+                            <!-- PickUp Input -->
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    Pickup
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input class="input w-full" name="pickup" placeholder="pickup" type="text" required/>
+                            </div>
+                
+                            <!-- Drop Off Input -->
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    Drop Off
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input class="input w-full" name="DropOff" placeholder="Drop Off" type="text" required/>
+                            </div>
+                
+                            <!-- Fare Input -->
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    Fare
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input class="input w-full" name="fare" placeholder="Fare" type="number" step="0.01" required/>
+                            </div>
+                
+                            <!-- Duration Input -->
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    Duration<span class="text-2sm text-gray-600">(Only for Local)</span>
+                                </label>
+                                <select class="select w-full" name="duration">
+                                    <option value="none">none</option> 
+                                    <option value="4 hrs 40 km">4 hrs 40 km</option>
+                                    <option value="8 hrs 80 km">8 hrs 80 km</option>
+                                    <option value="12 hrs 120 km">12 hrs 120 km</option>
+                                </select>
+                            </div>
+                
+                            <!-- KMS Input -->
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                    KMS<span class="text-2sm text-gray-600">(Not for Local)</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input class="input w-full" name="Kilometers" placeholder="Kilometers" type="number" required/>
+                            </div>
+                        </div>
+                
+                        <button class="btn btn-sm btn-primary" type="submit" style="margin: 10px;">
+                            Add Route
+                        </button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+        
+    </div>
+    <!-- end: container -->
+    <div class="container-fixed">
+    <div class="grid gap-5 lg:gap-7.5">
+        <div class="card card-grid min-w-full">
+            <div class="card-header py-5 flex-wrap">
+                <h3 class="card-title">
+                    Vahan Routes
+                    <div style="display: inline-block;" class="ml-5">
+                        <button class="btn btn-danger btn-sm" type="button" onclick="DeleteRoutes()">
+                            <i class="ki-filled ki-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                </h3>
+                <div class="flex gap-6">
+                    <div class="relative">
+                        <i
+                            class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3">
+                        </i>
+                        <input class="input input-sm pl-8" onkeyup="filterTable()" placeholder="Search Users" id="searcRotute" type="text" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div data-datatable="true" data-datatable-page-size="5">
+                    <div class="scrollable-x-auto">
+                        <table class="table table-auto table-border" data-datatable-table="true" id="grid_table">
+                            <thead>
+                                <tr>
+                                    <th class="w-[60px]">
+                                        <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                            type="checkbox" />
+                                    </th>
+                                    <th class="w-[80px]">
+                                    </th>
+                                    <th class="min-w-[175px]">
+                                        <span class="sort asc">
+                                            <span class="sort-label">
+                                                Trip type
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[150px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Pickup location
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Drop location
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Car type
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Fare
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Duration
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Kms
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Created by
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for routeData in routeData %}
+                                <tr>
+                                    <td>
+                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                            type="checkbox" id="checkBOX" value="{{routeData.id}}" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-light"
+                                            data-modal-toggle="#CarsUpdateModal-{{routeData.id}}">
+                                            <i class="ki-filled ki-pencil"></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                    {{ routeData.trip_type }}                                                    
+                                                </a>
+                                                <span class="text-2sm text-gray-600">
+                                                    <hr style="height: 1rem;">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><div class="flex items-center gap-1.5">{{ routeData.pickup_location }}</div></td>
+                                    <td>{{ routeData.drop_location }}</td>
+                                    <td>
+                                  
+                                            {% for car_type in routeData.car_type.all %}
+                                                {{ car_type.car_type }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                   
+                                    </td>
+                                    
+                                    
+                                    <td>{{ routeData.fare }}</td>
+                                    <td>{{routeData.duration}}</td>
+                                    <td>{{routeData.kms}}</td>
+                                    <td title="{{routeData.created_by}}">{{routeData.created_by.name}}(<span class="text-2sm text-gray-600">{{routeData.created_by}}</span>)</td>
+                                </tr>
+                                
+                                
+                                    
+                                    <div class="modal" data-modal="true" id="CarsUpdateModal-{{routeData.id}}">
+                                        <form id="carEditForm" method="post" enctype="multipart/form-data" action="{% url 'edit-routes' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="routeId" value="{{ routeData.id }}">
+                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title">Edit for {{ routeData.pickup_location }} - {{routeData.drop_location}}</h3>
+                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                    <i class="ki-outline ki-cross"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="modal-body">
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Trip Type<span class="text-danger">*</span>
+                                                    </label>
+                                                    <select class="select w-full" name="tripTypeEdit" required>
+                                                        <option value="oneway" {% if routeData.trip_type == 'oneway' %}selected{% endif %}>Oneway</option>
+                                                        <option value="roundtrip" {% if routeData.trip_type == 'roundtrip' %}selected{% endif %}>Roundtrip</option>
+                                                        <option value="local" {% if routeData.trip_type == 'local' %}selected{% endif %}>Local</option>
+                                                        <option value="airport_pickup" {% if routeData.trip_type == 'airport_pickup' %}selected{% endif %}>Airport Pickup</option>
+                                                        <option value="airport_drop" {% if routeData.trip_type == 'airport_drop' %}selected{% endif %}>Airport Drop</option>
+                                                    </select>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Pickup
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="pickupEdit" placeholder="Pickup" type="text" value="{{ routeData.pickup_location }}" required>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Drop Off
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" required/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Type
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="carType" placeholder="Car Type" type="text" 
+                                                           value="{% for car_type in routeData.car_type.all %}{{ car_type.car_type }}{% if not forloop.last %}, {% endif %}{% endfor %}" required/>
+                                                </div>
+                                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Fare
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="fareEdit" placeholder="Fare" type="number" value="{{ routeData.fare }}" required/>
+                                                </div>
+
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        KMS
+                                                        <span class="text-2sm text-gray-600">(Not for Local)</span>
+                                                    </label>
+                                                    <input class="input w-full" name="kmsEdit" placeholder="Kilometers" type="number" value="{{ routeData.kms }}" required/>
+                                                </div>
+                                               
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Duration<span class="text-2sm text-gray-600">(Only for Local)</span>
+                                                    </label>
+                                                    <select class="select w-full" name="duration">
+                                                        <option value="none" {% if routeData.duration == 'none' %}selected{% endif %}>none</option> 
+                                                        <option value="4 hrs 40 km" {% if routeData.duration == '4 hrs 40 km' %}selected{% endif %}>4 hrs 40 km</option>
+                                                        <option value="8 hrs 80 km" {% if routeData.duration == '8 hrs 80 km' %}selected{% endif %}>8 hrs 80 km</option>
+                                                        <option value="12 hrs 120 km" {% if routeData.duration == '12 hrs 120 km' %}selected{% endif %}>12 hrs 120 km</option>
+                                                    </select>
+                                                </div>
+                                                
+                                            </div>
+                                            
+                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                <div class="flex gap-4">
+                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                
+                           
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div
+                        class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                        <div class="flex items-center gap-2">
+                            Show
+                            <select class="select select-sm w-16" data-datatable-size="true" name="perpage">
+                            </select>
+                            per page
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span data-datatable-info="true">
+                            </span>
+                            <div class="pagination" data-datatable-pagination="true">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+<script>
+    function filterTable() {
+        // Get the value of the input field
+        var input = document.getElementById('searcRotute');
+        var filter = input.value.toUpperCase();
+    var table = document.getElementById('grid_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+    }
+    function userdelete() {
+        const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+        // Filter the checked checkboxes
+        const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+        // Extract values of checked checkboxes
+        const checkedValues = checkedCheckboxes.map(checkbox => checkbox.value);
+
+        if (checkedValues != '') {
+            console.log('Checked values:', checkedValues);
+
+            $.ajax({
+                type: 'GET',
+                url: '/user/delete/',
+                data: {
+                    'user_list': checkedValues,
+                },
+                success: function (response) {
+                    if (response.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops..',
+                            text: 'Something Went Wrong.',
+                            showCloseButton: true
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Delete Successfull',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                        $('#UserCreateForm')[0].reset();
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        }
+
+    }
+    function DeleteRoutes() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the DELETE request to Django
+            const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+            // Filter the checked checkboxes
+            const RoutescheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+            // Extract values of checked checkboxes
+            const RoutescheckedValues = RoutescheckedCheckboxes.map(checkbox => checkbox.value);
+
+            if (RoutescheckedValues != '') {
+                console.log('Checked values:', RoutescheckedValues);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/vendor/delete-route/', 
+                    data: {
+                        'routes_ids': CarscheckedValues,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something Went Wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Delete Successfull',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                            $('#UserCreateForm')[0].reset();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            }
+        }
+    });
+    
+}
+
+
+    $(document).ready(function() {
+        let timeout;
+
+
+        // Handle input event to fetch and display results
+        $('.car-model-input').on('input', function() {
+            let query = $(this).val();
+            if (query) {
+                $.ajax({
+                    url: '{% url "car_model_search" %}',
+                    data: { query: query },
+                    success: function(data) {
+                        let results = data.results;
+                        $('#car-model-results').empty().show();
+                        if (results.length > 0) {
+                            results.forEach(function(result) {
+                                $('#car-model-results').append('<div class="dropdown-item" data-value="' + result.name + '">' + result.name + '</div>');
+                            });
+                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
+                        } else {
+                            $('#car-model-results').append('<div>No results found</div>');
+                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
+                        }
+                    },
+                    error: function() {
+                        $('#car-model-results').empty().show().append('<div>Error fetching results</div>');
+                    }
+                });
+            } else {
+                $('#car-model-results').empty().hide();
+            }
+        });
+
+        // Show dropdown on focus
+        $('.car-model-input').on('focus', function() {
+            $('#car-model-results').show();
+        });
+
+        // Hide dropdown on blur
+        $('.car-model-input').on('blur', function() {
+            timeout = setTimeout(function() {
+                $('#car-model-results').hide();
+            }, 200); // Delay to allow click events on dropdown items
+        });
+
+        // Prevent dropdown from closing on item click
+        $('#car-model-results').on('mousedown', function(event) {
+            event.preventDefault(); // Prevent input blur on dropdown item click
+        });
+
+        // Handle click on dropdown items
+        $(document).on('click', '.dropdown-item', function() {
+            let selectedValue = $(this).data('value');
+            $('.car-model-input').val(selectedValue);
+            $('#car-model-results').empty().hide();
+        });
+
+        $(document).on('click', '.add-car-model', function() {
+            let name = $('.car-model-input').val();
+            $.ajax({
+                type: 'POST',
+                url: '{% url "car_type_add" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    name: name
+                },
+                success: function(data) {
+                    
+                    // $('#car-model-input').val('');
+                    $('#car-model-results').empty().hide();
+                    // $('#car-model-input').val('').prop('disabled', true);
+                },
+                error: function(response) {
+                    alert('Error: ' + response.responseJSON.error);
+                }
+        });
+    });})
+</script>
+{% endblock %}

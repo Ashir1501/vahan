@@ -6,24 +6,28 @@ from usersApp.models import Account
 class Ride(models.Model):
     
     RIDE_STATUS_CHOICES = (
+        ('pending','pending'),
+        ('assigned','assigned'),
+        ('declined','declined'),
+        ('confirmed','confirmed'),
         ('cancelled','cancelled'),
         ('Started','Started'),
         ('completed','completed')
     )
 
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE,null=True,blank=True)
     customer = models.ForeignKey(Account, on_delete=models.CASCADE)
     pickup_date = models.DateField()
     pickup_at = models.TimeField()
     return_date = models.DateField(null=True,blank=True)
-    route = models.ForeignKey(Route, on_delete=models.CASCADE)
-    ride_status = models.CharField(max_length=20, choices=RIDE_STATUS_CHOICES)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE) #remove this and add ,pickup, drop, fare ,creaared at ,car columms
+    ride_status = models.CharField(max_length=20, choices=RIDE_STATUS_CHOICES,default=RIDE_STATUS_CHOICES[0])
     Front_pic = models.ImageField(upload_to='ride_images', default=None)
     Back_pic = models.ImageField(upload_to='ride_images', default=None)
     selfie = models.ImageField(upload_to='ride_images', default=None)
     opening_kms_screen = models.ImageField(upload_to='ride_images', default=None)
     closing_kms_screen = models.ImageField(upload_to='ride_images', default=None)
-
+    is_extra = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.customer.name}-{self.route}-{self.pickup_date}"
 
@@ -41,4 +45,3 @@ class Extra(models.Model):
     
     def __str__(self):
         return f"extra-{self.ride}"
-    

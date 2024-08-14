@@ -31,8 +31,48 @@
         <link href="{% static 'vendors/apexcharts/apexcharts.css' %}" rel="stylesheet"/>
         <link href="{% static 'vendors/keenicons/styles.bundle.css' %}" rel="stylesheet"/>
         <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <!-- Metronic CSS -->
+<link href="path/to/metronic/css/style.bundle.css" rel="stylesheet" />
+
+<!-- Metronic JS -->
+<script src="path/to/metronic/js/scripts.bundle.js"></script>
 
         <style>
+
+        
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-results {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 230px;
+            border: 1px solid #ddd;
+            z-index: 1;
+        }
+        .dropdown-results div {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .dropdown-results div:hover {
+            background-color: gray;
+        }
+        .add-car-model {
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+        .add-car-model:hover {
+            background-color: #0d6efd;
+        }
+
             .form-control-file {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
@@ -45,6 +85,8 @@
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
 }
+
+
 
         </style>
     </head>

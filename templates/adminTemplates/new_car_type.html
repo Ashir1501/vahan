@@ -2,133 +2,166 @@
 {% load static %}
 
 {% block content %}
-<div>
-    <button class="btn btn-light mb-5 ms-5" data-collapse="#collapsible_content">
-        Create New Car Type
-    </button>
-    <div class="card transition-all duration-300 hidden" id="collapsible_content">
-        <div class="card-header">
-            <h3 class="card-title">New Car Type</h3>
+
+{% if messages %}
+ 
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+
+    <script>
+        console.log('{{message}}')
+        Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+    {% endif %}
+    {% if message.tags == 'error' %}
+    <script>
+   
+        Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 2000
+        });
+    </script>
+    {% endif %}
+    {% endfor %}
+
+{% endif %}
+
+<div style="margin-left: 30px;">
+    <form method="post" action="{% url 'add-car-type' %}" style="width: 400px;">
+        {% csrf_token %}
+        <div class="input-group">
+            <input class="input" placeholder="Car Type" type="text" value="" name="car_types"/>
+            <button class="btn btn-light" type="submit">Create Car Type</button>
         </div>
-        <div class="card-body">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="w-full">
-                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                        <label class="form-label max-w-32">
-                            Car Model:
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input class="input" name="text" placeholder="Car Model" type="text"/>
-                    </div>
-                </div>
-                <div class="w-full">
-                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                        <label class="form-label max-w-32">
-                            Car Type:
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input class="input" name="text" placeholder="Car Type" type="text"/>
-                    </div>
-                </div>
-                <div class="w-full">
-                    <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                        <label class="form-label max-w-32">
-                            Car Brand:
-                            <span class="text-danger">*</span>
-                        </label>
-                        <input class="input" name="text" placeholder="Car Brand" type="text"/>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-    </div>
+    </form>
 </div>
+
 
 <!-- Cars List -->
 <div style="margin: 10px;">
-    <div class="grid">
-        <div class="card card-grid min-w-full">
-            <div class="card-header py-5 flex-wrap">
-                <h3 class="card-title">Cars Type List</h3>
-                <div class="flex gap-6">
-                    <div class="relative">
-                        <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
-                        <input class="input input-sm pl-8" placeholder="Search Cars Type" id="searchCarType" type="text"/>
+    <div class="container-fixed">
+        <div class="grid gap-5 lg:gap-7.5">
+            <div class="card card-grid min-w-full">
+                <div class="card-header py-5 flex-wrap">
+                    <h3 class="card-title">
+                        Vahan Routes
+                        <div style="display: inline-block;" class="ml-5">
+                            <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCarType()">
+                                <i class="ki-filled ki-trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </h3>
+                    <div class="flex gap-6">
+                        <div class="relative">
+                            <i
+                                class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3">
+                            </i>
+                            <input class="input input-sm pl-8" onkeyup="filterTableType()" placeholder="Search Users" id="searchUser" type="text" />
+    
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div data-datatable="true" data-datatable-page-size="5">
-                    <div class="scrollable-x-auto">
-                        <table class="table table-auto table-border" id="grid_table_carType">
+                <div class="card-body">
+                    <div data-datatable="true" data-datatable-page-size="5">
+                        <div class="scrollable-x-auto">
+                            <table class="table table-auto table-border" data-datatable-table="true" id="grid_table">
                             <thead>
                                 <tr>
-                                    <th class="min-w-[175px]">Member</th>
-                                    <th class="min-w-[150px]">Location</th>
-                                    <th class="min-w-[125px]">Status</th>
-                                    <th class="w-[80px]"></th>
+                                    <th class="w-[60px]">
+                                        <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                            type="checkbox" />
+                                    </th>
+                                    <th class="w-[80px]">
+                                        Type
+                                        <span class="sort-icon">
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for carType in carType %}
                                 <tr>
                                     <td>
+                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                            type="checkbox" id="checkBOX" value="{{ carType.id }}" />
+                                    </td>
+                                    <td>
                                         <div class="flex items-center gap-2.5">
-                                            <img alt="" class="h-9 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/avatars/300-3.png"/>
+                                            
                                             <div class="flex flex-col gap-0.5">
-                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">Tyler Hero</a>
-                                                <span class="text-2sm text-gray-600">26 tasks</span>
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ carType.car_type }}</a>
+                                                <span class="text-2sm text-gray-600">{{ carType.car_count }} Cars Registerd</span>
                                             </div>
                                         </div>
                                     </td>
+                                    
                                     <td>
-                                        <div class="flex items-center gap-1.5">
-                                            <img alt="flag" class="h-4 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/flags/estonia.svg"/>
-                                            <span class="leading-none text-gray-700">Estonia</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-success">Active</span>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-sm btn-light">Edit</a>
+                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{carType.id}}"><i class="ki-filled ki-pencil"></i></a>
+                                        <!-- <button class="btn btn-sm btn-danger" onclick="DeleteCarType({{carType.id}})">Delete</button> -->
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-2.5">
-                                            <img alt="" class="h-9 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/avatars/300-2.png"/>
-                                            <div class="flex flex-col gap-0.5">
-                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">Esther Howard</a>
-                                                <span class="text-2sm text-gray-600">639 tasks</span>
+                                
+                                    
+                                    <div class="modal" data-modal="true" id="modal_{{ carType.id }}">
+                                        <form id="carEditForm" method="post" enctype="multipart/form-data" action="{% url 'car-type-edit' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="car_type_id" value="{{ carType.id }}">
+                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title">Edit {{ carType.car_type }}</h3>
+                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                    <i class="ki-outline ki-cross"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="modal-body">
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Type
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_type_edit" placeholder="Car Model" type="text" value="{{ carType.car_type }}"/>
+                                                </div>
+                                        
+                                            </div>
+                                            
+                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                <div class="flex gap-4">
+                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="flex items-center gap-1.5">
-                                            <img alt="flag" class="h-4 rounded-full" src="/static/metronic/tailwind/docs/dist/assets/media/flags/malaysia.svg"/>
-                                            <span class="leading-none text-gray-700">Malaysia</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-warning">Pending</span>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-sm btn-light">Edit</a>
-                                    </td>
-                                </tr>
+                                    </form>
+                                    </div>
+                                
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                    <div
+                        class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
                         <div class="flex items-center gap-2">
                             Show
-                            <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                            <select class="select select-sm w-16" data-datatable-size="true" name="perpage">
+                            </select>
                             per page
                         </div>
                         <div class="flex items-center gap-4">
-                            <span data-datatable-info="true"></span>
-                            <div class="pagination" data-datatable-pagination="true"></div>
+                            <span data-datatable-info="true">
+                            </span>
+                            <div class="pagination" data-datatable-pagination="true">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -139,33 +172,103 @@
 <!-- Cars List end -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchCarType');
-        const table = document.getElementById('grid_table_carType');
-        const tableRows = table.querySelectorAll('tbody tr');
+   function filterTableType() {
+    // Get the value of the input field
+    var input = document.getElementById('searchUser');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('grid_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
 
-        // Logging to debug
-        console.log('Search Input:', searchInput);
-        console.log('Table Rows:', tableRows);
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
 
-        searchInput.addEventListener('input', function() {
-            const searchTerm = searchInput.value.toLowerCase();
-            console.log('Search Term:', searchTerm);
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
 
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let rowContainsSearchTerm = false;
+    function DeleteCarType() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the DELETE request to Django
+            const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+            // Filter the checked checkboxes
+            const CarsTypecheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
 
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                        rowContainsSearchTerm = true;
+            // Extract values of checked checkboxes
+            const CarsTypecheckedValues = CarsTypecheckedCheckboxes.map(checkbox => checkbox.value);
+            if (CarsTypecheckedValues != '') {
+                console.log('Checked values:', CarsTypecheckedValues);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/vendor/delete-car-type/', 
+                    data: {
+                        'car_type_ids': CarsTypecheckedValues,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something Went Wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Delete Successfull',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                            $('#UserCreateForm')[0].reset();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
                     }
                 });
-
-                row.style.display = rowContainsSearchTerm ? '' : 'none';
-            });
-        });
+            }
+        }
     });
+}
+
+
+
+
+
+
 </script>
 
 {% endblock %}

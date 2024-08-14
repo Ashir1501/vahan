@@ -18,12 +18,10 @@ class Driver(models.Model):
         return f"{self.name}-{self.vendor_id.name}"
 
 class CarType(models.Model):
-    car_model = models.CharField(max_length=50)
     car_type = models.CharField(max_length=50)
-    car_brand = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.car_type}-{self.car_brand} {self.car_model}"
+        return f"{self.car_type}"
     
 class Route(models.Model):
 
@@ -48,6 +46,7 @@ class Route(models.Model):
     fare = models.DecimalField(max_digits=10,decimal_places=2, null=True, blank=True, default=30)
     duration = models.CharField(max_length=50, choices=DURATION_CHOICES, default=DURATION_CHOICES[0])
     kms = models.IntegerField(default=1)
+    created_by = models.ForeignKey(Account,on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.pickup_location}-{self.drop_location}-Car({self.car_type.get()})"
@@ -58,6 +57,8 @@ class Route(models.Model):
 class Car(models.Model):
     Car_type = models.ForeignKey(CarType, on_delete=models.CASCADE)
     Vender_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+    car_model = models.CharField(max_length=50)
+    car_brand = models.CharField(max_length=50)
     Front_pic = models.ImageField(upload_to='car_images', default=None)
     Back_pic = models.ImageField(upload_to='car_images', default=None)
     Registration_Number = models.CharField(max_length=20)
