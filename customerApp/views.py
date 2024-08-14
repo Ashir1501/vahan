@@ -9,7 +9,8 @@ from django.http import JsonResponse
 # method to render pending rides page
 def Pending_rides_page(request):
     rides_details = Ride.objects.all()
-    return render(request,'adminTemplates/ride_details.html',{'ridesData':rides_details})
+    drivers = Driver.objects.all()
+    return render(request,'adminTemplates/ride_details.html',{'ridesData':rides_details,"driverData":drivers})
 
 
 

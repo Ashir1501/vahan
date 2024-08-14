@@ -136,14 +136,18 @@
                                                                         </button>
                                                                     </div>
                                                                     <div class="modal-body">
+                                                                        <input type="hidden" name="driver_id" id="driverId_{{ rideData.id }}">
                                                                         <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                                                             <label class="form-label flex-shrink-0 w-full lg:w-auto">
                                                                                 Driver
                                                                                 <span class="text-danger">*</span>
                                                                             </label>
-                                                                            <input type="hidden" name="driver_id" id="driver_id_{{ rideData.id }}">
-                                                                            <input class="input w-full" type="text" id="user_input_{{ rideData.id }}" placeholder="type name or email..." autocomplete="off" style="width: 100%;">
-                                                                            <ul id="driver_list_{{ rideData.id }}" style="display:none; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; position: absolute; top: 100%; left: 0; right: 0; background-color: white; list-style-type: none; padding: 0; margin: 0; z-index: 1000; border-radius: 10px;"></ul>
+                                                                            <input class="input" id="driverInput_{{ rideData.id }}" placeholder="Driver" type="text" list="driverList_{{ rideData.id }}" autocomplete="off"/>
+                                                                            <datalist id="driverList_{{ rideData.id }}">
+                                                                                {% for driverData in driverData %}
+                                                                                    <option data-id="{{ driverData.id }}" value="{{ driverData.name }}"></option>
+                                                                                {% endfor %}
+                                                                            </datalist>
                                                                         </div>
                                                                     </div>
                                                                     <div class="modal-footer justify-end" style="margin: 10px;">
@@ -154,6 +158,7 @@
                                                                     </div>
                                                                 </div>
                                                             </form>
+                                                            
                                                         </div>
                                                         {% endif %}
                                                         {% endfor %}
@@ -498,47 +503,35 @@ function filterTableTypeCancelled() {
 
 // custom.js
 // custom.js
-$(document).ready(function(){
-    // Attach the event handler to each input field using a loop
-    $('[id^=user_input_]').each(function(){
-        var inputId = $(this).attr('id');
-        var listId = 'driver_list_' + inputId.split('_')[2];
-        var userIdField = 'driver_id_' + inputId.split('_')[2];
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[id^="driverInput_"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            var inputId = this.id;
+            var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+            var listId = 'driverList_' + modalId;
+            var hiddenInputId = 'driverId_' + modalId;
 
-        $('#' + inputId).on('focus keyup', function(){
-            var query = $(this).val();
-            $.ajax({
-                url: 'customer/autocomplete-driver/',
-                data: {
-                    'term': query
-                },
-                dataType: 'json',
-                success: function(data){
-                    var user_list = $('#' + listId);
-                    user_list.empty();
-                    user_list.show();
-                    data.forEach(function(item){
-                        user_list.append('<li data-id="'+item.id+'" data-email="'+item.email+'">'+item.label+'</li>');
-                    });
+            var inputElement = document.getElementById(inputId);
+            var listElement = document.getElementById(listId);
+            var hiddenInputElement = document.getElementById(hiddenInputId);
+
+            var inputValue = inputElement.value;
+            var options = listElement.options;
+
+            hiddenInputElement.value = ""; // Reset hidden input
+
+            // Loop through options to find a match with the input value
+            for (var i = 0; i < options.length; i++) {
+                if (options[i].value === inputValue) {
+                    hiddenInputElement.value = options[i].getAttribute('data-id');
+                    console.log("ID found and set: ", hiddenInputElement.value);
+                    break;
                 }
-            });
-        });
+            }
 
-        // Handle click on dropdown items
-        $('#' + listId).on('click', 'li', function(){
-            var user_id = $(this).data('id');
-            var user_name = $(this).text();
-
-            $('#' + inputId).val(user_name);
-            $('#' + userIdField).val(user_id);
-
-            $('#' + listId).hide();
-        });
-
-        // Hide the dropdown if the input loses focus
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#' + inputId).length && !$(e.target).closest('#' + listId).length) {
-                $('#' + listId).hide();
+            // Debugging log to check the result
+            if (!hiddenInputElement.value) {
+                console.log("No matching ID found for input: ", inputValue);
             }
         });
     });
