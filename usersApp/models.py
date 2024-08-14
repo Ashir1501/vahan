@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from random import randint
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 # Create your models here.
 class MyAccountManager(BaseUserManager):
     def create_user(self, phone_number, email,user_type,OTP=None,password=None, first_name=None, last_name=None):
@@ -42,7 +41,7 @@ class MyAccountManager(BaseUserManager):
         user.is_superadmin = True
         user.save(using = self.db)
 
-class Account(AbstractBaseUser):
+class Account(AbstractBaseUser, PermissionsMixin):
 
     #required fields
     first_name = models.CharField(max_length = 150, null=True, blank=True)
@@ -94,17 +93,17 @@ class AccountDetail(models.Model):
         ("Male","Male"),
         ("Female","Female"),
         ("Other","Other"),
-        ("None","None")
     ]
     user_id = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='accountDetail')
     photo = models.ImageField(upload_to='user_images', null=True, blank=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default=GENDER_CHOICES[3][0])
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, null=True, blank=True)
     driving_licence = models.ImageField(upload_to='user_images', null=True, blank=True)
     aadhar_card = models.ImageField(upload_to='user_images', null=True, blank=True)
     join_date = models.DateField(null=True, blank=True)
     exit_date = models.DateField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     updated_by = models.ForeignKey(Account,null=True, on_delete=models.SET_NULL)
+    works_for = models.ForeignKey(Account,null=True,blank=True, on_delete=models.SET_NULL, related_name='worksFor')
 
     def __str__(self):
         return f"{self.user_id.first_name}-{self.user_id.last_name}"
