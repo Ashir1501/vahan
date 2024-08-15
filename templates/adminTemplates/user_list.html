@@ -304,6 +304,42 @@
                                     <th class="min-w-[125px]">
                                         <span class="sort">
                                             <span class="sort-label">
+                                                Gender
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Join Date
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Exit Date
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Works For
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
                                                 Created At
                                             </span>
                                             <span class="sort-icon">
@@ -328,11 +364,30 @@
                                             </span>
                                         </span>
                                     </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Aadhar
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Driving Licence
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% if users %}
                                     {% for user in users %}
+                                    {% with user.accountDetail.first as detail %}
                                         <tr>
                                             <td>
                                                 <input class="checkbox checkbox-sm" data-datatable-row-check="true"
@@ -374,8 +429,13 @@
                                             {% endif %}
                                             <td>
                                                 <div class="flex items-center gap-2.5">
+                                                    {% if detail.photo %}
                                                     <img alt="" class="h-9 rounded-full"
-                                                        src="{% static 'media/avatars/300-3.png' %}" />
+                                                        src="{{ detail.photo.url }}" />
+                                                    {% else %}
+                                                    <img alt="" class="h-9 rounded-full"
+                                                        src="{% static 'media/avatars/blank.png' %}" />
+                                                    {% endif %}
                                                     <div class="flex flex-col gap-0.5">
                                                         <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary"
                                                             href="#">
@@ -403,6 +463,34 @@
                                             </td>
                                             <td>
                                                 <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ detail.gender }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ detail.join_date }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ detail.exit_date }}
+                                                </span>
+                                            </td>
+                                            {% if user.first_name and user.last_name %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ user.first_name }} {{ user.last_name }}
+                                                </span>
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ user.email }} 
+                                                </span>
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
                                                     {{ user.created_at }}
                                                 </span>
                                             </td>
@@ -416,6 +504,36 @@
                                                     {{ user.last_login }}
                                                 </span>
                                             </td>
+                                            {% if detail.aadhar_card %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    <a href="{% url 'download_aadhar' detail.pk %}">
+                                                        Download
+                                                    </a>
+                                                </span>
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    N/A
+                                                </span>
+                                            </td>
+                                            {% endif %}
+                                            {% if detail.driving_licence %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    <a href="{% url 'download_driving_licence' detail.pk %}">
+                                                        Download
+                                                    </a>
+                                                </span>
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    N/A
+                                                </span>
+                                            </td>
+                                            {% endif %}
                                         </tr>
                                         <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
                                             data-modal-backdrop-static="true">
@@ -490,6 +608,7 @@
                                                                         maxlength="10" />
                                                                 </div>
                                                             </div>
+                                                            {% if user.user_type != "Customer" %}
                                                             <div class="w-full">
                                                                 <div
                                                                     class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
@@ -498,7 +617,7 @@
                                                                     </label>
                                                                     <div class="flex flex-col w-full gap-1">
                                                                         <select class="select" name="new_gender" id="genderU">
-                                                                            {% with user.accountDetail.first as detail %}
+                                                                            
                                                                                 {% if detail.gender %}
                                                                                     <option selected value="{{ detail.gender }}">{{ detail.gender }}</option>
                                                                                     {% for value, label in gender_choices %}
@@ -513,7 +632,7 @@
                                                                                     {% endfor %}
                                                                                 {% endif %}
 
-                                                                            {% endwith %}                                                               
+                                                                                                                                       
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -525,18 +644,20 @@
                                                                     </label>
                                                                     <div class="flex flex-col w-full gap-1">
                                                                         <select class="select" name="new_works_for" id="new_works_forU">
-                                                                            {% with user.accountDetail.first as detail %}
-                                                                                {% if detail.works_for %}
-                                                                                    <option value="{{ detail.works_for.id }}" selected>{{ detail.works_for.email }}</option>
-                                                                                {% else %}
-                                                                                    <option value="" selected>Select a option</option>
-                                                                                {% endif %}
-                                                                            {% endwith %}
+                                                                            
+                                                                            {% if detail.works_for %}
+                                                                                <option value="{{ detail.works_for.id }}" selected>{{ detail.works_for.email }}</option>
+                                                                            {% else %}
+                                                                                <option value="" selected>Select a option</option>
+                                                                            {% endif %}
+                                                                        
                                                                             {% if works_for %}
                                                                                 {% for user in works_for %}
+                                                                                    {% if user.pk != detail.works_for.id and user.pk != user.pk%}
                                                                                     <option value="{{ user.pk }}">
                                                                                         {{ user }}
                                                                                     </option>
+                                                                                    {% endif %}
                                                                                 {% endfor %}
                                                                             {% else %}
                                                                                 <option value="">
@@ -601,6 +722,7 @@
                                                                     <input id="exit_dateU" name="new_exit_date" type="date" />
                                                                 </div>
                                                             </div>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                     <hr>
@@ -614,6 +736,7 @@
                                                 </form>
                                             </div>
                                         </div>
+                                    {% endwith %}
                                     {% endfor %}
                                 {% else %}
                                     <tr>
@@ -660,6 +783,36 @@
                                         </td>
                                         <td>
                                             <span class="badge badge-sm badge-outline badge-info">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
+                                                N/A
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-sm badge-outline badge-warning">
                                                 N/A
                                             </span>
                                         </td>

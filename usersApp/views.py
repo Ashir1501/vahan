@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from usersApp.models import Account, AccountDetail
 from django.views.generic import View
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.utils.dateparse import parse_date
 from django.core.validators import FileExtensionValidator
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 # Create your views here.
 def adminHome(request):
@@ -77,9 +79,9 @@ class userListCreateView(View):
 
             # Validate files
             file_validators = {
-                'photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
-                'driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'pdf']),
-                'aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'pdf'])
+                'photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg']),
+                'driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg']),
+                'aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg'])
             }
 
             for file_key in file_validators:
@@ -166,15 +168,18 @@ class updateUser(View):
         new_photo = files.get('new_photo', None)
         new_driving_licence = files.get('new_driving_licence', None)
         new_aadhar_card = files.get('new_aadhar_card', None)
-        new_works_for = data.get('new_works_for')
+        new_works_for = data.get('new_works_for', None)
+        print(new_works_for,'line 170')
 
         errors = {}
         accountDetail = account.accountDetail.first()
         accountDetail.gender = new_gender if new_gender else None
-        if(new_works_for != ''):
-            accountDetail.works_for = Account.objects.get(pk = new_works_for)
+        if(new_works_for):
+            if(new_works_for != ''):
+                accountDetail.works_for = Account.objects.get(pk = new_works_for)
         else:
             accountDetail.works_for = None
+            
 
         # Validate new email 
         email_validator = EmailValidator()
@@ -272,3 +277,21 @@ class deleteUser(View):
                 return JsonResponse({'success': False, 'error': f'User with id {user_id} does not exist'})
                 
         return JsonResponse({'success':True})
+    
+def download_aadhar(request, image_id):
+    account_detail = get_object_or_404(AccountDetail, id=image_id)
+    image_path = account_detail.aadhar_card.path
+
+    with default_storage.open(image_path, 'rb') as image_file:
+        response = HttpResponse(image_file.read(), content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename="{account_detail.aadhar_card.name}"'
+        return response
+
+def download_driving_licence(request, image_id):
+    account_detail = get_object_or_404(AccountDetail, id=image_id)
+    image_path = account_detail.driving_licence.path
+
+    with default_storage.open(image_path, 'rb') as image_file:
+        response = HttpResponse(image_file.read(), content_type='image/jpeg')
+        response['Content-Disposition'] = f'attachment; filename="{account_detail.driving_licence.name}"'
+        return response
