@@ -652,10 +652,10 @@
                                                                             {% endif %}
                                                                         
                                                                             {% if works_for %}
-                                                                                {% for user in works_for %}
-                                                                                    {% if user.pk != detail.works_for.id and user.pk != user.pk%}
-                                                                                    <option value="{{ user.pk }}">
-                                                                                        {{ user }}
+                                                                                {% for users in works_for %}
+                                                                                    {% if users.pk != detail.works_for.id and users.pk != user.pk %}
+                                                                                    <option value="{{ users.pk }}">
+                                                                                        {{ users }}
                                                                                     </option>
                                                                                     {% endif %}
                                                                                 {% endfor %}
@@ -664,6 +664,7 @@
                                                                                     None
                                                                                 </option>
                                                                             {% endif %}
+                                                                            <option value="">None</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
