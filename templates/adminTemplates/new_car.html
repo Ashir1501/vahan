@@ -1,0 +1,604 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if messages %}
+ 
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+
+    <script>
+        console.log('{{message}}')
+        Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+    {% endif %}
+    {% if message.tags == 'error' %}
+    <script>
+   
+        Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 2000
+        });
+    </script>
+    {% endif %}
+    {% endfor %}
+
+{% endif %}
+
+
+<!-- Trigger Button -->
+
+<div>
+    <button class="btn btn-light mb-5 ms-5" data-collapse="#collapsible_content">
+        Create New Car
+    </button>
+    <div class="card transition-all duration-300 hidden" id="collapsible_content">
+        <div class="card-header">
+            <h3 class="card-title">New Car</h3>
+        </div>
+        <form action="{% url 'add-new-car' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="card-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+                    <!-- Car Type Input with Dropdown -->
+                
+                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                            <label class="form-label max-w-32">
+                                Cars Type:
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="input" placeholder="Car Type" type="text" list="carType{{ rideData.id }}" autocomplete="off" name="carsTypeId"/>
+                            <datalist id="carType{{ rideData.id }}">
+                                {% for CarsType in CarsType %}
+                                    <option data-id="{{ CarsType.id }}" value="{{ CarsType.car_type }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                
+                    <!-- Vendor Select -->
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                            Vendor
+                        </label>
+                        <select class="select w-full" name="vendorId">
+                            <option value="me">Self</option>
+                            {% for vendorData in vendorData %}
+                                {% if vendorData.user_type == 'Vendor' %}
+                                    <option value="{{vendorData.id}}">{{vendorData.first_name}} {{vendorData.last_name}} / {{vendorData.email}}</option>
+                                {% endif %}
+                            {% endfor %}
+                            
+                        </select>
+                    </div>
+                
+                    <!-- Car Model Input -->
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                            Car Model
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input class="input w-full" name="carModel" placeholder="Car Model" type="text"/>
+                    </div>
+                
+                    <!-- Car Brand Input -->
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                            Car Brand
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input class="input w-full" name="carBrand" placeholder="Car Brand" type="text"/>
+                    </div>
+                
+                    <!-- Registration Number Input -->
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                            Registration Number
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input class="input w-full" name="registrationNumber" placeholder="Registration Number" type="text"/>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mt-5">
+                    <div class="form-group ms-5">
+                        <label for="fileInputFront" class="form-label">Front pic</label>
+                        <input class="form-control-file form-control-sm" id="fileInputFront" type="file" name="frontPic" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="fileInputBack" class="form-label">Back pic</label>
+                        <input class="form-control-file form-control-sm" id="fileInputBack" type="file" name="backPic" accept="image/*">
+                    </div>
+                    <div class="form-group ms-5">
+                        <label for="fileInputRC" class="form-label">RC Photo</label>
+                        <input class="form-control-file form-control-sm" id="fileInputRC" type="file" name="rcPhoto" accept="image/*">
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-primary"  type="submit" style="margin: 10px;">
+                    Add Car
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Cars List -->
+<div style="margin: 10px;">
+    <div class="container-fixed">
+        <div class="grid gap-5 lg:gap-7.5">
+            <div class="card card-grid min-w-full">
+                <div class="card-header py-5 flex-wrap">
+                    <h3 class="card-title">
+                        Cars
+                        <div style="display: inline-block;" class="ml-5">
+                            <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCars()">
+                                <i class="ki-filled ki-trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </h3>
+                    <div class="flex gap-6">
+                        <div class="relative">
+                            <i
+                                class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3">
+                            </i>
+                            <input class="input input-sm pl-8" onkeyup="filterTable()" placeholder="Search Users" id="searchCar" type="text" />
+    
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div data-datatable="true" data-datatable-page-size="5">
+                        <div class="scrollable-x-auto">
+                            <table class="table table-auto table-border" data-datatable-table="true" id="car_table">
+                                <thead>
+                                    <tr>
+                                        <th class="w-[60px]">
+                                            <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                                type="checkbox" />
+                                        </th>
+                                        <th class="w-[80px]">
+                                        </th>
+                                        <th class="min-w-[175px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">
+                                                    Car Model
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[150px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Car Type
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Car Brand
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Vendor
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Registration Number
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Is Available
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Front Pic
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Back Pic
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                        <th class="min-w-[125px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                    Rc Photo
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for CarsData in data %}
+                                    <tr>
+                                        <td>
+                                            <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                                type="checkbox" id="checkBOX" value="{{CarsData.id}}" />
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light"
+                                                data-modal-toggle="#CarsUpdateModal-{{CarsData.id}}">
+                                                <i class="ki-filled ki-pencil"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2.5">
+                                                
+                                                <div class="flex flex-col gap-0.5">
+                                                    <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                        {{ CarsData.car_model }}                                                    
+                                                    </a>
+                                                    
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-1.5">
+                                                    {{ CarsData.Car_type.car_type }}
+                                           
+                                            </div>
+                                        </td>
+                                        <td>  
+                                            {{ CarsData.car_brand }}                                         
+                                        </td>
+                                        <td>
+                                            {{ CarsData.Vender_id.first_name }}(<span class="text-2sm text-gray-600">{{CarsData.Vender_id}}</span>)
+                                        </td>
+                                        <td>
+                                            {{ CarsData.Registration_Number }}
+                                        </td>
+                                            {% if CarsData.id in notAvalaibe %}
+                                                <td><span class="badge badge-sm badge-outline badge-worning">No</span></td>
+                                            {% else %}
+                                                <td><span class="badge badge-sm badge-outline badge-success">Yes</span></td>
+                                            {% endif %}
+                                        <td>
+                                                {% if CarsData.Front_pic %}
+                                                    <img alt="flag" class="h-4 rounded-full" src="{{ CarsData.Front_pic.url }}"/>
+                                                {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if CarsData.Back_pic %}
+                                                <img alt="flag" class="h-4 rounded-full" src="{{ CarsData.Back_pic.url }}"/>
+                                            {% endif %}
+                                        </td>
+                                        <td><img alt="flag" class="h-4 rounded-full" src="{{ CarsData.rc_photo.url }}"/></td>
+                                    </tr>
+                                 
+
+                                    <div class="modal" data-modal="true" id="CarsUpdateModal-{{CarsData.id}}">
+                                        <form id="carEditForm" method="post" enctype="multipart/form-data" action="{% url 'edit_car' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="car_id" value="{{ CarsData.id }}">
+                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title">Edit {{ CarsData.car_model }}</h3>
+                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                    <i class="ki-outline ki-cross"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="modal-body">
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Model
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_model_edit" placeholder="Car Model" type="text" value="{{ CarsData.car_model }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Type
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_type_edit" placeholder="Car Type" type="text" value="{{ CarsData.Car_type.car_type }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Brand
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_brand_edit" placeholder="Car Brand" type="text" value="{{ CarsData.car_brand }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Registration Number
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="registration_number_edit" placeholder="Registration Number" type="text" value="{{ CarsData.Registration_Number }}"/>
+                                                </div>
+                                                
+                                                <div class="form-group ms-5 mt-5">
+                                                    
+                                                    {% if CarsData.Front_pic %}
+                                                        <input type="hidden" name="FrontPicInputHidden" value="{{ CarsData.Front_pic.url }}">
+                                                        <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src="{{ CarsData.Front_pic.url }}"/>
+                                                    {% else %}
+                                                    <input type="hidden" name="FrontPicInputHidden" value="">
+                                                        <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src=""/>
+                                                    {% endif %}
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputFrontEdit" class="form-label">Front pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputFrontEdit" type="file" name="front_pic_edit" accept="image/*">
+                                                    </div>
+                                                </div>
+                                
+                                                <div class="form-group ms-5 mt-5">
+                                                    
+                                                    {% if CarsData.Back_pic %}
+                                                        <input type="hidden" name="BackPicInputHidden" value="{{ CarsData.Back_pic.url }}">
+                                                        <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src="{{ CarsData.Back_pic.url }}"/>
+                                                    {% else %}
+                                                        <input type="hidden" name="BackPicInputHidden" value="">
+                                                        <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src=""/>
+                                                    {% endif %}
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputBackEdit" class="form-label">Back pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputBackEdit" type="file" name="back_pic_edit" accept="image/*">
+                                                    </div>
+                                                </div>
+                                
+                                                <div class="form-group ms-5 mt-5">
+                                                    <input type="hidden" name="RcPicInputHidden" value="{{ CarsData.rc_photo.url }}">
+                                                    <img alt="RC pic" class="h-10 rounded-full" id="RcpicImg" src="{{ CarsData.rc_photo.url }}"/>
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputRCEdit" class="form-label">RC pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputRCEdit" type="file" name="rc_pic_edit" accept="image/*">
+                                                    </div>
+                                                </div>
+                                                <label class="switch" style="margin: 10px; margin-top: 10px;">
+                                                    <input name="available_check" type="checkbox" value="1" {% if not CarsData.id in notAvalaibe %} checked {% endif %} />
+                                                    <span class="switch-label">
+                                                        Available
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                <div class="flex gap-4">
+                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                   
+                               
+                                    {% endfor %}
+                    
+                                </tbody>
+                            </table>
+                        </div>
+                        <div
+                            class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                            <div class="flex items-center gap-2">
+                                Show
+                                <select class="select select-sm w-16" data-datatable-size="true" name="perpage">
+                                </select>
+                                per page
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span data-datatable-info="true">
+                                </span>
+                                <div class="pagination" data-datatable-pagination="true">
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+</div>
+
+<!-- Cars List end -->
+
+<script>
+   
+   function filterTable() {
+    // Get the value of the input field
+    var input = document.getElementById('searchCar');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('car_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+
+    
+    function DeleteCars() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the DELETE request to Django
+            const checkboxes = document.querySelectorAll('#car_table input[id="checkBOX"]');
+            // Filter the checked checkboxes
+            const CarscheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+            // Extract values of checked checkboxes
+            const CarscheckedValues = CarscheckedCheckboxes.map(checkbox => checkbox.value);
+
+            if (CarscheckedValues != '') {
+                console.log('Checked values:', CarscheckedValues);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/vendor/delete-car/', 
+                    data: {
+                        'car_ids': CarscheckedValues,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something Went Wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Delete Successfull',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                            $('#UserCreateForm')[0].reset();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            }
+        }
+    });
+    
+}
+
+
+    $(document).ready(function() {
+        let timeout;
+
+
+    $('#fileInputFrontEdit').on('change', function(event) {
+                var file = event.target.files[0];
+                
+                $('#FrontPicInputHidden').val('')
+                
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        console.log(file);
+                        $('#frontpicImg').attr('src', e.target.result);
+                        $('#FrontPicInputHidden').val( e.target.result)
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#fileInputBackEdit').on('change', function(event) {
+                var file = event.target.files[0];
+                
+                $('#BackPicInputHidden').val('')
+            
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        console.log(file);
+                        $('#backpicImg').attr('src', e.target.result);
+                        $('#BackPicInputHidden').val(e.target.result)
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#fileInputRCEdit').on('change', function(event) {
+                var file = event.target.files[0];
+                
+                
+                $('#RcPicInputHidden').val('')
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        console.log(file);
+                        $('#RcpicImg').attr('src', e.target.result);
+                        $('#RcPicInputHidden').val(e.target.result)
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        
+        });
+
+
+
+</script>
+
+{% endblock %}

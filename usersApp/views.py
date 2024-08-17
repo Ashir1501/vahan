@@ -152,8 +152,11 @@ class userListCreateView(View):
         return JsonResponse({'success':False, 'error':'Invalid request method'})
 
 class updateUser(View):
+    
     def post(self,request,*args,**kwargs):
-        account = get_object_or_404(Account, pk = kwargs.get('pk'))
+        pk = kwargs.get('pk')
+        print(pk)
+        account = get_object_or_404(Account, pk = pk)
         data = request.POST
         files = request.FILES
 
@@ -261,6 +264,7 @@ class updateUser(View):
         accountDetail.save()
         messages.success(request,"User updated successfully")
         return redirect('user-list')
+    
     
 class deleteUser(View):
     def get(self, request, *args, **kwargs):

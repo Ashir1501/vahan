@@ -1583,7 +1583,7 @@
                 </div>
             </div>
             {% endif %}
-            {% if request.resolver_match.url_name == 'user-list' %}
+            {% if not request.resolver_match.url_name == 'adminHome' %}
             <div class="flex [.header_&amp;]:below-lg:hidden items-center gap-1.25 text-xs lg:text-sm font-medium mb-2.5 lg:mb-0"
                 data-reparent="true" data-reparent-mode="prepend|lg:prepend"
                 data-reparent-target="#content_container|lg:#header_container">
@@ -1597,9 +1597,41 @@
                 </div>
                 <i class="ki-filled ki-right text-gray-500 text-3xs">
                 </i>
+                {% if request.resolver_match.url_name == 'user-list' %}
+                    <span class="text-gray-700">
+                        User List
+                    </span>
+                {% elif request.resolver_match.url_name == 'routes-page' %}
+                    <span class="text-gray-700">
+                        Routes
+                    </span>
+                {% elif request.resolver_match.url_name == 'new-car-page' %}
                 <span class="text-gray-700">
-                    User List
+                    New Car
                 </span>
+                {% elif request.resolver_match.url_name == 'new-car-type-page' %}
+                <span class="text-gray-700">
+                    New Car Type
+                </span>
+                {% elif request.resolver_match.url_name == 'rides-details-page' %}
+                    <span class="text-gray-700">
+                    Rides <i class="ki-filled ki-right text-gray-500 text-3xs">
+                    </i>   Details
+                    </span>
+                {% elif request.resolver_match.url_name == 'ongoing-page' %}
+                <span class="text-gray-700">
+                    Ongoing
+                </span>
+
+                {% elif request.resolver_match.url_name == 'previous-page' %}
+                <span class="text-gray-700">
+                    Previous
+                </span>
+                {% elif request.resolver_match.url_name == 'extra-page' %}
+                <a href="{% url 'previous-page' %}"><span class="text-gray-700">
+                    Previous
+                </span></a> <i class="ki-filled ki-right text-gray-500 text-3xs"></i> <span class="text-gray-700">Extra</span>
+                {%endif%}
             </div>
             {% endif %}
         </div>
