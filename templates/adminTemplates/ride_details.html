@@ -29,7 +29,7 @@
         {% endif %}
     {% endfor %}
 {% endif %}
-
+{{data}}
 <div>
     <div>
         <div>
@@ -52,7 +52,7 @@
                                             Pending Rides
                                             
                                             <div style="display: inline-block;" class="ml-5">
-                                                <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCarType()">
+                                                <button class="btn btn-danger btn-sm" type="button" onclick="cancelRidePending()">
                                                     <i class="ki-filled ki-cross-circle"></i>
                                                     Cancel
                                                 </button>
@@ -76,95 +76,257 @@
                                                                 <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
                                                             </th>
                                                             <th class="w-[20px]"></th>
-                                                            <th class="w-[80px]"> 
+                                                            <th class="w-[80px]">
                                                                 <span class="sort asc">
-                                                                    <span class="sort-label">
-                                                                        Driver Name
-                                                                    </span>
-                                                                    <span class="sort-icon">
-                                                                    </span>
+                                                                    <span class="sort-label">Status</span>
+                                                                    <span class="sort-icon"></span>
                                                                 </span>
-                                                                
                                                             </th>
-                                                            <th class="w-[80px]"> 
+                                                            <th class="w-[80px]">
                                                                 <span class="sort asc">
-                                                                    <span class="sort-label">
-                                                                        customer Name
-                                                                    </span>
-                                                                    <span class="sort-icon">
-                                                                    </span>
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
                                                                 </span>
-                                                                
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup at</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Return Date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[10px]"></th>
+                                                            <th class="w-[80px]"> Car </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Fare</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Duration</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">KMS</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
                                                             </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {% for rideData in ridesData %}
-                                                        {% if not rideData.ride_status == 'cancelled' and not rideData.ride_status == 'Started' and not rideData.ride_status == 'completed' and not rideData.ride_status == 'confirmed' %}
-                                                        <tr>
-                                                            <td>
-                                                                <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX_{{ rideData.id }}" value="" />
-                                                            </td>
-                                                            <td>
-                                                                <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{ rideData.id }}_pending"><i class="ki-filled ki-delivery-3"></i>Assign</a>
-                                                            </td>
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.driver.name }}</a>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.return_date }}</a>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    
-                                                        <div class="modal" data-modal="true" id="modal_{{ rideData.id }}_pending">
-                                                            <form id="carEditForm_{{ rideData.id }}" method="post" enctype="multipart/form-data" action="{% url 'assign-driver' %}">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="ride_id" value="{{ rideData.id }}">
-                                                                <div class="modal-content max-w-[600px] top-[10%]">
-                                                                    <div class="modal-header">
-                                                                        <h3 class="modal-title">Edit {{ rideData.pickup_date }}</h3>
-                                                                        <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                                                                            <i class="ki-outline ki-cross"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <input type="hidden" name="driver_id" id="driverId_{{ rideData.id }}">
-                                                                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                                                                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                                                Driver
-                                                                                <span class="text-danger">*</span>
-                                                                            </label>
-                                                                            <input class="input" id="driverInput_{{ rideData.id }}" placeholder="Driver" type="text" list="driverList_{{ rideData.id }}" autocomplete="off"/>
-                                                                            <datalist id="driverList_{{ rideData.id }}">
-                                                                                {% for driverData in driverData %}
-                                                                                    <option data-id="{{ driverData.id }}" value="{{ driverData.name }}"></option>
-                                                                                {% endfor %}
-                                                                            </datalist>
+                                                            {% if not rideData.ride_status ==  'cancelled' and not rideData.ride_status == 'Started' and not rideData.ride_status == 'completed' and not rideData.ride_status == 'confirmed' %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX_{{ rideData.hashed_id }}" value="{{ rideData.hashed_id }}" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{ rideData.hashed_id }}_pending">
+                                                                            <i class="ki-filled ki-delivery-3"></i>Assign
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.ride_status }}</a>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="modal-footer justify-end" style="margin: 10px;">
-                                                                        <div class="flex gap-4">
-                                                                            <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
-                                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.pickup_location }}</a>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.driver.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.driver.first_name }} {{ rideData.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.return_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{rideData.car.car_model }}/ ({{rideData.car.car_brand}})</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.duration }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.kms }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.customer.first_name }} {{ rideData.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                
+                                                                <!-- Modal -->
+                                                                <div class="modal" data-modal="true" id="modal_{{ rideData.hashed_id }}_pending">
+                                                                    <form id="carEditForm_{{ rideData.hashed_id }}" method="post" enctype="multipart/form-data" action="{% url 'assign-driver' %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="ride_id" value="{{ rideData.hashed_id }}">
+                                                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                                                            <div class="modal-header">
+                                                                                <h3 class="modal-title">Edit {{ rideData.pickup_date }}</h3>
+                                                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                                                    <i class="ki-outline ki-cross"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <input type="hidden" name="driver_id" id="driverId_{{ rideData.hashed_id }}">
+                                                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                                        Driver
+                                                                                        <span class="text-danger">*</span>
+                                                                                    </label>
+                                                                                    <input class="input" id="driverInput_{{ rideData.hashed_id }}" placeholder="Driver" type="text" list="driverList_{{ rideData.hashed_id }}" autocomplete="off"/>
+                                                                                    <datalist id="driverList_{{ rideData.hashed_id }}">
+                                                                                        {% for driverData in driverData %}
+                                                                                            {% if driverData.user_type == 'Driver'%}
+                                                                                                <option data-id="{{ driverData.hashed_id }}" value="{{ driverData.first_name }} {{ driverData.last_name }} /{{ driverData.email }}"></option>
+                                                                                            {% endif%}
+                                                                                        {% endfor %}
+                                                                                    </datalist>
+                                                                                </div>
+                                                                                <input type="hidden" name="car_id" id="carId_{{ rideData.hashed_id }}">
+                                                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                                        Car
+                                                                                        <span class="text-danger">*</span>
+                                                                                    </label>
+                                                                                    <input class="input" id="carInput_{{ rideData.hashed_id }}" placeholder="Cars" type="text" list="CarsList_{{ rideData.hashed_id }}" autocomplete="off"/>
+                                                                                    <datalist id="CarsList_{{ rideData.hashed_id }}">
+                                                                                        {% for cars in cars_data %}
+                                                                                            {% if cars.Car_type.car_type == rideData.route.car_type.car_type %}
+                                                                                                <option data-id="{{ cars.hashed_id }}" value="{{ cars.car_model }} / {{ cars.car_brand }} / {{ cars.Car_type.car_type }}"></option>
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </datalist>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                                                <div class="flex gap-4">
+                                                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                    
                                                                 </div>
-                                                            </form>
-                                                            
-                                                        </div>
-                                                        {% endif %}
+                                                            {% endif %}
                                                         {% endfor %}
                                                     </tbody>
-                                                    
                                                 </table>
+                                                
                                             </div>
                                             <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
                                                 <div class="flex items-center gap-2">
@@ -197,7 +359,7 @@
                                         <h3 class="card-title">
                                             Confirmed Rides
                                             <div style="display: inline-block;" class="ml-5">
-                                                <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCarType()">
+                                                <button class="btn btn-danger btn-sm" type="button" onclick="cancelRideConfirmed()">
                                                     <i class="ki-filled ki-cross-circle"></i>
                                                     Cancel
                                                 </button>
@@ -219,72 +381,263 @@
                                                             <th class="w-[60px]">
                                                                 <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
                                                             </th>
-                                                            <th class="w-[60px]"></th>
-                                                            <th class="w-[80px]"></th>
+                                                            <th class="w-[20px]"></th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup at</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Return Date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th></th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Fare</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Duration</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">KMS</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {% for rideData in ridesData %}
-                                                        {% if not rideData.ride_status == 'cancelled' and not rideData.ride_status == 'Started' and not rideData.ride_status == 'completed' and not rideData.ride_status == 'assigned' and not rideData.ride_status == 'declined' %}
-                                                        <tr>
-                                                            <td>
-                                                                <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX" value="" />
-                                                            </td>
-                                                            <td>
-                                                                <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{RideData.id}}_confirmed"><i class="ki-filled ki-delivery-3"></i></i>Assign</a>
-                                                                <!-- <button class="btn btn-sm btn-danger" onclick="DeleteCarType({{carType.id}})">Delete</button> -->
-                                                            </td>
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.driver.name }}</a>
-                                                                        <!-- <span class="text-2sm text-gray-600">jk</span> -->
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.customer.name }}</a>
-                                                                        <span class="text-2sm text-gray-600">jk</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            
-                                                        </tr>
-                                                        
-                                                        <div class="modal" data-modal="true" id="modal_{{RideData.id}}_confirmed">
-                                                            <form method="post" action="{% url 'assign-driver' %}">
-                                                                        {% csrf_token %}
-                                                                <input type="hidden" name="ride_id" value="{{rideData.id}}">
-                                                                <div class="modal-content max-w-[600px] top-[10%]">
-                                                                    <div class="modal-header">
-                                                                        <h3 class="modal-title">Edit {{RideData.pickup_date}}</h3>
-                                                                        <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                                                                            <i class="ki-outline ki-cross"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                    
-                                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                                        Driver
-                                                                        <span class="text-danger">*</span>
-                                                                    </label>
-                                                                    <input type="hidden" name="driver_id" id="driver_id_{{ rideData.id }}">
-                                                                    <input class="input w-full" type="text" id="user_input_{{ rideData.id }}" placeholder="type name or email..." autocomplete="off" style="width: 100%;">
-                                                                    <ul id="driver_list_{{ rideData.id }}" style="display:none; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; position: absolute; top: 100%; left: 0; right: 0; background-color: white; list-style-type: none; padding: 0; margin: 0; z-index: 1000; border-radius: 20px;"></ul>
-                                                                    <div class="modal-footer justify-end" style="margin: 10px;">
-                                                                        <div class="flex gap-4">
-                                                                            <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
-                                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                            {% if rideData.ride_status == 'confirmed' %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX_{{ rideData.hashed_id }}" value="{{ rideData.hashed_id }}" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{ rideData.hashed_id }}_pending">
+                                                                            <i class="ki-filled ki-delivery-3"></i>Assign
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.ride_status }}</a>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.driver.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.driver.first_name }} {{ rideData.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.return_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{rideData.car.car_model}} /({{rideData.car.car_brand}})</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.duration }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.kms }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.customer.first_name }} {{ rideData.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                
+                                                                <!-- Modal -->
+                                                                <div class="modal" data-modal="true" id="modal_{{ rideData.hashed_id }}_pending">
+                                                                    <form id="carEditForm_{{ rideData.hashed_id }}" method="post" enctype="multipart/form-data" action="{% url 'assign-driver' %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="ride_id" value="{{ rideData.hashed_id }}">
+                                                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                                                            <div class="modal-header">
+                                                                                <h3 class="modal-title">Edit {{ rideData.pickup_date }}</h3>
+                                                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                                                    <i class="ki-outline ki-cross"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <input type="hidden" name="driver_id" id="driverId_{{ rideData.hashed_id }}">
+                                                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                                        Driver
+                                                                                        <span class="text-danger">*</span>
+                                                                                    </label>
+                                                                                    <input class="input" id="driverInput_{{ rideData.hashed_id }}" placeholder="Driver" type="text" list="driverList_{{ rideData.hashed_id }}" autocomplete="off"/>
+                                                                                    <datalist id="driverList_{{ rideData.hashed_id }}">
+                                                                                        {% for driverData in driverData %}
+                                                                                            {% if driverData.user_type == 'Driver'%}
+                                                                                                <option data-id="{{ driverData.hashed_id }}" value="{{ driverData.first_name }} {{ driverData.last_name }} /{{ driverData.email }}"></option>
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </datalist>
+                                                                                </div>
+                                                                                <input type="hidden" name="car_id" id="carId_{{ rideData.hashed_id }}">
+                                                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                                        Car
+                                                                                        <span class="text-danger">*</span>
+                                                                                    </label>
+                                                                                    <input class="input" id="carInput_{{ rideData.hashed_id }}" placeholder="Cars" type="text" list="CarsList_{{ rideData.hashed_id }}" autocomplete="off"/>
+                                                                                    <datalist id="CarsList_{{ rideData.hashed_id }}">
+                                                                                        {% for cars in cars_data %}
+                                                                                            {% if cars.Car_type.car_type == rideData.route.car_type.car_type %}
+                                                                                                <option data-id="{{ cars.hashed_id }}" value="{{ cars.car_model }} / {{ cars.car_brand }} / {{ cars.Car_type.car_type }}"></option>
+                                                                                            {% endif %}
+                                                                                        {% endfor %}
+                                                                                    </datalist>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                                                <div class="flex gap-4">
+                                                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                    
                                                                 </div>
-                                                            </form>
-                                                        </div>
-                                                        {% endif %}
+                                                            {% endif %}
                                                         {% endfor %}
                                                     </tbody>
                                                 </table>
+                                                
                                             </div>
                                             <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
                                                 <div class="flex items-center gap-2">
@@ -333,48 +686,217 @@
                                     <div class="card-body">
                                         <div data-datatable="true" data-datatable-page-size="5">
                                             <div class="scrollable-x-auto">
-                                                <table class="table table-auto table-border" data-datatable-table="true" id="Cancelled_table">
+                                                <table class="table table-auto table-border" data-datatable-table="true" id="Pending_table">
                                                     <thead>
                                                         <tr>
                                                             <!-- <th class="w-[60px]">
                                                                 <input class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
                                                             </th> -->
-                                                            
-                                                            <th class="w-[80px]"></th>
+                                                            <!-- <th class="w-[20px]"></th> -->
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup at</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Return Date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th></th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Fare</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Duration</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">KMS</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {% for rideData in ridesData %}
-                                                        {% if not rideData.ride_status == 'assigned' and not rideData.ride_status == 'Started' and not rideData.ride_status == 'completed' and not rideData.ride_status == 'confirmed' and not rideData.ride_status == 'declined' %}
-                                                        <tr>
-                                                            <!-- <td>
-                                                                <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX" value="" />
-                                                            </td>
-                                                            -->
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.driver.name }}</a>
-                                                                        <!-- <span class="text-2sm text-gray-600">jk</span> -->
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="flex items-center gap-2.5">
-                                                                    <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.customer.name }}</a>
-                                                                        <span class="text-2sm text-gray-600">jk</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
+                                                            {% if rideData.ride_status == 'cancelled' %}
+                                                                <tr>
+                                                                    <!-- <td>
+                                                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true" type="checkbox" id="checkBOX_{{ rideData.hashed_id }}" value="" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{ rideData.hashed_id }}_pending">
+                                                                            <i class="ki-filled ki-delivery-3"></i>Assign
+                                                                        </a>
+                                                                    </td> -->
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.ride_status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.driver.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.driver.first_name }} {{ rideData.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.return_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.car.car_model }} /( {{ rideData.car.car_brand }} )</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.duration }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.kms }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                                    {{ rideData.customer.first_name }} {{ rideData.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                
+                                                                <!-- Modal -->
                                                             
-                                                        </tr>
-                                                        
-                                                     
-                                                        {% endif %}
+                                                            {% endif %}
                                                         {% endfor %}
                                                     </tbody>
                                                 </table>
+                                                
                                             </div>
                                             <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
                                                 <div class="flex items-center gap-2">
@@ -439,7 +961,7 @@ function filterTableTypeConfirmed() {
     // Get the value of the input field
     var input = document.getElementById('searchConfirmed');
     var filter = input.value.toUpperCase();
-    var table = document.getElementById('Confirmed_table');
+    var table = document.getElementById('C');
     var tr = table.getElementsByTagName('tr');
     
     // Loop through all table rows
@@ -505,37 +1027,204 @@ function filterTableTypeCancelled() {
 // custom.js
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('input[id^="driverInput_"]').forEach(function(input) {
-        input.addEventListener('change', function() {
-            var inputId = this.id;
-            var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
-            var listId = 'driverList_' + modalId;
-            var hiddenInputId = 'driverId_' + modalId;
+    input.addEventListener('change', function() {
+        var inputId = this.id;
+        var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+        var listId = 'driverList_' + modalId;
+        var hiddenInputId = 'driverId_' + modalId;
 
-            var inputElement = document.getElementById(inputId);
-            var listElement = document.getElementById(listId);
-            var hiddenInputElement = document.getElementById(hiddenInputId);
+        var inputElement = document.getElementById(inputId);
+        var listElement = document.getElementById(listId);
+        var hiddenInputElement = document.getElementById(hiddenInputId);
 
-            var inputValue = inputElement.value;
-            var options = listElement.options;
+        var inputValue = inputElement.value.trim().toLowerCase();
+        var options = listElement.options;
 
-            hiddenInputElement.value = ""; // Reset hidden input
+        hiddenInputElement.value = ""; // Reset hidden input
 
-            // Loop through options to find a match with the input value
-            for (var i = 0; i < options.length; i++) {
-                if (options[i].value === inputValue) {
-                    hiddenInputElement.value = options[i].getAttribute('data-id');
-                    console.log("ID found and set: ", hiddenInputElement.value);
-                    break;
-                }
+        // Loop through options to find a match with the input value
+        for (var i = 0; i < options.length; i++) {
+            var optionValue = options[i].value.trim().toLowerCase();
+
+            if (optionValue === inputValue) {
+                hiddenInputElement.value = options[i].getAttribute('data-id');
+                console.log("Driver ID found and set: ", hiddenInputElement.value);
+                break;
             }
+        }
 
-            // Debugging log to check the result
-            if (!hiddenInputElement.value) {
-                console.log("No matching ID found for input: ", inputValue);
-            }
-        });
+        if (!hiddenInputElement.value) {
+            console.log("No matching Driver ID found for input: ", inputValue);
+        }
     });
 });
+
+document.querySelectorAll('input[id^="carInput_"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+        var inputId = this.id;
+        var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+        var listId = 'CarsList_' + modalId;
+        var hiddenInputId = 'carId_' + modalId;
+
+        var inputElement = document.getElementById(inputId);
+        var listElement = document.getElementById(listId);
+        var hiddenInputElement = document.getElementById(hiddenInputId);
+
+        if (!inputElement || !listElement || !hiddenInputElement) {
+            console.error(`One or more elements not found: inputId=${inputId}, listId=${listId}, hiddenInputId=${hiddenInputId}`);
+            return;
+        }
+
+        var inputValue = inputElement.value.trim().toLowerCase();
+        var options = listElement.options;
+
+        hiddenInputElement.value = ""; // Reset hidden input
+
+        // Loop through options to find a match with the input value
+        for (var i = 0; i < options.length; i++) {
+            var optionValue = options[i].value.trim().toLowerCase();
+
+            if (optionValue === inputValue) {
+                hiddenInputElement.value = options[i].getAttribute('data-id');
+                console.log("Car ID found and set: ", hiddenInputElement.value);
+                break;
+            }
+        }
+
+        if (!hiddenInputElement.value) {
+            console.log("No matching Car ID found for input: ", inputValue);
+        }
+    });
+});
+
+});
+
+
+function cancelRidePending() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Cancel it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the DELETE request to Django
+            const checkboxes = document.querySelectorAll('#Pending_table input[type="checkbox"][data-datatable-row-check="true"]');
+            
+            // Filter the checked checkboxes
+            const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+            
+            // Extract values of checked checkboxes
+            const checkedValues = checkedCheckboxes.map(checkbox => checkbox.value);
+            
+          
+            console.log("check Value :",checkedValues);
+            
+            if (checkedValues.length > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "cancel-ride" %}', 
+                    data: {
+                        'ride_ids': checkedValues,  // Ensure the backend is expecting this key
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        console.log("success");
+                        
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something Went Wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancellation Successful',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+    });
+}
+
+function cancelRideConfirmed() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Cancel it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Correct table ID
+            const checkboxes = document.querySelectorAll('#ConfirmedPage input[type="checkbox"][data-datatable-row-check="true"]');
+
+            // Filter the checked checkboxes
+            const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+            // Extract values of checked checkboxes
+            const checkedValues = checkedCheckboxes.map(checkbox => checkbox.value);
+
+            console.log("Checked Values: ", checkedValues);
+
+            if (checkedValues.length > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "cancel-ride" %}',  // Make sure this URL is correct
+                    data: {
+                        'ride_ids': checkedValues,  // Convert to JSON string
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        console.log("Success");
+
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something went wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancellation Successful',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                        }
+                    },
+                    error: function (error) {
+                        console.log("Error: ", error);
+                    }
+                });
+            }
+        }
+    });
+}
+
 
 </script>
 {% endblock %}

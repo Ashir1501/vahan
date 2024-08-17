@@ -35,8 +35,8 @@
 
 {% endif %}
 
-<!-- Trigger Button -->
 
+<!-- Trigger Button -->
 
 <div>
     <button class="btn btn-light mb-5 ms-5" data-collapse="#collapsible_content">
@@ -52,17 +52,20 @@
             <div class="card-body">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
                     <!-- Car Type Input with Dropdown -->
-                    <div class="dropdown-container">
+                
                         <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                             <label class="form-label max-w-32">
                                 Cars Type:
                                 <span class="text-danger">*</span>
                             </label>
-                            <input class="input car-model-input" name="carsTypeId" placeholder="Cars Type"  type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+                            <input class="input" placeholder="Car Type" type="text" list="carType{{ rideData.id }}" autocomplete="off" name="carsTypeId"/>
+                            <datalist id="carType{{ rideData.id }}">
+                                {% for CarsType in CarsType %}
+                                    <option data-id="{{ CarsType.id }}" value="{{ CarsType.car_type }}"></option>
+                                {% endfor %}
+                            </datalist>
                         </div>
-                        <!-- <input class type="text" id="car-model-input" placeholder="Search for car model"> -->
-                        <div id="car-model-results" class="dropdown-results"></div>
-                    </div>
+
                 
                     <!-- Vendor Select -->
                     <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -70,11 +73,13 @@
                             Vendor
                         </label>
                         <select class="select w-full" name="vendorId">
+                            <option value="me">Self</option>
                             {% for vendorData in vendorData %}
                                 {% if vendorData.user_type == 'Vendor' %}
-                                    <option value="{{vendorData.id}}">{{vendorData.name}}</option>
+                                    <option value="{{vendorData.id}}">{{vendorData.first_name}} {{vendorData.last_name}} / {{vendorData.email}}</option>
                                 {% endif %}
                             {% endfor %}
+                            
                         </select>
                     </div>
                 
@@ -158,7 +163,7 @@
                 <div class="card-body">
                     <div data-datatable="true" data-datatable-page-size="5">
                         <div class="scrollable-x-auto">
-                            <table class="table table-auto table-border" data-datatable-table="true" id="grid_table">
+                            <table class="table table-auto table-border" data-datatable-table="true" id="car_table">
                                 <thead>
                                     <tr>
                                         <th class="w-[60px]">
@@ -270,155 +275,148 @@
                                                     <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
                                                         {{ CarsData.car_model }}                                                    
                                                     </a>
-                                                    <span class="text-2sm text-gray-600">
-                                                        <hr style="height: 1rem;">
-                                                    </span>
+                                                    
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="flex items-center gap-1.5">
-                                                
-                                                
                                                     {{ CarsData.Car_type.car_type }}
                                            
                                             </div>
                                         </td>
-                                        <td>
-                                            
-                                            {{ CarsData.car_brand }}
-                                            
+                                        <td>  
+                                            {{ CarsData.car_brand }}                                         
                                         </td>
                                         <td>
-                                            {{ CarsData.Vender_id.name }}(<span class="text-2sm text-gray-600">{{CarsData.Vender_id}}</span>)
+                                            {{ CarsData.Vender_id.first_name }}(<span class="text-2sm text-gray-600">{{CarsData.Vender_id}}</span>)
                                         </td>
                                         <td>
                                             {{ CarsData.Registration_Number }}
                                         </td>
-                                        {% if CarsData.is_available %}
-                                                <td><span class="badge badge-sm badge-outline badge-success">Yes</span></td>
+                                            {% if CarsData.id in notAvalaibe %}
+                                                <td><span class="badge badge-sm badge-outline badge-worning">No</span></td>
                                             {% else %}
-                                                <td><span class="badge badge-sm badge-outline badge-warning">No</span></td>
+                                                <td><span class="badge badge-sm badge-outline badge-success">Yes</span></td>
                                             {% endif %}
-                                            <td>
+                                        <td>
                                                 {% if CarsData.Front_pic %}
                                                     <img alt="flag" class="h-4 rounded-full" src="{{ CarsData.Front_pic.url }}"/>
-                                                
                                                 {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if CarsData.Back_pic %}
-                                                    <img alt="flag" class="h-4 rounded-full" src="{{ CarsData.Back_pic.url }}"/>
-                                                {% endif %}
-                                            </td>
-                                            <td><img alt="flag" class="h-4 rounded-full" src="{{ CarsData.rc_photo.url }}"/></td>
+                                        </td>
+                                        <td>
+                                            {% if CarsData.Back_pic %}
+                                                <img alt="flag" class="h-4 rounded-full" src="{{ CarsData.Back_pic.url }}"/>
+                                            {% endif %}
+                                        </td>
+                                        <td><img alt="flag" class="h-4 rounded-full" src="{{ CarsData.rc_photo.url }}"/></td>
                                     </tr>
-                                    
-                                    
-                                        
-                                        <div class="modal" data-modal="true" id="CarsUpdateModal-{{CarsData.id}}">
-                                            <form id="carEditForm" method="post" enctype="multipart/form-data" action="{% url 'edit_car' %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="car_id" value="{{ CarsData.id }}">
-                                            <div class="modal-content max-w-[600px] top-[10%]">
-                                                <div class="modal-header">
-                                                    <h3 class="modal-title">Edit {{ CarsData.car_model }}</h3>
-                                                    <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                                                        <i class="ki-outline ki-cross"></i>
-                                                    </button>
-                                                </div>
-                                                
-                                                <div class="modal-body">
-                                                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                                                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                            Car Model
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input class="input w-full" name="car_model_edit" placeholder="Car Model" type="text" value="{{ CarsData.car_model }}"/>
-                                                    </div>
-                                    
-                                                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                                                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                            Car Type
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input class="input w-full" name="car_type_edit" placeholder="Car Type" type="text" value="{{ CarsData.Car_type.car_type }}"/>
-                                                    </div>
-                                    
-                                                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                                                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                            Car Brand
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input class="input w-full" name="car_brand_edit" placeholder="Car Brand" type="text" value="{{ CarsData.car_brand }}"/>
-                                                    </div>
-                                    
-                                                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                                                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
-                                                            Registration Number
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input class="input w-full" name="registration_number_edit" placeholder="Registration Number" type="text" value="{{ CarsData.Registration_Number }}"/>
-                                                    </div>
-                                                   
-                                                    <div class="form-group ms-5 mt-5">
-                                                        
-                                                        {% if CarsData.Front_pic %}
-                                                            <input type="hidden" name="FrontPicInputHidden" value="{{ CarsData.Front_pic.url }}">
-                                                            <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src="{{ CarsData.Front_pic.url }}"/>
-                                                        {% else %}
-                                                        <input type="hidden" name="FrontPicInputHidden" value="">
-                                                            <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src=""/>
-                                                        {% endif %}
-                                                        <div class="form-group ms-5">
-                                                            <label for="fileInputFrontEdit" class="form-label">Front pic</label>
-                                                            <input class="form-control-file form-control-sm" id="fileInputFrontEdit" type="file" name="front_pic_edit" accept="image/*">
-                                                        </div>
-                                                    </div>
-                                    
-                                                    <div class="form-group ms-5 mt-5">
-                                                        
-                                                        {% if CarsData.Back_pic %}
-                                                            <input type="hidden" name="BackPicInputHidden" value="{{ CarsData.Back_pic.url }}">
-                                                            <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src="{{ CarsData.Back_pic.url }}"/>
-                                                        {% else %}
-                                                            <input type="hidden" name="BackPicInputHidden" value="">
-                                                            <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src=""/>
-                                                        {% endif %}
-                                                        <div class="form-group ms-5">
-                                                            <label for="fileInputBackEdit" class="form-label">Back pic</label>
-                                                            <input class="form-control-file form-control-sm" id="fileInputBackEdit" type="file" name="back_pic_edit" accept="image/*">
-                                                        </div>
-                                                    </div>
-                                    
-                                                    <div class="form-group ms-5 mt-5">
-                                                        <input type="hidden" name="RcPicInputHidden" value="{{ CarsData.rc_photo.url }}">
-                                                        <img alt="RC pic" class="h-10 rounded-full" id="RcpicImg" src="{{ CarsData.rc_photo.url }}"/>
-                                                        <div class="form-group ms-5">
-                                                            <label for="fileInputRCEdit" class="form-label">RC pic</label>
-                                                            <input class="form-control-file form-control-sm" id="fileInputRCEdit" type="file" name="rc_pic_edit" accept="image/*">
-                                                        </div>
-                                                    </div>
-                                                    <label class="switch" style="margin: 10px; margin-top: 10px;">
-                                                        <input name="available_check" type="checkbox" value="1" {% if CarsData.is_available %} checked {% endif %} />
-                                                        <span class="switch-label">
-                                                         Available
-                                                        </span>
+                                 
+
+                                    <div class="modal" data-modal="true" id="CarsUpdateModal-{{CarsData.id}}">
+                                        <form id="carEditForm" method="post" enctype="multipart/form-data" action="{% url 'edit_car' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="car_id" value="{{ CarsData.id }}">
+                                        <div class="modal-content max-w-[600px] top-[10%]">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title">Edit {{ CarsData.car_model }}</h3>
+                                                <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                    <i class="ki-outline ki-cross"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="modal-body">
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Model
+                                                        <span class="text-danger">*</span>
                                                     </label>
+                                                    <input class="input w-full" name="car_model_edit" placeholder="Car Model" type="text" value="{{ CarsData.car_model }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Type
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_type_edit" placeholder="Car Type" type="text" value="{{ CarsData.Car_type.car_type }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Brand
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_brand_edit" placeholder="Car Brand" type="text" value="{{ CarsData.car_brand }}"/>
+                                                </div>
+                                
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Registration Number
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="registration_number_edit" placeholder="Registration Number" type="text" value="{{ CarsData.Registration_Number }}"/>
                                                 </div>
                                                 
-                                                <div class="modal-footer justify-end" style="margin: 10px;">
-                                                    <div class="flex gap-4">
-                                                        <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                <div class="form-group ms-5 mt-5">
+                                                    
+                                                    {% if CarsData.Front_pic %}
+                                                        <input type="hidden" name="FrontPicInputHidden" value="{{ CarsData.Front_pic.url }}">
+                                                        <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src="{{ CarsData.Front_pic.url }}"/>
+                                                    {% else %}
+                                                    <input type="hidden" name="FrontPicInputHidden" value="">
+                                                        <img alt="Front pic" class="h-10 rounded-full" id="frontpicImg" src=""/>
+                                                    {% endif %}
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputFrontEdit" class="form-label">Front pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputFrontEdit" type="file" name="front_pic_edit" accept="image/*">
                                                     </div>
+                                                </div>
+                                
+                                                <div class="form-group ms-5 mt-5">
+                                                    
+                                                    {% if CarsData.Back_pic %}
+                                                        <input type="hidden" name="BackPicInputHidden" value="{{ CarsData.Back_pic.url }}">
+                                                        <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src="{{ CarsData.Back_pic.url }}"/>
+                                                    {% else %}
+                                                        <input type="hidden" name="BackPicInputHidden" value="">
+                                                        <img alt="Back pic" class="h-10 rounded-full" id="backpicImg" src=""/>
+                                                    {% endif %}
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputBackEdit" class="form-label">Back pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputBackEdit" type="file" name="back_pic_edit" accept="image/*">
+                                                    </div>
+                                                </div>
+                                
+                                                <div class="form-group ms-5 mt-5">
+                                                    <input type="hidden" name="RcPicInputHidden" value="{{ CarsData.rc_photo.url }}">
+                                                    <img alt="RC pic" class="h-10 rounded-full" id="RcpicImg" src="{{ CarsData.rc_photo.url }}"/>
+                                                    <div class="form-group ms-5">
+                                                        <label for="fileInputRCEdit" class="form-label">RC pic</label>
+                                                        <input class="form-control-file form-control-sm" id="fileInputRCEdit" type="file" name="rc_pic_edit" accept="image/*">
+                                                    </div>
+                                                </div>
+                                                <label class="switch" style="margin: 10px; margin-top: 10px;">
+                                                    <input name="available_check" type="checkbox" value="1" {% if not CarsData.id in notAvalaibe %} checked {% endif %} />
+                                                    <span class="switch-label">
+                                                        Available
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            
+                                            <div class="modal-footer justify-end" style="margin: 10px;">
+                                                <div class="flex gap-4">
+                                                    <button type="button" class="btn btn-light" data-modal-dismiss="true">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
                                                 </div>
                                             </div>
-                                        </form>
                                         </div>
+                                    </form>
+                                    </div>
                                    
                                
                                     {% endfor %}
+                    
                                 </tbody>
                             </table>
                         </div>
@@ -453,7 +451,7 @@
     // Get the value of the input field
     var input = document.getElementById('searchCar');
     var filter = input.value.toUpperCase();
-    var table = document.getElementById('grid_table');
+    var table = document.getElementById('car_table');
     var tr = table.getElementsByTagName('tr');
     
     // Loop through all table rows
@@ -483,7 +481,6 @@
 }
 
     
-
     function DeleteCars() {
     Swal.fire({
         title: "Are you sure?",
@@ -496,7 +493,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
             // Send the DELETE request to Django
-            const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+            const checkboxes = document.querySelectorAll('#car_table input[id="checkBOX"]');
             // Filter the checked checkboxes
             const CarscheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
 
@@ -550,80 +547,6 @@
         let timeout;
 
 
-        // Handle input event to fetch and display results
-        $('.car-model-input').on('input', function() {
-            let query = $(this).val();
-            if (query) {
-                $.ajax({
-                    url: '{% url "car_model_search" %}',
-                    data: { query: query },
-                    success: function(data) {
-                        let results = data.results;
-                        $('#car-model-results').empty().show();
-                        if (results.length > 0) {
-                            results.forEach(function(result) {
-                                $('#car-model-results').append('<div class="dropdown-item" data-value="' + result.name + '">' + result.name + '</div>');
-                            });
-                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
-                        } else {
-                            $('#car-model-results').append('<div>No results found</div>');
-                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
-                        }
-                    },
-                    error: function() {
-                        $('#car-model-results').empty().show().append('<div>Error fetching results</div>');
-                    }
-                });
-            } else {
-                $('#car-model-results').empty().hide();
-            }
-        });
-
-        // Show dropdown on focus
-        $('.car-model-input').on('focus', function() {
-            $('#car-model-results').show();
-        });
-
-        // Hide dropdown on blur
-        $('.car-model-input').on('blur', function() {
-            timeout = setTimeout(function() {
-                $('#car-model-results').hide();
-            }, 200); // Delay to allow click events on dropdown items
-        });
-
-        // Prevent dropdown from closing on item click
-        $('#car-model-results').on('mousedown', function(event) {
-            event.preventDefault(); // Prevent input blur on dropdown item click
-        });
-
-        // Handle click on dropdown items
-        $(document).on('click', '.dropdown-item', function() {
-            let selectedValue = $(this).data('value');
-            $('.car-model-input').val(selectedValue);
-            $('#car-model-results').empty().hide();
-        });
-
-        $(document).on('click', '.add-car-model', function() {
-            let name = $('.car-model-input').val();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "car_type_add" %}',
-                data: {
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    name: name
-                },
-                success: function(data) {
-                    
-                    // $('#car-model-input').val('');
-                    $('#car-model-results').empty().hide();
-                    // $('#car-model-input').val('').prop('disabled', true);
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.error);
-                }
-        });
-    });
-
     $('#fileInputFrontEdit').on('change', function(event) {
                 var file = event.target.files[0];
                 
@@ -673,6 +596,9 @@
             });
         
         });
+
+
+
 </script>
 
 {% endblock %}

@@ -70,10 +70,16 @@
                                         Cars Type:
                                         <span class="text-danger">*</span>
                                     </label>
+                                    <input class="input"  placeholder="Car Type" type="text" list="carType{{ rideData.id }}" autocomplete="off" name="carsTypeId"/>
+                                    <datalist id="carType{{ rideData.id }}">
+                                        {% for CarsType in CarsType %}
+                                            <option data-id="{{ CarsType.id }}" value="{{ CarsType.car_type }}"></option>
+                                        {% endfor %}
+                                    </datalist>
                                     <!-- Ensure car types are submitted as a list -->
-                                    <input class="input car-model-input" name="carsTypeId" placeholder="Cars Type" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required/>
+                                    <!-- <input class="input car-model-input" name="carsTypeId" placeholder="Cars Type" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required/> -->
                                 </div>
-                                <div id="car-model-results" class="dropdown-results"></div>
+                                <!-- <div id="car-model-results" class="dropdown-results"></div> -->
                             </div>
                 
                             <!-- PickUp Input -->
@@ -91,7 +97,7 @@
                                     Drop Off
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="input w-full" name="DropOff" placeholder="Drop Off" type="text" required/>
+                                <input class="input w-full" name="DropOff" placeholder="Drop Off" type="text" />
                             </div>
                 
                             <!-- Fare Input -->
@@ -122,7 +128,7 @@
                                     KMS<span class="text-2sm text-gray-600">(Not for Local)</span>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="input w-full" name="Kilometers" placeholder="Kilometers" type="number" required/>
+                                <input class="input w-full" name="Kilometers" placeholder="Kilometers" type="number" />
                             </div>
                         </div>
                 
@@ -163,7 +169,7 @@
             <div class="card-body">
                 <div data-datatable="true" data-datatable-page-size="5">
                     <div class="scrollable-x-auto">
-                        <table class="table table-auto table-border" data-datatable-table="true" id="grid_table">
+                        <table class="table table-auto table-border" data-datatable-table="true" id="route_table">
                             <thead>
                                 <tr>
                                     <th class="w-[60px]">
@@ -276,10 +282,8 @@
                                     <td><div class="flex items-center gap-1.5">{{ routeData.pickup_location }}</div></td>
                                     <td>{{ routeData.drop_location }}</td>
                                     <td>
-                                  
-                                            {% for car_type in routeData.car_type.all %}
-                                                {{ car_type.car_type }}{% if not forloop.last %}, {% endif %}
-                                            {% endfor %}
+                                        {{ routeData.car_type.car_type }}
+                                           
                    
                                     </td>
                                     
@@ -331,7 +335,7 @@
                                                         Drop Off
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="input w-full" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" required/>
+                                                    <input class="input w-full" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" />
                                                 </div>
                                 
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -356,7 +360,7 @@
                                                         KMS
                                                         <span class="text-2sm text-gray-600">(Not for Local)</span>
                                                     </label>
-                                                    <input class="input w-full" name="kmsEdit" placeholder="Kilometers" type="number" value="{{ routeData.kms }}" required/>
+                                                    <input class="input w-full" name="kmsEdit" placeholder="Kilometers" type="number" value="{{ routeData.kms }}" />
                                                 </div>
                                                
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -415,7 +419,7 @@
         // Get the value of the input field
         var input = document.getElementById('searcRotute');
         var filter = input.value.toUpperCase();
-    var table = document.getElementById('grid_table');
+    var table = document.getElementById('route_table');
     var tr = table.getElementsByTagName('tr');
     
     // Loop through all table rows
@@ -444,7 +448,7 @@
     }
     }
     function userdelete() {
-        const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+        const checkboxes = document.querySelectorAll('#route_table input[id="checkBOX"]');
         // Filter the checked checkboxes
         const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
 
@@ -501,7 +505,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
             // Send the DELETE request to Django
-            const checkboxes = document.querySelectorAll('#grid_table input[id="checkBOX"]');
+            const checkboxes = document.querySelectorAll('#route_table input[id="checkBOX"]');
             // Filter the checked checkboxes
             const RoutescheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
 
@@ -551,82 +555,6 @@
 }
 
 
-    $(document).ready(function() {
-        let timeout;
-
-
-        // Handle input event to fetch and display results
-        $('.car-model-input').on('input', function() {
-            let query = $(this).val();
-            if (query) {
-                $.ajax({
-                    url: '{% url "car_model_search" %}',
-                    data: { query: query },
-                    success: function(data) {
-                        let results = data.results;
-                        $('#car-model-results').empty().show();
-                        if (results.length > 0) {
-                            results.forEach(function(result) {
-                                $('#car-model-results').append('<div class="dropdown-item" data-value="' + result.name + '">' + result.name + '</div>');
-                            });
-                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
-                        } else {
-                            $('#car-model-results').append('<div>No results found</div>');
-                            $('#car-model-results').append('<div class="add-car-model">Add Car Type</div>');
-                        }
-                    },
-                    error: function() {
-                        $('#car-model-results').empty().show().append('<div>Error fetching results</div>');
-                    }
-                });
-            } else {
-                $('#car-model-results').empty().hide();
-            }
-        });
-
-        // Show dropdown on focus
-        $('.car-model-input').on('focus', function() {
-            $('#car-model-results').show();
-        });
-
-        // Hide dropdown on blur
-        $('.car-model-input').on('blur', function() {
-            timeout = setTimeout(function() {
-                $('#car-model-results').hide();
-            }, 200); // Delay to allow click events on dropdown items
-        });
-
-        // Prevent dropdown from closing on item click
-        $('#car-model-results').on('mousedown', function(event) {
-            event.preventDefault(); // Prevent input blur on dropdown item click
-        });
-
-        // Handle click on dropdown items
-        $(document).on('click', '.dropdown-item', function() {
-            let selectedValue = $(this).data('value');
-            $('.car-model-input').val(selectedValue);
-            $('#car-model-results').empty().hide();
-        });
-
-        $(document).on('click', '.add-car-model', function() {
-            let name = $('.car-model-input').val();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "car_type_add" %}',
-                data: {
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    name: name
-                },
-                success: function(data) {
-                    
-                    // $('#car-model-input').val('');
-                    $('#car-model-results').empty().hide();
-                    // $('#car-model-input').val('').prop('disabled', true);
-                },
-                error: function(response) {
-                    alert('Error: ' + response.responseJSON.error);
-                }
-        });
-    });})
+  
 </script>
 {% endblock %}

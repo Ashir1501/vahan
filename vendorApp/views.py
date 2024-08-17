@@ -8,6 +8,8 @@ from django.db.models import Count
 from PIL import Image
 from .models import *
 from usersApp.models import *
+from customerApp.models import *
+from django.db.models import Q
 
 # Create your views here.
 # =================Cars Views=====================
@@ -15,7 +17,7 @@ from usersApp.models import *
 def new_car_page(request):
     data = Car.objects.all()
     TypeData = CarType.objects.all()
-
+    car_ids = Ride.objects.filter(ride_status='Started').values_list('car', flat=True).distinct()
     unique_car_types = []
     seen_car_types = set()
     
@@ -24,14 +26,14 @@ def new_car_page(request):
             unique_car_types.append(car_type)
             seen_car_types.add(car_type.car_type)
     Vendor = Account.objects.all()
-    return render(request,'adminTemplates/new_car.html',{'data':data,'CarsType':unique_car_types,'vendorData':Vendor,})
+    return render(request,'adminTemplates/new_car.html',{'data':data,'CarsType':unique_car_types,'vendorData':Vendor,"notAvalaibe":car_ids})
 
 # method to create new cars
 def add_new_car(request):
     if request.method == 'POST':
         car_type_id = request.POST.get("carsTypeId")
-        car_brand=request.POST.get("carBrand")
-        car_model= request.POST.get("carModel")
+        car_brand = request.POST.get("carBrand")
+        car_model = request.POST.get("carModel")
         vendor_id = request.POST.get("vendorId")
         registration_number = request.POST.get("registrationNumber")
 
@@ -40,44 +42,31 @@ def add_new_car(request):
         back_pic = request.FILES.get("backPic")
         rc_photo = request.FILES.get("rcPhoto")
 
-        # car_type1 = CarType.objects.get(car_type=car_type_id)
-        # print("32 : ",car_type_id,vendor_id,car_type1)
-        if front_pic:
-            
-            try:
-                img1 = Image.open(front_pic)
-                img1.verify()
-            except:
-                messages.error(request,"File Must be image")
-                return redirect('new-car-page')       
-
-        if back_pic:
-            
-            try:
-                img2 = Image.open(back_pic)
-                img2.verify()
-            except:
-                messages.error(request,"File Must be image")
+        # Validate image files
+        for image, image_name in zip([front_pic, back_pic, rc_photo], ['Front Pic', 'Back Pic', 'RC Photo']):
+            if image:
+                try:
+                    img = Image.open(image)
+                    img.verify()
+                except:
+                    messages.error(request, f"{image_name} must be an image.")
+                    return redirect('new-car-page')
+            elif image_name == 'RC Photo':
+                messages.error(request, "RC Photo is required.")
                 return redirect('new-car-page')
-        
-        if rc_photo:
-          
-            try:
-                img3 = Image.open(rc_photo)
-                img3.verify()
-            except:
-                messages.error(request,"File Must be image")
-                return redirect('new-car-page')
-        else:
-            messages.error(request,"RC Photo is requerd")
-            return redirect('new-car-page')
 
         try:
-            # Retrieve related objects
-            car_type = CarType.objects.get(car_type=car_type_id)
-            vendor = Account.objects.get(id=vendor_id)
+            # Retrieve or create the CarType
+            car_type, created = CarType.objects.get_or_create(car_type=car_type_id)
+            if created:
+                messages.success(request, "Car Type added to the system.")
 
-            print("37 : ",car_type,vendor,car_type_id,vendor_id)
+            # Retrieve the vendor
+            if vendor_id == 'me':
+                vendor = Account.objects.get(id=1)
+            else:
+                vendor = Account.objects.get(id=vendor_id)
+
             # Create new car instance
             new_car = Car(
                 Car_type=car_type,
@@ -88,24 +77,22 @@ def add_new_car(request):
                 Back_pic=back_pic,
                 Registration_Number=registration_number,
                 rc_photo=rc_photo,
-                is_available=True  # Set this according to your needs
+                is_available=True,  # Set this according to your needs
+                created_by=Account.objects.get(id=1)  # Adjust according to your logic
             )
             new_car.save()
 
             # Redirect after successful save
-            messages.success(request,"Data Add Successfully")
-            return redirect('new-car-page')  # Replace with the name of the page you want to redirect to
-
-        except CarType.DoesNotExist:
-            messages.error(request,"Kindly Add that Cars type in ur system first")
+            messages.success(request, "Data added successfully.")
             return redirect('new-car-page')
+
         except Account.DoesNotExist:
+            messages.error(request, "Vendor does not exist.")
             return redirect('new-car-page')
 
     else:
         # Handle GET request or other methods
         return render(request, 'new_car.html')
-    
 # method to search car type and show in car type input to get
 def car_model_search(request):
     query = request.GET.get('query', '')
@@ -295,7 +282,8 @@ def delete_car_type(request):
 # method to render Routes page
 def Routes_page(request):
     routes_data = Route.objects.all()
-    return render(request,'adminTemplates/Route.html',{'routeData':routes_data})
+    cartype= CarType.objects.all()
+    return render(request,'adminTemplates/Route.html',{'routeData':routes_data,'CarsType':cartype})
 
 
 # method to add new route
@@ -310,7 +298,7 @@ def add_route(request):
         car_type_ids = request.POST.get('carsTypeId')  # Handle multiple car types
         
         # Validation
-        if not pickup_location or not drop_location or not fare:
+        if not pickup_location  or not fare:
             # return HttpResponse("Missing required fields", status=400)
             messages.error(request,"Missing required fields")
             return redirect('routes-page')
@@ -322,12 +310,21 @@ def add_route(request):
             if duration != 'none':
                 messages.error(request, "If the route type is not 'Local', then 'Duration' should not be provided.")
                 return redirect('routes-page')
-            if kms and int(kms) < 0:
+            if kms and int(kms) < 0 and trip_type != 'local':
                 messages.error(request, "KMS value must be a non-negative number.")
                 return redirect('routes-page')
         try:
+            car_type, created = CarType.objects.get_or_create(car_type=car_type_ids)
+        except:
+            pass
+        if created:
+                messages.success(request, "Car Type added to the system.")
+        try:
             fare = float(fare)
-            kms = int(kms)
+            if trip_type != 'local':
+                kms = int(kms)
+            else:
+                kms =0 
         except ValueError:
             messages.error(request,"Invalid fare or kilometers")
             return redirect('routes-page')
@@ -335,7 +332,7 @@ def add_route(request):
 
         route = Route(
             trip_type=trip_type,
-            # car_type = car_type,
+            car_type = car_type,
             pickup_location=pickup_location,
             drop_location=drop_location,
             fare=fare,
@@ -347,12 +344,12 @@ def add_route(request):
         
         # Handle ManyToManyField for CarType
 
-        try :
-                matching_car_types = CarType.objects.filter(car_type__icontains=car_type_ids)
-                route.car_type.add(*matching_car_types)
-        except:
-            messages.error(request,"This car Type is not present in your System")
-            return redirect('routes-page')
+        # try :
+        #         matching_car_types = CarType.objects.filter(car_type__icontains=car_type_ids)
+        #         route.car_type.add(*matching_car_types)
+        # except:
+        #     messages.error(request,"This car Type is not present in your System")
+        #     return redirect('routes-page')
 
         messages.success(request,"Routes Added Successfully!")
         return redirect('routes-page')  # Redirect to a success page or wherever you want
@@ -375,7 +372,7 @@ def edit_route(request):
         duration = request.POST.get('duration')
 
         # Validate and process the data
-        if not all([trip_type, pickup_location, drop_location, car_type, fare]):
+        if not all([trip_type, pickup_location, car_type, fare]):
             messages.error(request,"Missing required fields")
             return redirect('routes-page')
         car_types = CarType.objects.filter(car_type__icontains=car_type)
@@ -383,7 +380,7 @@ def edit_route(request):
         if not car_types.exists():
             messages.error(request, f'The car type "{car_type}" is not present in your system. Please add it before proceeding.')
 
-            return redirect('new-car-page')
+            return redirect('routes-page')
 
         # Assuming the filter returns a single unique result, you can use first() or handle the case where multiple results exist
         carT = car_types.first()
@@ -402,7 +399,7 @@ def edit_route(request):
         route.trip_type = trip_type
         route.pickup_location = pickup_location
         route.drop_location = drop_location
-        route.car_type.set([carT])  # Assuming car_type is a ManyToManyField
+        route.car_type = carT # Assuming car_type is a ManyToManyField
         route.fare = fare
         route.kms = kms
         route.duration = duration
@@ -411,6 +408,7 @@ def edit_route(request):
         route.save()
 
         # Redirect to a success page or the same page
+        messages.success(request,"Route Update Successfully")
         return redirect('routes-page')
 
     else:

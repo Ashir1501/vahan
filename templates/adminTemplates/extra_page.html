@@ -1,0 +1,407 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div style="margin: 10px;">
+    <div>
+        <div class="card transition-all duration-300 hidden" id="collapsible_content">
+            <div class="card-header">
+             <h3 class="card-title">
+              Bill Image
+             </h3>
+            </div>
+            <div class="card-body">
+                
+                {% if ride.extra_img %}
+                    <img src="{{ ride.extra_img.url }}" alt="Image for {{ ride.id }}">
+                {% else %}
+                    <h1>No Image Found</h1>
+                {% endif %}
+
+            </div>
+           </div>
+        <button class="btn btn-primary mb-5" data-collapse="#collapsible_content">
+            Bill Image
+        </button>
+           
+        {% if show_button %}
+            <button class="btn btn-light mb-5 ms-5" data-collapse="#extra_content">
+                Add Extra
+            </button>
+        {% endif %}
+
+
+        <div class="card transition-all duration-300 hidden" id="extra_content">
+            <div class="card-header">
+                <h3 class="card-title">Extra Ride</h3>
+            </div>
+            <form action="{% url 'add-new-extra' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="card-body">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+                        
+                        <input type="hidden" value="{{ride.hashed_id}}" name="ride_id">
+                        <!-- New Destination Input -->
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                New Destination
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="input w-full" name="new_destination" placeholder="New Destination" type="text"/>
+                        </div>
+                    
+                        <!-- KMs Input -->
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                KMs
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="input w-full" name="ExtraKms" placeholder="KMs" type="text"/>
+                        </div>
+                    
+                        <!-- Duration Input -->
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                Duration 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="input w-full" name="extraDuration" placeholder="HH:MM" type="text"/>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                Toll Fare 
+                                
+                            </label>
+                            <input class="input w-full" name="TollFare" placeholder="Toll Fare" type="text"/>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                Parking Fare 
+                                
+                            </label>
+                            <input class="input w-full" name="ParkingFare" placeholder="Parking Fare" type="text"/>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                Ride Fare 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="input w-full" name="Ride Fare" placeholder="Ride Fare" type="text"/>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                Payment Type
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="select w-full" name="Payment">
+                                <option value="online">online</option>
+                                <option value="cash">cash</option>
+                                <option value="wallet">wallet</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    
+                    <button class="btn btn-sm btn-primary"  type="submit" style="margin: 10px;">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container-fixed">
+        <div class="grid gap-5 lg:gap-7.5">
+            <div class="card card-grid min-w-full">
+                <div class="card-header py-5 flex-wrap">
+                    <h3 class="card-title">
+                        Extra Rides
+                        <div style="display: inline-block;" class="ml-5">
+                            <button class="btn btn-danger btn-sm" type="button" onclick="DeleteExtra()">
+                                <i class="ki-filled ki-cross-circle"></i>
+                                Delete
+                            </button>
+                        </div>
+                        
+                    </h3>
+                    <div class="flex gap-6">
+                        <div class="relative">
+                            <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                            <input class="input input-sm pl-8" onkeyup="filterTableTypeExtra()" placeholder="Search" id="searchExtra" type="text" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div data-datatable="true" data-datatable-page-size="5">
+                        <div class="scrollable-x-auto">
+                            <table class="table table-auto table-border" data-datatable-table="true" id="Extra_table">
+                                <thead>
+                                    <tr>
+                                    
+                                            <th class="w-[60px]">
+                                                <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                                    type="checkbox" />
+                                            </th>
+                                    
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">New destination</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">KMS</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Duration (HH:MM)</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">TOll Fare</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Parking fare</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Ride fare</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <!-- <th class="w-[80px]">
+                                            <span class="sort">
+                                                <span class="sort-label">
+                                                 <span class="pt-px" data-tooltip="true" data-tooltip-offset="0, 5px" data-tooltip-placement="top">
+                                                  <i class="ki-outline ki-information-2 text-lg leading-none">
+                                                  </i>
+                                                  <span class="tooltip max-w-55" data-tooltip-content="true">
+                                                   (Ride + Toll Fare + Parking Fare)
+                                                  </span>
+                                                 </span>
+                                                 Total
+                                                </span>
+                                                <span class="sort-icon">
+                                                </span>
+                                               </span>
+                                        </th> -->
+                                        <!-- <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Return Date</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th></th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Car Type</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Fare</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Duration</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">KMS</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th>
+                                        <th class="w-[80px]">
+                                            <span class="sort asc">
+                                                <span class="sort-label">Customer Name</span>
+                                                <span class="sort-icon"></span>
+                                            </span>
+                                        </th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for extra in extras %}
+                                       
+                                            <tr>
+                                                <!-- <td> -->
+                                                    <td>
+                                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                                            type="checkbox" id="checkBOX" value="{{ extra.hashed_id }}" />
+                                                    </td>
+                                                <!-- </td> -->
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ extra.new_destination }}</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ extra.kms }}</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <script>
+                                                    function formatDuration(seconds) {
+                                                        const hours = Math.floor(seconds / 3600);
+                                                        const minutes = Math.floor((seconds % 3600) / 60);
+                                                        return `${hours}:${minutes.toString().padStart(2, '0')}`;
+                                                    }
+                                                    
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        document.querySelectorAll('.duration').forEach(element => {
+                                                            const seconds = parseFloat(element.getAttribute('data-duration'));
+                                                            if (!isNaN(seconds)) {
+                                                                element.textContent = formatDuration(seconds);
+                                                            }
+                                                        });
+                                                    });
+                                                    </script>
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary duration" data-duration="{{ extra.duration.total_seconds }}"></a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                                {{extra.toll_fare}}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ extra.parking_fare }}</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ extra.ride_fare }}</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                
+                                               
+                                            </tr>
+                                            
+                                            <!-- Modal -->
+                         
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                            <div class="flex items-center gap-2">
+                                Show
+                                <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                per page
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span data-datatable-info="true"></span>
+                                <div class="pagination" data-datatable-pagination="true"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function DeleteExtra() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the DELETE request to Django
+            const checkboxes = document.querySelectorAll('#Extra_table input[id="checkBOX"]');
+            // Filter the checked checkboxes
+            const ExtracheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+            // Extract values of checked checkboxes
+            const ExtracheckedValues = ExtracheckedCheckboxes.map(checkbox => checkbox.value);
+            console.log("values :",ExtracheckedValues);
+            
+            if (ExtracheckedValues != '') {
+                console.log('Checked values:', ExtracheckedValues);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/customer/delete-extra/', 
+                    data: {
+                        'extra_ids': ExtracheckedValues,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF token for Django
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops..',
+                                text: 'Something Went Wrong.',
+                                showCloseButton: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Delete Successfull',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000);
+                            $('#UserCreateForm')[0].reset();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            }
+        }
+ 
+    });
+    
+}
+
+</script>
+{% endblock %}
