@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full" data-theme="true" data-theme-mode="light" lang="en">
+
+<head>
+    <base href="../../../">
+    <title>
+        Vahan - Error 404
+    </title>
+    <meta charset="utf-8" />
+    <meta content="follow, index" name="robots" />
+    <link href="https://keenthemes.com/metronic" rel="canonical" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <meta content="Error 404 page, using Tailwind CSS" name="description" />
+    <meta content="@keenthemes" name="twitter:site" />
+    <meta content="@keenthemes" name="twitter:creator" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Metronic - Tailwind CSS Error 404" name="twitter:title" />
+    <meta content="Error 404 page, using Tailwind CSS" name="twitter:description" />
+    <meta content="/static/metronic-tailwind-html/dist/assets/media/app/og-image.png" name="twitter:image" />
+    <meta content="https://keenthemes.com/metronic" property="og:url" />
+    <meta content="en_US" property="og:locale" />
+    <meta content="website" property="og:type" />
+    <meta content="@keenthemes" property="og:site_name" />
+    <meta content="Metronic - Tailwind CSS Error 404" property="og:title" />
+    <meta content="Error 404 page, using Tailwind CSS" property="og:description" />
+    <meta content="/static/metronic-tailwind-html/dist/assets/media/app/og-image.png" property="og:image" />
+    <link href="{% static 'media/app/apple-touch-icon.png' %}" rel="apple-touch-icon" sizes="180x180" />
+    <link href="{% static 'media/app/favicon-32x32.png' %}" rel="icon" sizes="32x32" type="image/png" />
+    <link href="{% static 'media/app/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png" />
+    <link href="{% static 'media/app/favicon.ico' %}" rel="shortcut icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="{% static 'vendors/apexcharts/apexcharts.css' %}" rel="stylesheet" />
+    <link href="{% static 'vendors/keenicons/styles.bundle.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+</head>
+
+<body class="flex h-full demo1 bg-[#fefefe] dark:bg-coal-500">
+    <!--begin::Theme mode setup on page load-->
+    <script>
+        const defaultThemeMode = 'light'; // light|dark|system
+        let themeMode;
+
+        if (document.documentElement) {
+            if (localStorage.getItem('theme')) {
+                themeMode = localStorage.getItem('theme');
+            } else if (document.documentElement.hasAttribute('data-theme-mode')) {
+                themeMode = document.documentElement.getAttribute('data-theme-mode');
+            } else {
+                themeMode = defaultThemeMode;
+            }
+
+            if (themeMode === 'system') {
+                themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            document.documentElement.classList.add(themeMode);
+        }
+    </script>
+    <!--end::Theme mode setup on page load-->
+    <!--begin::Page layout-->
+    <div class="flex grow">
+        <div class="wrapper flex grow flex-col">
+
+            <main class="grow content pt-5" id="content" role="content">
+                <!-- begin: container -->
+                <div class="container-fixed" id="content_container">
+                </div>
+                <!-- end: container -->
+                <div class="flex flex-col items-center justify-center h-[95%]">
+                    <div class="mb-10">
+                        <img alt="image1" class="dark:hidden max-h-[160px]" src="{% static 'media/illustrations/19.png' %}" />
+                        <img alt="image2" class="light:hidden max-h-[160px]" src="{% static 'media/illustrations/19-dark.svg' %}" />
+                    </div>
+                    <span class="badge badge-primary badge-outline mb-3">
+                        404 Error
+                    </span>
+                    <h3 class="text-2.5xl font-semibold text-gray-900 text-center mb-2">
+                        We have lost this page
+                    </h3>
+                </div>
+            </main>
+            <footer class="footer">
+                <!-- begin: container -->
+                <div class="container-fixed">
+                    <div class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-3 py-5">
+                        <div class="flex order-2 md:order-1 gap-2 font-normal text-2sm">
+                            <span class="text-gray-500">
+                                2024©
+                            </span>
+                            <a class="text-gray-600 hover:text-primary" href="https://keenthemes.com">
+                                Keenthemes Inc.
+                            </a>
+                        </div>
+                        <nav class="flex order-1 md:order-2 gap-4 font-normal text-2sm text-gray-600">
+                            <a class="hover:text-primary" href="https://keenthemes.com/metronic/tailwind/docs">
+                                Docs
+                            </a>
+                            <a class="hover:text-primary" href="https://1.envato.market/EA4JP">
+                                Purchase
+                            </a>
+                            <a class="hover:text-primary"
+                                href="https://devs.keenthemes.com/question/understanding-metronic-themeforest-license-a-comprehensive-guide">
+                                FAQ
+                            </a>
+                            <a class="hover:text-primary" href="https://devs.keenthemes.com">
+                                Support
+                            </a>
+                            <a class="hover:text-primary"
+                                href="https://devs.keenthemes.com/question/understanding-metronic-themeforest-license-a-comprehensive-guide">
+                                License
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+                <!-- end: container -->
+            </footer>
+        </div>
+    </div>
+
+    <!--end::Page layout-->
+    <!--begin::Page scripts-->
+    <script src="{% static 'js/core.bundle.js' %}">
+    </script>
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}">
+    </script>
+    <!--end::Page scripts-->
+</body>
+
+</html>

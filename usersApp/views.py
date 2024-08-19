@@ -9,12 +9,16 @@ from django.utils.dateparse import parse_date
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
 from django.core.files.storage import default_storage
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
+
+@login_required(login_url='auth/login/')
 def adminHome(request):
     return render(request,'adminTemplates/index.html')
 
-class userListCreateView(View):
+class userListCreateView(LoginRequiredMixin,View):
+    login_url = 'auth/login/'
     def get(self, request):
         users = Account.objects.all()
         works_for = Account.objects.filter(user_type__in=['Admin', 'Vendor'])
@@ -79,9 +83,9 @@ class userListCreateView(View):
 
             # Validate files
             file_validators = {
-                'photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg']),
-                'driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg']),
-                'aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg'])
+                'photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg','png','webp']),
+                'driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg','png','webp']),
+                'aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg','png','webp'])
             }
 
             for file_key in file_validators:
@@ -151,8 +155,8 @@ class userListCreateView(View):
             return JsonResponse({'success':True})
         return JsonResponse({'success':False, 'error':'Invalid request method'})
 
-class updateUser(View):
-    
+class updateUser(LoginRequiredMixin,View):
+    login_url = 'auth/login/'
     def post(self,request,*args,**kwargs):
         pk = kwargs.get('pk')
         print(pk)
@@ -224,9 +228,9 @@ class updateUser(View):
 
         # Validate files
         file_validators = {
-            'new_photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
-            'new_driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'pdf']),
-            'new_aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'pdf'])
+            'new_photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png','webp']),
+            'new_driving_licence': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png','webp']),
+            'new_aadhar_card': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png','webp'])
         }
 
         for file_key in file_validators:
@@ -266,7 +270,8 @@ class updateUser(View):
         return redirect('user-list')
     
     
-class deleteUser(View):
+class deleteUser(LoginRequiredMixin,View):
+    login_url = 'auth/login/'
     def get(self, request, *args, **kwargs):
         user_list = request.GET.getlist('user_list[]')
 
@@ -281,7 +286,8 @@ class deleteUser(View):
                 return JsonResponse({'success': False, 'error': f'User with id {user_id} does not exist'})
                 
         return JsonResponse({'success':True})
-    
+
+@login_required(login_url='auth/login/')
 def download_aadhar(request, image_id):
     account_detail = get_object_or_404(AccountDetail, id=image_id)
     image_path = account_detail.aadhar_card.path
@@ -291,6 +297,7 @@ def download_aadhar(request, image_id):
         response['Content-Disposition'] = f'attachment; filename="{account_detail.aadhar_card.name}"'
         return response
 
+@login_required(login_url='auth/login/')
 def download_driving_licence(request, image_id):
     account_detail = get_object_or_404(AccountDetail, id=image_id)
     image_path = account_detail.driving_licence.path

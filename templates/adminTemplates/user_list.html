@@ -462,7 +462,6 @@
                                                
                                             </td>
                                             <td>
-
                                                 
                                                     {{ detail.gender }}
                                                 
@@ -492,37 +491,6 @@
                                             {% endif %}
                                             <td>
                                                 
-
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ detail.gender }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ detail.join_date }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ detail.exit_date }}
-                                                </span>
-                                            </td>
-                                            {% if user.first_name and user.last_name %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ user.first_name }} {{ user.last_name }}
-                                                </span>
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ user.email }} 
-                                                </span>
-                                            </td>
-                                            {% endif %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-
                                                     {{ user.created_at }}
                                                 
                                             </td>
@@ -555,47 +523,17 @@
                                             <td>
                                                 
                                                     <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
-                                                        <i class="ki-filled ki-file-down"></i>  Download
-                                                    </a>
-                                                
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                
-                                                    N/A
-                                                
-                                            </td>
-
-                                            {% if detail.aadhar_card %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    <a href="{% url 'download_aadhar' detail.pk %}">
+                                                        <!-- <i class="ki-filled ki-file-down"></i>  Download -->
                                                         Download
                                                     </a>
-                                                </span>
+                                                
                                             </td>
                                             {% else %}
                                             <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
+                                                
                                                     N/A
-                                                </span>
+                                                
                                             </td>
-                                            {% endif %}
-                                            {% if detail.driving_licence %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    <a href="{% url 'download_driving_licence' detail.pk %}">
-                                                        Download
-                                                    </a>
-                                                </span>
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    N/A
-                                                </span>
-                                            </td>
-
                                             {% endif %}
                                         </tr>
                                         <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
@@ -707,13 +645,13 @@
                                                                     </label>
                                                                     <div class="flex flex-col w-full gap-1">
                                                                         <select class="select" name="new_works_for" id="new_works_forU">
-                                                                            
-                                                                            {% if detail.works_for %}
-                                                                                <option value="{{ detail.works_for.id }}" selected>{{ detail.works_for.email }}</option>
-                                                                            {% else %}
-                                                                                <option value="" selected>Select a option</option>
-                                                                            {% endif %}
-                                                                        
+                                                                            {% with user.accountDetail.first as detail %}
+                                                                                {% if detail.works_for %}
+                                                                                    <option value="{{ detail.works_for.id }}" selected>{{ detail.works_for.email }}</option>
+                                                                                {% else %}
+                                                                                    <option value="" selected>Select a option</option>
+                                                                                {% endif %}
+                                                                            {% endwith %}
                                                                             {% if works_for %}
                                                                                 {% for users in works_for %}
                                                                                     {% if users.pk != detail.works_for.id and users.pk != user.pk %}
@@ -723,8 +661,8 @@
                                                                                     {% endif %}
                                                                                 {% endfor %}
                                                                             
-                                                                            {% endif %}
-                                                                            <option value="">None</option>
+                                                                                {% endif %}
+                                                                                <option value="">None</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>

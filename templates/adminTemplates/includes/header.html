@@ -1598,13 +1598,13 @@
                 <i class="ki-filled ki-right text-gray-500 text-3xs">
                 </i>
                 {% if request.resolver_match.url_name == 'user-list' %}
-                    <span class="text-gray-700">
-                        User List
-                    </span>
+                <span class="text-gray-700">
+                    User List
+                </span>
                 {% elif request.resolver_match.url_name == 'routes-page' %}
-                    <span class="text-gray-700">
-                        Routes
-                    </span>
+                <span class="text-gray-700">
+                    Routes
+                </span>
                 {% elif request.resolver_match.url_name == 'new-car-page' %}
                 <span class="text-gray-700">
                     New Car
@@ -1614,10 +1614,10 @@
                     New Car Type
                 </span>
                 {% elif request.resolver_match.url_name == 'rides-details-page' %}
-                    <span class="text-gray-700">
+                <span class="text-gray-700">
                     Rides <i class="ki-filled ki-right text-gray-500 text-3xs">
-                    </i>   Details
-                    </span>
+                    </i> Details
+                </span>
                 {% elif request.resolver_match.url_name == 'ongoing-page' %}
                 <span class="text-gray-700">
                     Ongoing
@@ -1629,8 +1629,9 @@
                 </span>
                 {% elif request.resolver_match.url_name == 'extra-page' %}
                 <a href="{% url 'previous-page' %}"><span class="text-gray-700">
-                    Previous
-                </span></a> <i class="ki-filled ki-right text-gray-500 text-3xs"></i> <span class="text-gray-700">Extra</span>
+                        Previous
+                    </span></a> <i class="ki-filled ki-right text-gray-500 text-3xs"></i> <span
+                    class="text-gray-700">Extra</span>
                 {%endif%}
             </div>
             {% endif %}
@@ -3461,16 +3462,33 @@
             <div class="menu" data-menu="true">
                 <div class="menu-item" data-menu-item-offset="20px, 10px" data-menu-item-placement="bottom-end"
                     data-menu-item-toggle="dropdown" data-menu-item-trigger="click|lg:click">
+                    {% with request.user.accountDetail.first as detail %}
                     <div class="menu-toggle btn btn-icon rounded-full">
+
+                        {% if detail.photo %}
                         <img alt="" class="size-9 rounded-full border-2 border-success shrink-0"
-                            src="{% static 'media/avatars/300-2.png' %}">
+                            src="{{ detail.photo.url }}">
                         </img>
+                        {% else %}
+                        <img alt="" class="size-9 rounded-full border-2 border-success shrink-0"
+                            src="{% static 'media/avatars/blank.png' %}">
+                        </img>
+                        {% endif %}
+
+
                     </div>
                     <div class="menu-dropdown menu-default light:border-gray-300 w-full max-w-[250px]">
                         <div class="flex items-center justify-between px-5 py-1.5 gap-1.5">
                             <div class="flex items-center gap-2">
-                                <img alt="" class="size-9 rounded-full border-2 border-success"
-                                    src="assets/media/avatars/300-2.png">
+                                {% if detail.photo %}
+                                <img alt="" class="size-9 rounded-full border-2 border-success shrink-0"
+                                    src="{{ detail.photo.url }}">
+                                </img>
+                                {% else %}
+                                <img alt="" class="size-9 rounded-full border-2 border-success shrink-0"
+                                    src="{% static 'media/avatars/blank.png' %}">
+                                </img>
+                                {% endif %}
                                 <div class="flex flex-col gap-1.5">
                                     <!-- <span class="text-sm text-gray-800 font-semibold leading-none">
                                         Cody Fisher
@@ -3480,11 +3498,19 @@
                                         c.fisher@gmail.com
                                     </a> -->
                                     <span class="text-sm text-gray-800 font-semibold leading-none">
-                                        User Name
+                                        {% if request.user.first_name %}
+                                        {{ request.user.first_name }} {{ request.user.last_name }}
+                                        {% else %}
+                                        Not Available
+                                        {% endif %}
                                     </span>
                                     <a class="text-xs text-gray-600 hover:text-primary font-medium leading-none"
                                         href="html/demo1/account/home/get-started.html">
-                                        username@gmail.com
+                                        {% if request.user.email %}
+                                        {{ request.user.email }}
+                                        {% else %}
+                                        Not Available
+                                        {% endif %}
                                     </a>
                                 </div>
                                 </img>
@@ -3739,13 +3765,13 @@
                                 </div>
                             </div>
                             <div class="menu-item px-4 py-1.5">
-                                <a class="btn btn-sm btn-light justify-center"
-                                    href="html/demo1/authentication/classic/sign-in.html">
+                                <a class="btn btn-sm btn-light justify-center" href="{% url 'logout' %}">
                                     Log out
                                 </a>
                             </div>
                         </div>
                     </div>
+                    {% endwith %}
                 </div>
             </div>
         </div>

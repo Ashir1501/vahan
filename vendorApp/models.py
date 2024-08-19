@@ -49,6 +49,7 @@ class Route(models.Model):
     duration = models.CharField(max_length=50, choices=DURATION_CHOICES, default=DURATION_CHOICES[0])
     kms = models.IntegerField(default=1)
     created_by =  models.ForeignKey(Account, on_delete=models.CASCADE)
+    
     def __str__(self):
         return f"{self.pickup_location}-{self.drop_location}-Car({self.car_type})"
 

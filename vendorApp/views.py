@@ -10,10 +10,12 @@ from .models import *
 from usersApp.models import *
 from customerApp.models import *
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # =================Cars Views=====================
 # new Car page 
+@login_required(login_url='auth/login/')
 def new_car_page(request):
     data = Car.objects.all()
     TypeData = CarType.objects.all()
@@ -29,6 +31,7 @@ def new_car_page(request):
     return render(request,'adminTemplates/new_car.html',{'data':data,'CarsType':unique_car_types,'vendorData':Vendor,"notAvalaibe":car_ids})
 
 # method to create new cars
+@login_required(login_url='auth/login/')
 def add_new_car(request):
     if request.method == 'POST':
         car_type_id = request.POST.get("carsTypeId")
@@ -94,6 +97,7 @@ def add_new_car(request):
         # Handle GET request or other methods
         return render(request, 'new_car.html')
 # method to search car type and show in car type input to get
+@login_required(login_url='auth/login/')
 def car_model_search(request):
     query = request.GET.get('query', '')
     car_type = CarType.objects.filter(car_type__icontains=query)
@@ -102,6 +106,7 @@ def car_model_search(request):
 
 
 # method to edit car 
+@login_required(login_url='auth/login/')
 @require_POST
 def edit_car(request):
     print("1111111111222222220")
@@ -173,6 +178,7 @@ def edit_car(request):
 
 
 # method to delete car data
+@login_required(login_url='auth/login/')
 @csrf_exempt  
 def delete_car(request):
     if request.method == 'POST':
@@ -211,6 +217,7 @@ def car_type_add(request):
 
 # ==================Cars Type Views===============================================
 # method for render new car type page
+@login_required(login_url='auth/login/')
 def new_car_type_page(request):
     car_type_data = CarType.objects.annotate(car_count=Count('car'))
 
@@ -280,6 +287,7 @@ def delete_car_type(request):
 # ===========================================Routes Views=============================
 
 # method to render Routes page
+@login_required(login_url='auth/login/')
 def Routes_page(request):
     routes_data = Route.objects.all()
     cartype= CarType.objects.all()
@@ -287,6 +295,7 @@ def Routes_page(request):
 
 
 # method to add new route
+@login_required(login_url='auth/login/')
 def add_route(request):
     if request.method == 'POST':
         trip_type = request.POST.get('tripType')
@@ -357,6 +366,7 @@ def add_route(request):
         return render(request, 'Routes.html')
 
 # method to edit routes
+@login_required(login_url='auth/login/')
 def edit_route(request):
     
 
@@ -417,6 +427,7 @@ def edit_route(request):
     
 # method to delete routes
 @require_POST
+@login_required(login_url='auth/login/')
 def delete_route_type(request):
 
 

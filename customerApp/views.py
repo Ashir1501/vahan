@@ -9,6 +9,7 @@ from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 # ===============================================================Rides views============================================
             # --------------------Pending Rides Views-------------------------
@@ -18,6 +19,7 @@ def hash_id(objects):
         obj.hashed_id = hashlib.sha256(str(obj.id).encode()).hexdigest()
     return objects
 # method to render pending rides page
+@login_required(login_url='auth/login/')
 def Pending_rides_page(request):
     rides_details = Ride.objects.all()
     drivers = Account.objects.all()
@@ -63,7 +65,7 @@ def decode_hashed_id(hashed_id, model_class):
             return obj.id
     print(f"No match found for hashed ID: {hashed_id}")
     return None
-
+@login_required(login_url='auth/login/')
 def assign_driver(request):
     if request.method == 'POST':
         hashed_driver_id = request.POST.get('driver_id')
@@ -112,7 +114,7 @@ def assign_driver(request):
     
     return redirect('rides-details-page')
 # method to render ongoing page
-
+@login_required(login_url='auth/login/')
 def ongoing_rides_page(request):
     rides_details = Ride.objects.all()
     for ride_detail in rides_details:
@@ -121,6 +123,7 @@ def ongoing_rides_page(request):
     return render(request,'adminTemplates/ongoing.html',{'ridesData':rides_details})
 
  # -------------------------Completed Ride ----------------------------
+@login_required(login_url='auth/login/')
 def completed_or_past_rides(request):
     today = date.today()
     
@@ -137,7 +140,7 @@ def completed_or_past_rides(request):
 
 
 # ---cancel Ride ------- 
-
+@login_required(login_url='auth/login/')
 def cancel_ride(request):
     if request.method == 'POST':
         try:
@@ -153,7 +156,7 @@ def cancel_ride(request):
 
 
 # ----------------------- extra page ---------------------------
-
+@login_required(login_url='auth/login/')
 def extra_page(request, hashed_id):
     # Find the Ride object that corresponds to the hashed_id
     rides = Ride.objects.all()
@@ -201,7 +204,7 @@ def extra_page(request, hashed_id):
 
 
            
-
+@login_required(login_url='auth/login/')
 def add_new_extra(request):
     if request.method == 'POST':
         # Fetch the Ride object using the hashed ID
@@ -283,7 +286,8 @@ def add_new_extra(request):
 #     hashlib.sha256(str(extra.id).encode()).hexdigest(): extra.id
 #     for extra in Extra.objects.all()
 # }
-# @csrf_exempt  
+# @csrf_exempt
+@login_required(login_url='auth/login/')  
 def delete_Extra(request):
     if request.method == 'POST':
         hashed_ids = request.POST.getlist('extra_ids[]')  # Get the list of car IDs
