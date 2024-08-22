@@ -88,7 +88,8 @@
                                     Pickup
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="input w-full" name="pickup" placeholder="pickup" type="text" required/>
+                                <input class="select-input input w-full pickup" name="pickup" onkeyup="processChange()" placeholder="pickup" type="text" required/>
+                                <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                             </div>
                 
                             <!-- Drop Off Input -->
@@ -97,7 +98,8 @@
                                     Drop Off
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="input w-full" name="DropOff" placeholder="Drop Off" type="text" />
+                                <input class="select-input input w-full pickup" onkeyup="processChange()" name="DropOff" placeholder="Drop Off" type="text" />
+                                <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                             </div>
                 
                             <!-- Fare Input -->
@@ -327,7 +329,8 @@
                                                         Pickup
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="input w-full" name="pickupEdit" placeholder="Pickup" type="text" value="{{ routeData.pickup_location }}" required>
+                                                    <input class="select-input input w-full pickup" name="pickupEdit" onkeyup="processChange()" value="{{ routeData.pickup_location }}" placeholder="pickup" type="text" required/>
+                                                    <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                                                 </div>
                                 
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -335,7 +338,8 @@
                                                         Drop Off
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="input w-full" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" />
+                                                    <input class="select-input input w-full pickup" onkeyup="processChange()" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" />
+                                                    <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                                                 </div>
                                 
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -553,6 +557,142 @@
     });
     
 }
+
+function debounce(func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
+function saveInput() {
+    let clientId = "123431b9-6234-4e45-8126-8fe82200a8e6";
+    let clientSecret = "pZMe7Br1OyH93MyXS6aTVPkuPW1BoexQ";
+    let endpoint = "https://account.olamaps.io/realms/olamaps/protocol/openid-connect/token";
+    let currentFocus = -1;
+
+    $('.pickup').each(function() {
+        let input = $(this);
+        let resultsDiv = input.next('.autocomplete-results');
+
+        input.on('input', function() {
+            let searchText = input.val();
+
+            if (!searchText) {
+                resultsDiv.hide();
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: endpoint,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    "grant_type": "client_credentials",
+                    "scope": "openid",
+                    "client_id": clientId,
+                    "client_secret": clientSecret
+                },
+                success: function(response) {
+                    let access_token = response.access_token;
+                    if (access_token) {
+                        $.ajax({
+                            type: 'GET',
+                            url: `https://api.olamaps.io/places/v1/autocomplete?input=${searchText}`,
+                            headers: {
+                                'Authorization': `Bearer ${access_token}`
+                            },
+                            success: function(data) {
+                                resultsDiv.empty();
+                                currentFocus = -1;
+
+                                data.predictions.forEach(function(prediction) {
+                                    let item = $('<div></div>').text(prediction.description);
+                                    item.on('click', function() {
+                                        input.val(prediction.description);
+                                        resultsDiv.hide();
+                                    });
+                                    resultsDiv.append(item);
+                                });
+
+                                let inputOffset = input.offset();
+                                resultsDiv.css({
+                                    top: inputOffset.top + input.outerHeight(),
+                                    left: inputOffset.left,
+                                    width: input.outerWidth()
+                                });
+
+                                resultsDiv.show();
+                            },
+                            error: function(error) {
+                                console.error('Error fetching autocomplete results:', error);
+                            }
+                        });
+                    } else {
+                        console.error('Failed to retrieve access token');
+                    }
+                },
+                error: function(error) {
+                    console.error(`Failed to get access token: ${error.status} - ${error.responseText}`);
+                }
+            });
+        });
+
+        input.on('keydown', function(e) {
+            let items = resultsDiv.children('div');
+
+            if (e.keyCode === 40) { // Arrow Down
+                currentFocus++;
+                addActive(items);
+            } else if (e.keyCode === 38) { // Arrow Up
+                currentFocus--;
+                addActive(items);
+            } else if (e.keyCode === 13) { // Enter
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    items.eq(currentFocus).click();
+                }
+            }
+        });
+
+        function addActive(items) {
+            if (!items) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = items.length - 1;
+
+            let activeItem = items.eq(currentFocus);
+            activeItem.addClass('active');
+
+            // Scroll the dropdown if the active item is not fully visible
+            let dropdownScrollTop = resultsDiv.scrollTop();
+            let dropdownHeight = resultsDiv.outerHeight();
+            let itemOffsetTop = activeItem.position().top;
+            let itemHeight = activeItem.outerHeight();
+
+            if (itemOffsetTop + itemHeight > dropdownScrollTop + dropdownHeight) {
+                resultsDiv.scrollTop(itemOffsetTop + itemHeight - dropdownHeight);
+            } else if (itemOffsetTop < dropdownScrollTop) {
+                resultsDiv.scrollTop(itemOffsetTop);
+            }
+        }
+
+        function removeActive(items) {
+            items.removeClass('active');
+        }
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest(input).length && !$(e.target).closest(resultsDiv).length) {
+                resultsDiv.hide();
+            }
+        });
+    });
+}
+
+const processChange = debounce(() => saveInput());
 
 
   
