@@ -88,8 +88,8 @@
                                     Pickup
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="select-input input w-full pickup" name="pickup" onkeyup="processChange()" placeholder="pickup" type="text" required/>
-                                <div class="select-dropdown autocomplete-results dropdown-menu"></div>
+                                <input class="input w-full pickup" name="pickup" onkeyup="processChange()" placeholder="pickup" type="text" required/>
+                                <div class="autocomplete-results dropdown-menu"></div>
                             </div>
                 
                             <!-- Drop Off Input -->
@@ -98,8 +98,8 @@
                                     Drop Off
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="select-input input w-full pickup" onkeyup="processChange()" name="DropOff" placeholder="Drop Off" type="text" />
-                                <div class="select-dropdown autocomplete-results dropdown-menu"></div>
+                                <input class="input w-full pickup" onkeyup="processChange()" name="DropOff" placeholder="Drop Off" type="text" />
+                                <div class="autocomplete-results dropdown-menu"></div>
                             </div>
                 
                             <!-- Fare Input -->
@@ -329,8 +329,8 @@
                                                         Pickup
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="select-input input w-full pickup" name="pickupEdit" onkeyup="processChange()" value="{{ routeData.pickup_location }}" placeholder="pickup" type="text" required/>
-                                                    <div class="select-dropdown autocomplete-results dropdown-menu"></div>
+                                                    <input class="input w-full pickup" name="pickupEdit" onkeyup="processChange()" value="{{ routeData.pickup_location }}" placeholder="pickup" type="text" required/>
+                                                    <div class="autocomplete-results dropdown-menu"></div>
                                                 </div>
                                 
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -338,8 +338,8 @@
                                                         Drop Off
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="select-input input w-full pickup" onkeyup="processChange()" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" />
-                                                    <div class="select-dropdown autocomplete-results dropdown-menu"></div>
+                                                    <input class="input w-full pickup" onkeyup="processChange()" name="dropOffEdit" placeholder="Drop Off" type="text" value="{{ routeData.drop_location }}" />
+                                                    <div class="autocomplete-results dropdown-menu"></div>
                                                 </div>
                                 
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
@@ -567,8 +567,6 @@ function debounce(func, timeout = 300) {
 }
 
 function saveInput() {
-    let clientId = "123431b9-6234-4e45-8126-8fe82200a8e6";
-    let clientSecret = "pZMe7Br1OyH93MyXS6aTVPkuPW1BoexQ";
     let endpoint = "https://account.olamaps.io/realms/olamaps/protocol/openid-connect/token";
     let currentFocus = -1;
 
@@ -593,8 +591,8 @@ function saveInput() {
                 data: {
                     "grant_type": "client_credentials",
                     "scope": "openid",
-                    "client_id": clientId,
-                    "client_secret": clientSecret
+                    "client_id": "{{ clientId }}",
+                    "client_secret": "{{ clientSecret }}"
                 },
                 success: function(response) {
                     let access_token = response.access_token;

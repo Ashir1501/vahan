@@ -9,7 +9,7 @@ def loginAdmin(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-        user = Account.objects.get(email = email)
+        user = get_object_or_404(Account, email=email)
         if user.check_password(password):
             auth_login(request,user)
             messages.success(request,f'Welcome {email} You have logged in Successfully.')

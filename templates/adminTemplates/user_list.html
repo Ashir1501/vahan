@@ -430,8 +430,9 @@
                                             <td>
                                                 <div class="flex items-center gap-2.5">
                                                     {% if detail.photo %}
-                                                    <img alt="" class="h-9 rounded-full"
-                                                        src="{{ detail.photo.url }}" />
+                                                    <img alt="" class="size-11 rounded-full shrink-0"
+                                                        src="{{ detail.photo.url }}">
+                                                    </img>
                                                     {% else %}
                                                     <img alt="" class="h-9 rounded-full"
                                                         src="{% static 'media/avatars/blank.png' %}" />
