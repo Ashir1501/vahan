@@ -6,6 +6,7 @@ urlpatterns = [
     # Pending Rides-------
     path('rides-details-page',Pending_rides_page,name='rides-details-page'),
     path('assign-driver',assign_driver,name='assign-driver'),
+    path('approved-ride',approved_ride,name='approved-ride'),
     # path('autocomplete-driver/', autocomplete_driver, name='autocomplete_driver'),
     # confirmed Rides-----
     path('ongoing-page',ongoing_rides_page,name='ongoing-page'),

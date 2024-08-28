@@ -8,9 +8,9 @@ class Ride(models.Model):
     
     RIDE_STATUS_CHOICES = (
         ('pending','pending'),
-        ('assigned','assigned'),
-        ('declined','declined'),
+        ('approved','approved'),
         ('confirmed','confirmed'),
+        ('assigned','assigned'),
         ('cancelled','cancelled'),
         ('Started','Started'),
         ('completed','completed')
@@ -30,32 +30,36 @@ class Ride(models.Model):
     selfie = models.ImageField(upload_to='ride_images', default=None,null=True, blank=True)
     opening_kms_screen = models.ImageField(upload_to='ride_images', default=None,null=True, blank=True)
     closing_kms_screen = models.ImageField(upload_to='ride_images', default=None,null=True, blank=True)
+    opening_kms_input = models.IntegerField(null=True, blank=True)
+    closing_kms_input = models.IntegerField(null=True, blank=True)
+    toll_fare = models.IntegerField(null=True,blank=True)
+    parking_fare = models.IntegerField(null=True,blank=True)
     is_extra = models.BooleanField(default=False)
-    extra_img = models.ImageField(upload_to='ride_images', default=None,null=True, blank=True)
+
     def __str__(self):
         return f"{self.customer.first_name}-{self.route}-{self.pickup_date}"
 
-class Extra(models.Model):
+# class Extra(models.Model):
 
-    Extra_PAYMENT_TYPE_CHOICE=(
-        ('online','online'),
-        ('cash','cash'),
-        ('wallet','wallet')
-    )
+#     Extra_PAYMENT_TYPE_CHOICE=(
+#         ('online','online'),
+#         ('cash','cash'),
+#         ('wallet','wallet')
+#     )
 
-    ride = models.ForeignKey(Ride, on_delete=models.CASCADE)
-    new_destination = models.CharField(max_length=100, default="none")
-    kms = models.IntegerField(default="none")
-    duration = models.DurationField(default="none")
-    toll_fare = models.IntegerField(null=True,blank=True)
-    parking_fare = models.IntegerField(null=True,blank=True)
-    ride_fare = models.IntegerField(null=True,blank=True)
-    payment_type = models.CharField(max_length=20, choices=Extra_PAYMENT_TYPE_CHOICE)
+#     ride = models.ForeignKey(Ride, on_delete=models.CASCADE)
+#     new_destination = models.CharField(max_length=100, default="none")
+#     kms = models.IntegerField(default="none")
+#     duration = models.DurationField(default="none")
+#     toll_fare = models.IntegerField(null=True,blank=True)
+#     parking_fare = models.IntegerField(null=True,blank=True)
+#     ride_fare = models.IntegerField(null=True,blank=True)
+#     payment_type = models.CharField(max_length=20, choices=Extra_PAYMENT_TYPE_CHOICE)
 
-    @property
-    def extra_fare(self):
-        return (self.kms*13.5)+self.toll_fare+self.parking_fare
-    def set_duration(self, hours=0, minutes=0):
-        self.duration = timedelta(hours=hours, minutes=minutes)
-    def __str__(self):
-        return f"extra-{self.ride}"
+#     @property
+#     def extra_fare(self):
+#         return (self.kms*13.5)+self.toll_fare+self.parking_fare
+#     def set_duration(self, hours=0, minutes=0):
+#         self.duration = timedelta(hours=hours, minutes=minutes)
+#     def __str__(self):
+#         return f"extra-{self.ride}"

@@ -41,6 +41,28 @@
 
     <!-- Metronic JS -->
     <script src="path/to/metronic/js/scripts.bundle.js"></script>
+    <style>
+                .otp-container {
+            background: #fff;
+            padding: 10px;
+            /* border-radius: 8px; */
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+            text-align: center;
+        }
+        .otp-container h2 {
+            margin-bottom: 20px;
+        }
+        .otp-container input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+    </style>
 </head>
 
 <body class="flex h-full dark:bg-coal-500">
@@ -144,6 +166,17 @@
                         </button>
                     </label>
                 </div>
+                <div class="otp-container">
+                    <h2>Enter OTP</h2>
+                    <form action="/submit-otp" method="POST">
+                        <input type="text" name="otp1" maxlength="1" oninput="moveFocus(this, event)"  required>
+                        <input type="text" name="otp2" maxlength="1" oninput="moveFocus(this, event)" required>
+                        <input type="text" name="otp3" maxlength="1" oninput="moveFocus(this, event)" required>
+                        <input type="text" name="otp4" maxlength="1" oninput="moveFocus(this, event)" required>
+                        <br>
+                        
+                    </form>
+                </div>
                 <button class="btn btn-primary flex justify-center grow">
                     Login
                 </button>
@@ -159,6 +192,27 @@
     <script src="{% static 'js/widgets/general.js' %}">
     </script>
     <!--end::Page scripts-->
+    <script>
+        function moveFocus(current, event) {
+            const value = current.value;
+
+            // Move to the next input if the current value is not empty
+            if (value.length === 1) {
+                const nextInput = current.nextElementSibling;
+                if (nextInput && nextInput.tagName === 'INPUT') {
+                    nextInput.focus();
+                }
+            }
+
+            // Move to the previous input if the current value is empty and the key pressed was backspace
+            if (event.inputType === 'deleteContentBackward') {
+                const prevInput = current.previousElementSibling;
+                if (prevInput && prevInput.tagName === 'INPUT') {
+                    prevInput.focus();
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

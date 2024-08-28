@@ -99,6 +99,92 @@
         .select-option.active {
             background-color: #e9e9e9;
         }
+
+
+
+        .autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+/* .autoInput {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.autoInput {
+  background-color: #f1f1f1;
+  width: 100%;
+} */
+
+/* input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+} */
+
+.carsType-items {
+  position: absolute;
+  /* border: 1px solid #d4d4d4; */
+  /* /* border-bottom: none; */
+  border-top: none; 
+  z-index: 99;
+  /*position the carsType items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  /* border: 20px; */
+}
+
+.carsType-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+
+/*when hovering an item:*/
+.carsType-items div:hover {
+  background-color: #e9e9e9; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.carsType-active {
+  background-color: #e9e9e9 !important; 
+  /* color: #ffffff;  */
+}
+
+
+
+/* The container for the autocomplete items */
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    top: 100%; /* Adjust based on your layout */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    max-height: 200px; /* Adjust based on your needs */
+    overflow-y: auto;
+}
+
+/* Individual items in the dropdown */
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Highlighted item in the dropdown */
+.autocomplete-active {
+    background-color: #e9e9e9;
+}
+
     </style>
 </head>
 

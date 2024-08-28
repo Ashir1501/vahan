@@ -12,6 +12,17 @@ from customerApp.models import *
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
+
+@csrf_exempt
+def carType_suggestions(request):
+    data = list(
+        CarType.objects.values_list('car_model', 'car_brand', 'car_type')
+    )
+    
+    # Formatting the data into "car_model-car_brand=car_type"
+    formatted_data = [f"{car_model} | {car_brand} | {car_type}" for car_model, car_brand, car_type in data]
+
+    return JsonResponse(formatted_data, safe=False)
 # Create your views here.
 # =================Cars Views=====================
 # new Car page 
@@ -34,9 +45,9 @@ def new_car_page(request):
 @login_required(login_url='auth/login/')
 def add_new_car(request):
     if request.method == 'POST':
-        car_type_id = request.POST.get("carsTypeId")
+        car_type_id = request.POST.get("carsType")
         car_brand = request.POST.get("carBrand")
-        car_model = request.POST.get("carModel")
+        car_model = request.POST.get("carModelId")
         vendor_id = request.POST.get("vendorId")
         registration_number = request.POST.get("registrationNumber")
 
@@ -60,9 +71,11 @@ def add_new_car(request):
 
         try:
             # Retrieve or create the CarType
-            car_type, created = CarType.objects.get_or_create(car_type=car_type_id)
-            if created:
-                messages.success(request, "Car Type added to the system.")
+            try:
+                car_type = CarType.objects.get(car_model=car_model)
+            except CarType.DoesNotExist:
+                messages.error(request, "This model is Not present in System")
+                return redirect("new-car-page")
 
             # Retrieve the vendor
             if vendor_id == 'me':
@@ -73,8 +86,7 @@ def add_new_car(request):
             # Create new car instance
             new_car = Car(
                 Car_type=car_type,
-                car_brand=car_brand,
-                car_model=car_model,
+                
                 Vender_id=vendor,
                 Front_pic=front_pic,
                 Back_pic=back_pic,
@@ -122,20 +134,21 @@ def edit_car(request):
         registration_number = request.POST.get('registration_number_edit')
 
         # Query for CarType using filter
-        car_types = CarType.objects.filter(car_type__icontains=car_type_query)
+        try:
+            car_types = CarType.objects.get(car_model__icontains=car_model)
 
-        if not car_types.exists():
-            messages.error(request, f'The car type "{car_type_query}" is not present in your system. Please add it before proceeding.')
+        except CarType.DoesNotExist:
+            messages.error(request, f'The car Model "{car_model}" is not present in your system. Please add it before proceeding.')
 
             return redirect('new-car-page')
 
         # Assuming the filter returns a single unique result, you can use first() or handle the case where multiple results exist
-        carT = car_types.first()
+        carT = car_types
 
         # Update car instance
-        car.car_model = car_model
+        # car.car_model = car_model
         car.Car_type = carT
-        car.car_brand = car_brand
+        # car.car_brand = car_brand
         car.Registration_Number = registration_number
 
         # Handle file uploads
@@ -201,17 +214,17 @@ def delete_car(request):
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
 # this method for add new car type from cars form
-def car_type_add(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        if name:
-            car_model, created = CarType.objects.get_or_create(car_type=name)
-            if created:
-                return JsonResponse({'id': car_model.id, 'name': car_model.car_type})
-            else:
-                return JsonResponse({'error': 'Car model already exists'}, status=400)
-        else:
-            return JsonResponse({'error': 'Name is required'}, status=400)
+# def car_type_add(request):
+#     if request.method == 'POST':
+#         name = request.POST.get('name')
+#         if name:
+#             car_model, created = CarType.objects.get_or_create(car_type=name)
+#             if created:
+#                 return JsonResponse({'id': car_model.id, 'name': car_model.car_type})
+#             else:
+#                 return JsonResponse({'error': 'Car model already exists'}, status=400)
+#         else:
+#             return JsonResponse({'error': 'Name is required'}, status=400)
         
 
 
@@ -228,17 +241,19 @@ def new_car_type_page(request):
 def create_car_type(request):
     print(2222555)
     if request.method == 'POST':
-        car_type_name = request.POST.get('car_types')
+        car_model_name = request.POST.get('carModal')
+        car_brand_name = request.POST.get('carBrand')
+        car_type_name = request.POST.get('carType')
         print("228 :",car_type_name)
-        if car_type_name:
-            check = CarType.objects.filter(car_type__icontains = car_type_name)
+        if car_type_name and car_model_name and car_brand_name:
+            check = CarType.objects.filter(car_model__icontains = car_model_name)
             print(231,check)
             if not check:
-                CarType.objects.create(car_type=car_type_name)
+                CarType.objects.create(car_model=car_model_name,car_brand = car_brand_name, car_type=car_type_name)
                 messages.success(request, 'Type Added successfully!')
                 return redirect('new-car-type-page')
             else:
-                messages.error(request, f"'{car_type_name}' is already present")
+                messages.error(request, f"'{car_model_name}' is already present")
                 return redirect('new-car-type-page')
         return redirect('new-car-type-page')
     return redirect('new-car-type-page')
@@ -249,13 +264,18 @@ def update_car_type(request):
     car_type = get_object_or_404(CarType, id=car_type_id)
 
     if request.method == 'POST':
+        car_model_name = request.POST.get('car_model_edit')
+        car_brand_name = request.POST.get('car_brand_edit')
         car_type_name = request.POST.get('car_type_edit')
-        if car_type_name:
+        if car_type_name and car_model_name and car_brand_name:
+            car_type.car_model = car_model_name
+            car_type.car_brand = car_brand_name
             car_type.car_type = car_type_name
             car_type.save()
             messages.success(request, 'Type Update successfully!')
             return redirect('new-car-type-page')  # Redirect to a list of car types or another page
-
+        else:
+            return redirect('new-car-type-page')
     return render(request, 'adminTemplates/new_car_type.html', {'car_type': car_type})
 
 
@@ -301,15 +321,14 @@ def add_route(request):
         trip_type = request.POST.get('tripType')
         pickup_location = request.POST.get('pickup')
         drop_location = request.POST.get('DropOff')
-        fare = request.POST.get('fare')
         duration = request.POST.get('duration')
         kms = request.POST.get('Kilometers')
-        car_type_ids = request.POST.get('carsTypeId')  # Handle multiple car types
-        
+        car_model_ids = request.POST.getlist('carModelId[]')  # Use getlist for multiple values
+        fares = request.POST.getlist('fare[]')  # Use getlist for multiple fares
+
         # Validation
-        if not pickup_location  or not fare:
-            # return HttpResponse("Missing required fields", status=400)
-            messages.error(request,"Missing required fields")
+        if not pickup_location or not car_model_ids or not fares:
+            messages.error(request, "Missing required fields")
             return redirect('routes-page')
         if trip_type == 'local':
             if duration == 'none':
@@ -322,48 +341,54 @@ def add_route(request):
             if kms and int(kms) < 0 and trip_type != 'local':
                 messages.error(request, "KMS value must be a non-negative number.")
                 return redirect('routes-page')
+
+        # Convert kms to int if not 'local'
         try:
-            car_type, created = CarType.objects.get_or_create(car_type=car_type_ids)
-        except:
-            pass
-        if created:
-                messages.success(request, "Car Type added to the system.")
-        try:
-            fare = float(fare)
             if trip_type != 'local':
                 kms = int(kms)
             else:
-                kms =0 
+                kms = 0 
         except ValueError:
-            messages.error(request,"Invalid fare or kilometers")
+            messages.error(request, "Invalid kilometers")
             return redirect('routes-page')
-            # return HttpResponse("Invalid fare or kilometers", status=400)
 
-        route = Route(
-            trip_type=trip_type,
-            car_type = car_type,
-            pickup_location=pickup_location,
-            drop_location=drop_location,
-            fare=fare,
-            duration=duration,
-            kms=kms,
-            created_by=Account.objects.get(id=1)             #request.user.account  # Or however you determine the creator
-        )
-        route.save()
-        
-        # Handle ManyToManyField for CarType
+        # Iterate over car model IDs and fares
+        for i in range(len(car_model_ids)):
+            car_model_id = car_model_ids[i]
+            fare = fares[i] if i < len(fares) else 0  # Handle case where fares list might be shorter
 
-        # try :
-        #         matching_car_types = CarType.objects.filter(car_type__icontains=car_type_ids)
-        #         route.car_type.add(*matching_car_types)
-        # except:
-        #     messages.error(request,"This car Type is not present in your System")
-        #     return redirect('routes-page')
+            try:
+                car_type = CarType.objects.get(car_model=car_model_id)  # Use get to retrieve CarType
+            except CarType.DoesNotExist:
+                messages.error(request, f"Car Type with model '{car_model_id}' does not exist.")
+                return redirect('routes-page')
+            except Exception as e:
+                messages.error(request, f"Error retrieving Car Type: {e}")
+                return redirect('routes-page')
 
-        messages.success(request,"Routes Added Successfully!")
-        return redirect('routes-page')  # Redirect to a success page or wherever you want
+            try:
+                fare_value = float(fare)  # Ensure fare is converted to float
+            except ValueError:
+                messages.error(request, "Invalid fare")
+                return redirect('routes-page')
+
+            route = Route(
+                trip_type=trip_type,
+                car_type=car_type,
+                pickup_location=pickup_location,
+                drop_location=drop_location,
+                fare=fare_value,
+                duration=duration,
+                kms=kms,
+                created_by=Account.objects.get(id=1)  # Or however you determine the creator
+            )
+            route.save()
+
+        messages.success(request, "Routes Added Successfully!")
+        return redirect('routes-page')
     else:
         return render(request, 'Routes.html')
+
 
 # method to edit routes
 @login_required(login_url='auth/login/')
@@ -376,16 +401,16 @@ def edit_route(request):
         trip_type = request.POST.get('tripTypeEdit')
         pickup_location = request.POST.get('pickupEdit')
         drop_location = request.POST.get('dropOffEdit')
-        car_type = request.POST.get('carType')
+        car_type = request.POST.get('carModelRuteId')
         fare = request.POST.get('fareEdit')
         kms = request.POST.get('kmsEdit')
         duration = request.POST.get('duration')
-
+        print("line 408 :",trip_type, pickup_location, car_type, fare)
         # Validate and process the data
         if not all([trip_type, pickup_location, car_type, fare]):
             messages.error(request,"Missing required fields")
             return redirect('routes-page')
-        car_types = CarType.objects.filter(car_type__icontains=car_type)
+        car_types = CarType.objects.filter(car_model__icontains=car_type)
 
         if not car_types.exists():
             messages.error(request, f'The car type "{car_type}" is not present in your system. Please add it before proceeding.')
@@ -428,7 +453,7 @@ def edit_route(request):
 # method to delete routes
 @require_POST
 @login_required(login_url='auth/login/')
-def delete_route_type(request):
+def delete_route(request):
 
 
     if request.method == 'POST':

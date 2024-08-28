@@ -18,6 +18,17 @@ def hash_id(objects):
     for obj in objects:
         obj.hashed_id = hashlib.sha256(str(obj.id).encode()).hexdigest()
     return objects
+
+def decode_hashed_id(hashed_id, model_class):
+    # Iterate over all objects and find the one with the matching hashed ID
+    for obj in model_class.objects.all():
+        generated_hash = hashlib.sha256(str(obj.id).encode()).hexdigest()
+        print(f"Checking ID: {obj.id} -> Generated hash: {generated_hash}")
+        if generated_hash == hashed_id:
+            print(f"Match found for hashed ID: {hashed_id}")
+            return obj.id
+    print(f"No match found for hashed ID: {hashed_id}")
+    return None
 # method to render pending rides page
 @login_required(login_url='auth/login/')
 def Pending_rides_page(request):
@@ -55,16 +66,7 @@ def Pending_rides_page(request):
 
 # method to assign driver
 
-def decode_hashed_id(hashed_id, model_class):
-    # Iterate over all objects and find the one with the matching hashed ID
-    for obj in model_class.objects.all():
-        generated_hash = hashlib.sha256(str(obj.id).encode()).hexdigest()
-        print(f"Checking ID: {obj.id} -> Generated hash: {generated_hash}")
-        if generated_hash == hashed_id:
-            print(f"Match found for hashed ID: {hashed_id}")
-            return obj.id
-    print(f"No match found for hashed ID: {hashed_id}")
-    return None
+
 @login_required(login_url='auth/login/')
 def assign_driver(request):
     if request.method == 'POST':
@@ -113,6 +115,20 @@ def assign_driver(request):
         return redirect('rides-details-page')
     
     return redirect('rides-details-page')
+
+@login_required(login_url='auth/login/')
+def approved_ride(request):
+    if request.method == 'POST':
+        try:
+            hashed_ride_ids = request.POST.getlist('ride_ids[]') 
+            ride_ids = [decode_hashed_id(hashed_id, Ride) for hashed_id in hashed_ride_ids]
+
+            # Filter rides by the decoded IDs and update their status
+            affected_rows = Ride.objects.filter(id__in=ride_ids).update(ride_status='approved')
+            return JsonResponse({'success': True, 'deleted_count': 1})
+        except:
+            pass
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 # method to render ongoing page
 @login_required(login_url='auth/login/')
 def ongoing_rides_page(request):
@@ -314,3 +330,13 @@ def delete_Extra(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+def vendor_ride_details(request):
+    rides_details = Ride.objects.all()
+    drivers = Account.objects.all()
+    cars_data = Car.objects.all()
+
+    rides_details = hash_id(rides_details)
+    drivers_details = hash_id(drivers)
+    cars = hash_id(cars_data)
+    return render(request,'vendorTemplates/vendor_ride_details.html',{'ridesData':rides_details,"driverData":drivers_details,"cars_data":cars})

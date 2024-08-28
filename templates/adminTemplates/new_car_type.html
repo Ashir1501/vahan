@@ -36,13 +36,44 @@
 {% endif %}
 
 <div style="margin-left: 30px;">
-    <form method="post" action="{% url 'add-car-type' %}" style="width: 400px;">
-        {% csrf_token %}
-        <div class="input-group">
-            <input class="input" placeholder="Car Type" type="text" value="" name="car_types"/>
-            <button class="btn btn-light" type="submit">Create Car Type</button>
+    <button class="btn btn-light mb-5 ms-5" data-collapse="#carType_content">
+        Create New Type
+    </button>
+    <div class="card transition-all duration-300 hidden" id="carType_content">
+        <div class="card-header">
+            <h3 class="card-title">New Car Type</h3>
         </div>
+    <form method="post" action="{% url 'add-car-type' %}" style="width: 400px; margin: 20px;">
+        {% csrf_token %}
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                Car Model
+                <span class="text-danger">*</span>
+            </label>
+            <input class="input w-full" name="carModal" placeholder="Car Model" type="text" />
+        </div>
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                Car Type
+                <span class="text-danger">*</span>
+            </label>
+            <input class="input w-full" name="carType" placeholder="Car Type" type="text" />
+        </div>
+
+        <!-- Car Brand Input -->
+        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+            <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                Car Brand
+                <span class="text-danger">*</span>
+            </label>
+            <input class="input w-full" name="carBrand" placeholder="Car Brand" type="text" />
+        </div>
+
+        <button class="btn btn-sm btn-primary" type="submit" style="margin: 10px;">
+            Add Type
+        </button>
     </form>
+    </div>
 </div>
 
 
@@ -53,7 +84,7 @@
             <div class="card card-grid min-w-full">
                 <div class="card-header py-5 flex-wrap">
                     <h3 class="card-title">
-                        Vahan Routes
+                        Car Type
                         <div style="display: inline-block;" class="ml-5">
                             <button class="btn btn-danger btn-sm" type="button" onclick="DeleteCarType()">
                                 <i class="ki-filled ki-trash"></i>
@@ -66,7 +97,7 @@
                             <i
                                 class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3">
                             </i>
-                            <input class="input input-sm pl-8" onkeyup="filterTableType()" placeholder="Search Users" id="searchUser" type="text" />
+                            <input class="input input-sm pl-8" onkeyup="filterTableType()" placeholder="Search Type" id="searcType" type="text" />
     
                         </div>
                     </div>
@@ -80,6 +111,17 @@
                                     <th class="w-[60px]">
                                         <input class="checkbox checkbox-sm" data-datatable-check="true"
                                             type="checkbox" />
+                                    </th>
+                                    <th></th>
+                                    <th class="w-[80px]">
+                                        Model
+                                        <span class="sort-icon">
+                                        </span>
+                                    </th>
+                                    <th class="w-[80px]">
+                                        Brand
+                                        <span class="sort-icon">
+                                        </span>
                                     </th>
                                     <th class="w-[80px]">
                                         Type
@@ -96,18 +138,35 @@
                                             type="checkbox" id="checkBOX" value="{{ carType.id }}" />
                                     </td>
                                     <td>
+                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{carType.id}}"><i class="ki-filled ki-pencil"></i></a>
+                                        <!-- <button class="btn btn-sm btn-danger" onclick="DeleteCarType({{carType.id}})">Delete</button> -->
+                                    </td>
+                                    <td>
                                         <div class="flex items-center gap-2.5">
                                             
                                             <div class="flex flex-col gap-0.5">
-                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ carType.car_type }}</a>
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ carType.car_model }}</a>
                                                 <span class="text-2sm text-gray-600">{{ carType.car_count }} Cars Registerd</span>
                                             </div>
                                         </div>
                                     </td>
-                                    
                                     <td>
-                                        <a class="btn btn-sm btn-light" data-modal-toggle="#modal_{{carType.id}}"><i class="ki-filled ki-pencil"></i></a>
-                                        <!-- <button class="btn btn-sm btn-danger" onclick="DeleteCarType({{carType.id}})">Delete</button> -->
+                                        <div class="flex items-center gap-2.5">
+                                            
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ carType.car_brand }}</a>
+                                                <!-- <span class="text-2sm text-gray-600">{{ carType.car_count }} Cars Registerd</span> -->
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ carType.car_type }}</a>
+                                                <!-- <span class="text-2sm text-gray-600">{{ carType.car_count }} Cars Registerd</span> -->
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                                 
@@ -118,7 +177,7 @@
                                             <input type="hidden" name="car_type_id" value="{{ carType.id }}">
                                         <div class="modal-content max-w-[600px] top-[10%]">
                                             <div class="modal-header">
-                                                <h3 class="modal-title">Edit {{ carType.car_type }}</h3>
+                                                <h3 class="modal-title">Edit <strong>{{ carType.car_model }}</strong></h3>
                                                 <button type="button" class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
                                                     <i class="ki-outline ki-cross"></i>
                                                 </button>
@@ -127,12 +186,25 @@
                                             <div class="modal-body">
                                                 <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                                     <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Model
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_model_edit" placeholder="Car Model" type="text" value="{{ carType.car_model }}"/>
+                                                </div>
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
                                                         Car Type
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input class="input w-full" name="car_type_edit" placeholder="Car Model" type="text" value="{{ carType.car_type }}"/>
+                                                    <input class="input w-full" name="car_type_edit" placeholder="Car Type" type="text" value="{{ carType.car_type }}"/>
                                                 </div>
-                                        
+                                                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                    <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                        Car Brand
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input class="input w-full" name="car_brand_edit" placeholder="Car Brand" type="text" value="{{ carType.car_brand }}"/>
+                                                </div>
                                             </div>
                                             
                                             <div class="modal-footer justify-end" style="margin: 10px;">
@@ -174,7 +246,7 @@
 <script>
    function filterTableType() {
     // Get the value of the input field
-    var input = document.getElementById('searchUser');
+    var input = document.getElementById('searcType');
     var filter = input.value.toUpperCase();
     var table = document.getElementById('car_type_table');
     var tr = table.getElementsByTagName('tr');
