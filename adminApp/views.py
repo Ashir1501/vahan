@@ -18,8 +18,14 @@ def loginAdmin(request):
             messages.error(request,"Invalid login credentials")
     return render(request,'adminTemplates/login.html')
 
-@login_required(login_url='auth/login/')
+
 def user_logout(request):
+    user_type = request.user.user_type
     logout(request)
     messages.success(request,f'You have logged out')
-    return redirect('loginAdmin')
+    if user_type == 'Admin':
+        return redirect('loginAdmin')
+    elif user_type == 'Vendor':
+        return redirect('vendor_login')
+    else:
+        return redirect('driver_login')
