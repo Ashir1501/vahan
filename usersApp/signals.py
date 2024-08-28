@@ -2,7 +2,11 @@ from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission, Group
-
+from django.db.models.signals import post_delete
+import os
+from .models import AccountDetail, Account
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 User = get_user_model()
 
 @receiver(post_migrate)
@@ -45,3 +49,16 @@ def assign_group(sender, instance, created, **kwargs):
         if group_name:
             group, created = Group.objects.get_or_create(name=group_name)
             user.groups.add(group)
+
+@receiver(post_delete, sender=AccountDetail)
+def delete_vendor_photo(sender, instance, **kwargs):
+    if instance.user_id.user_type == 'Vendor':
+        if instance.photo:
+            photo_storage = FileSystemStorage(location=settings.USER_MEDIA_ROOT)
+            photo_relative_path = instance.photo.name  # Get the relative path to the photo
+            
+            print(f"Deleting file line 60: {photo_relative_path}")
+            try:
+                photo_storage.delete(photo_relative_path)
+            except Exception as e:
+                print(f"Error deleting photo: {e}")
