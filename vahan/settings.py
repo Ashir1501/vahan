@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'usersApp.middleware.CleanUpSessionMiddleware',
+    'vahan.middleware.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'vahan.urls'
@@ -143,3 +143,5 @@ CAR_MEDIA_ROOT = BASE_DIR / 'car_images'
 
 USER_MEDIA_URL = '/user_images/'
 USER_MEDIA_ROOT = BASE_DIR / 'user_images'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

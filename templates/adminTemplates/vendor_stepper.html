@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full" data-theme="true" data-theme-mode="light" lang="en">
+
+<head>
+    <base href="../../../../">
+    <title>
+        Vahan - Vendor Workflow
+    </title>
+    <meta charset="utf-8" />
+    <meta content="follow, index" name="robots" />
+    <link href="https://keenthemes.com/metronic" rel="canonical" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <meta content="Sign in page using Tailwind CSS" name="description" />
+    <meta content="@keenthemes" name="twitter:site" />
+    <meta content="@keenthemes" name="twitter:creator" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Vahan - Sign In" name="twitter:title" />
+    <meta content="Sign in page using Tailwind CSS" name="twitter:description" />
+    <meta content="{% static 'media/app/og-image.png' %}" name="twitter:image" />
+    <meta content="https://keenthemes.com/metronic" property="og:url" />
+    <meta content="en_US" property="og:locale" />
+    <meta content="website" property="og:type" />
+    <meta content="@keenthemes" property="og:site_name" />
+    <meta content="Vahan - Sign In" property="og:title" />
+    <meta content="Sign in page using Tailwind CSS" property="og:description" />
+    <!-- <meta content="{% static 'media/app/og-image.png' %}" property="og:image" /> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="{% static 'vendors/apexcharts/apexcharts.css' %}" rel="stylesheet" />
+    <link href="{% static 'vendors/keenicons/styles.bundle.css' %}" rel="stylesheet" /> -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .stepper {
+            display: flex;
+            /* Aligns the steps horizontally */
+            justify-content: space-between;
+            /* Spreads the steps out */
+            margin-bottom: 20px;
+            gap: 20px;
+            /* Adds space between the steps */
+        }
+
+        .step {
+            position: relative;
+            padding: 10px 20px;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .step span {
+            position: absolute;
+            top: 50%;
+            right: -25px;
+            transform: translateY(-50%);
+            color: green;
+            display: none;
+            /* Initially hidden */
+        }
+
+        .step.completed span {
+            display: block;
+        }
+
+        .step.active span {
+            display: none;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .stepper-navigation {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body class="flex h-full dark:bg-coal-500">
+    {% if messages %}
+    <script>
+        let successMessages = [];
+        let errorMessages = [];
+
+        "{% for message in messages %}"
+        "{% if message.tags == 'success' %}"
+        successMessages.push('{{ message }}');
+        "{% elif message.tags == 'error' %}"
+        errorMessages.push('{{ message }}');
+        "{% endif %}"
+        "{% endfor %}"
+
+        if (successMessages.length > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: successMessages.join('<br>'),  // Concatenate messages with a line break
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        if (errorMessages.length > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops..',
+                html: errorMessages.join('<br>'),  // Concatenate messages with a line break
+                showCloseButton: true
+            });
+        }
+    </script>
+    {% endif %}
+    <!--begin::Theme mode setup on page load-->
+    <script>
+        const defaultThemeMode = 'light'; // light|dark|system
+        let themeMode;
+
+        if (document.documentElement) {
+            if (localStorage.getItem('theme')) {
+                themeMode = localStorage.getItem('theme');
+            } else if (document.documentElement.hasAttribute('data-theme-mode')) {
+                themeMode = document.documentElement.getAttribute('data-theme-mode');
+            } else {
+                themeMode = defaultThemeMode;
+            }
+
+            if (themeMode === 'system') {
+                themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            document.documentElement.classList.add(themeMode);
+        }
+    </script>
+    <!--end::Theme mode setup on page load-->
+    <!--begin::Page layout-->
+    <div class="flex grow">
+        <div class="wrapper flex grow flex-col">
+            <main class="grow content p-5 mx-auto mt-5" id="content" style="width: 60%;" role="content">
+
+                <!-- Stepper -->
+                <div class="stepper">
+                    <div class="step active" id="step-1">
+                        Step 1
+                        <span style="display:none;">tick1</span>
+                    </div>
+                    <div class="step" id="step-2">
+                        Step 2
+                        <span style="display:none;">tick2</span>
+                    </div>
+                    <div class="step" id="step-3">
+                        Step 3
+                        <span style="display:none;">tick3</span>
+                    </div>
+                </div>
+
+                <!-- Form Steps -->
+                <form id="multi-step-form">
+                    <div class="step-content active">
+                        <h3>Step 1: Personal Info</h3>
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="step-content">
+                        <h3>Step 2: Address Info</h3>
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" required>
+                        <label for="city">City:</label>
+                        <input type="text" id="city" name="city" required>
+                    </div>
+
+                    <div class="step-content">
+                        <h3>Step 3: Confirmation</h3>
+                        <p>Review your information and click submit.</p>
+                    </div>
+
+                    <!-- Stepper Navigation -->
+                    <div class="stepper-navigation">
+                        <button type="button" id="prev-btn">Previous</button>
+                        <button type="button" id="next-btn">Next</button>
+                    </div>
+                </form>
+
+            </main>
+        </div>
+    </div>
+
+
+
+    <!--end::Page layout-->
+    <!--begin::Page scripts-->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentStep = 0;
+            const steps = document.querySelectorAll('.step');
+            const stepContents = document.querySelectorAll('.step-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+        
+            function showStep(stepIndex) {
+                steps.forEach((step, index) => {
+                    if (index === stepIndex) {
+                        step.classList.add('active');
+                        step.classList.remove('completed');
+                    } else {
+                        step.classList.remove('active');
+                        if (index < stepIndex) {
+                            step.classList.add('completed');
+                        }
+                    }
+                });
+        
+                stepContents.forEach((content, index) => {
+                    content.classList.toggle('active', index === stepIndex);
+                });
+        
+                prevBtn.disabled = stepIndex === 0;
+        
+                if (stepIndex === steps.length - 1) {
+                    nextBtn.innerHTML = 'Submit';
+                    nextBtn.type = 'submit';
+                } else {
+                    nextBtn.innerHTML = 'Next';
+                    nextBtn.type = 'button';
+                }
+            }
+        
+            function nextStep() {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    showStep(currentStep);
+                } else if (currentStep === steps.length - 1) {
+                    document.getElementById('multi-step-form').submit();
+                }
+            }
+        
+            function prevStep() {
+                if (currentStep > 0) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            }
+        
+            // Initialize the first step
+            showStep(currentStep);
+        
+            // Attach event listeners
+            prevBtn.addEventListener('click', prevStep);
+            nextBtn.addEventListener('click', nextStep);
+        });
+    </script>
+        
+
+    <script src="{% static 'js/core.bundle.js' %}">
+    </script>
+    <!--end::Page scripts-->
+</body>
+
+</html>

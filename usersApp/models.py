@@ -102,6 +102,7 @@ class AccountDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
     updated_by = models.ForeignKey(Account,null=True, on_delete=models.SET_NULL)
     works_for = models.ForeignKey(Account,null=True,blank=True, on_delete=models.SET_NULL, related_name='worksFor')
+    created_by = models.ForeignKey(Account,null=True, on_delete=models.SET_NULL, related_name='createdBy')
 
     def __str__(self):
         return f"{self.user_id.first_name}-{self.user_id.last_name}"

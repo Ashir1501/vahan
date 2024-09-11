@@ -5,9 +5,21 @@
     <!-- begin: container -->
     <div class="container-fixed flex justify-between items-stretch lg:gap-4" id="header_container">
         <div class="flex gap-1 lg:hidden items-center -ml-1">
-            <a class="shrink-0" href="html/demo1.html">
-                <img class="max-h-[25px] w-full" src="assets/media/app/mini-logo.svg" />
+            {% if request.user.user_type == 'Admin' %}
+            <a class="shrink-0" href="{% url 'adminHome' %}">
+                <img class="max-h-[25px] w-full" src="{% static 'media/brand-logos/vahan_logo.ico' %}" />
             </a>
+            {% endif %}
+            {% if request.user.user_type == 'Vendor' %}
+            <a class="shrink-0" href="{% url 'vendor-home' %}">
+                <img class="max-h-[25px] w-full" src="{% static 'media/brand-logos/vahan_logo.ico' %}" />
+            </a>
+            {% endif %}
+            {% if request.user.user_type == 'Driver' %}
+            <a class="shrink-0" href="{% url 'driver-home' %}">
+                <img class="max-h-[25px] w-full" src="{% static 'media/brand-logos/vahan_logo.ico' %}" />
+            </a>
+            {% endif %}
             <div class="flex items-center">
                 <button class="btn btn-icon btn-light btn-clear btn-sm" data-drawer-toggle="#sidebar">
                     <i class="ki-filled ki-menu">
@@ -1588,12 +1600,30 @@
                 data-reparent="true" data-reparent-mode="prepend|lg:prepend"
                 data-reparent-target="#content_container|lg:#header_container">
                 <div class="menu-item active">
+                    {% if request.user.user_type == 'Driver' %}
+                    <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold"
+                        href="{% url 'driver-home' %}">
+                        <span class="menu-title text-nowrap">
+                            Home
+                        </span>
+                    </a>
+                    {% endif %}
+                    {% if request.user.user_type == 'Vendor' %}
+                    <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold"
+                        href="{% url 'vendor-home' %}">
+                        <span class="menu-title text-nowrap">
+                            Home
+                        </span>
+                    </a>
+                    {% endif %}
+                    {% if request.user.user_type == 'Admin' %}
                     <a class="menu-link text-nowrap text-sm text-gray-700 font-medium menu-item-hover:text-primary menu-item-active:text-gray-900 menu-item-active:font-semibold"
                         href="{% url 'adminHome' %}">
                         <span class="menu-title text-nowrap">
                             Home
                         </span>
                     </a>
+                    {% endif %}
                 </div>
                 <i class="ki-filled ki-right text-gray-500 text-3xs">
                 </i>
@@ -1632,6 +1662,10 @@
                         Previous
                     </span></a> <i class="ki-filled ki-right text-gray-500 text-3xs"></i> <span
                     class="text-gray-700">Extra</span>
+                {% elif request.resolver_match.url_name == 'admin-my-profile' or request.resolver_match.url_name == 'vendor-my-profile' or request.resolver_match.url_name == 'driver-my-profile'%}
+                <span class="text-gray-700">
+                    My Profile
+                </span>
                 {%endif%}
             </div>
             {% endif %}
@@ -3745,8 +3779,31 @@
                                 </div>
                             </div>
                         </div> -->
-                        <!-- <div class="menu-separator">
-                        </div> -->
+                        <div class="menu-separator">
+                        </div>
+                        <div class="flex flex-col" data-menu-dismiss="true">
+                            <div class="menu-item">
+                                {% if request.user.user_type == 'Admin' %}
+                                <a class="menu-link" href="{% url 'admin-my-profile' %}">
+                                {% endif %}
+                                {% if request.user.user_type == 'Vendor' %}
+                                <a class="menu-link" href="{% url 'vendor-my-profile' %}">
+                                {% endif %}
+                                {% if request.user.user_type == 'Driver' %}
+                                <a class="menu-link" href="{% url 'driver-my-profile' %}">
+                                {% endif %}
+                                    <span class="menu-icon">
+                                        <i class="ki-filled ki-profile-circle">
+                                        </i>
+                                    </span>
+                                    <span class="menu-title">
+                                        My Profile
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="menu-separator">
+                        </div>
                         <div class="flex flex-col">
                             <div class="menu-item mb-0.5">
                                 <div class="menu-link">

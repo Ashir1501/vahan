@@ -47,24 +47,42 @@
 <div class="container-fixed pb-7">
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <div class="flex flex-col justify-center gap-2">
+            {% if request.user.user_type == 'Vendor' %}
+            <h1 class="text-xl font-semibold leading-none text-gray-900">
+                Drivers
+            </h1>
+            {% else %}
             <h1 class="text-xl font-semibold leading-none text-gray-900">
                 Users
             </h1>
+            {% endif %}
             <div class="flex items-center gap-2 text-sm font-medium text-gray-600">
                 View, Add, Edit and Delete Users
             </div>
         </div>
         <div class="flex items-center gap-2.5">
+            {% if request.user.user_type == 'Vendor' %}
+            <button class="btn btn-sm btn-light" data-collapse="#collapsible_content">
+                Add Driver
+            </button>
+            {% else %}
             <button class="btn btn-sm btn-light" data-collapse="#collapsible_content">
                 Add Users
             </button>
+            {% endif %}
         </div>
     </div>
     <div class="card transition-all hidden container-fixed" id="collapsible_content">
         <div class="card-header" id="basic_settings">
+            {% if request.user.user_type == 'Vendor' %}
+            <h3 class="card-title">
+                Create Driver
+            </h3>
+            {% else %}
             <h3 class="card-title">
                 Create User
             </h3>
+            {% endif %}
         </div>
         <form method="post" id="UserCreateForm">
             <div class="card-body grid gap-5">
@@ -109,6 +127,7 @@
                             pattern="[0-9]{10}" required maxlength="10" />
                     </div>
                 </div>
+                {% if not request.user.user_type == 'Vendor' %}
                 <div class="w-full">
                     <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                         <label class="form-label flex items-center gap-1 max-w-56">
@@ -147,6 +166,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 <div class="flex justify-center pt-2.5">
                     <span class="badge badge-bg badge-outline badge-warning">
                         More Details Optional
@@ -176,6 +196,7 @@
                         </div>
                     </div>
                 </div>
+                {% if not request.user.user_type == 'Vendor' %}
                 <div class="w-full">
                     <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                         <label class="form-label flex items-center gap-1 max-w-56">
@@ -199,6 +220,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 <div class="w-full">
                     <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                         <label for="join_date" class="form-label flex items-center gap-1 max-w-56">
@@ -235,7 +257,11 @@
         <div class="card card-grid min-w-full">
             <div class="card-header py-5 flex-wrap">
                 <h3 class="card-title">
-                    Vahan Users
+                    {% if request.user.user_type == 'Vendor' %}
+                    My Drivers
+                    {% else %}
+                    Vahan users
+                    {% endif %}
                     <div style="display: inline-block;" class="ml-5">
                         <button class="btn btn-danger btn-sm" type="button" onclick="userdelete()">
                             <i class="ki-filled ki-trash"></i>
@@ -258,6 +284,7 @@
                     <div class="scrollable-x-auto">
                         <table class="table table-auto table-border" data-datatable-table="true" id="user_table">
                             <thead>
+
                                 <tr>
                                     <th class="w-[60px]">
                                         <input class="checkbox checkbox-sm" data-datatable-check="true"
@@ -340,7 +367,25 @@
                                     <th class="min-w-[125px]">
                                         <span class="sort">
                                             <span class="sort-label">
+                                                Created By
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
                                                 Created At
+                                            </span>
+                                            <span class="sort-icon">
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th class="min-w-[125px]">
+                                        <span class="sort">
+                                            <span class="sort-label">
+                                                Updated By
                                             </span>
                                             <span class="sort-icon">
                                             </span>
@@ -383,445 +428,536 @@
                                         </span>
                                     </th>
                                 </tr>
+
                             </thead>
                             <tbody>
                                 {% if users %}
-                                    {% for user in users %}
-                                    {% with user.accountDetail.first as detail %}
-                                        <tr>
-                                            <td>
-                                                <input class="checkbox checkbox-sm" data-datatable-row-check="true"
-                                                    type="checkbox" id="checkBOX" value="{{ user.pk }}" />
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-light"
-                                                    data-modal-toggle="#userUpdateModal-{{ user.pk }}">
-                                                    Edit
-                                                </button>
-                                            </td>
-                                            {% if user.user_type == 'Admin' %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-warning">
-                                                    {{ user.user_type }}
-                                                </span>
-                                            </td>
+                                {% for user in users %}
+                                {% with user.accountDetail.first as detail %}
+                                <tr>
+                                    <td>
+                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                            type="checkbox" id="checkBOX" value="{{ user.pk }}" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-light"
+                                            data-modal-toggle="#userUpdateModal-{{ user.pk }}">
+                                            Edit
+                                        </button>
+                                    </td>
+                                    {% if user.user_type == 'Admin' %}
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-warning">
+                                            {{ user.user_type }}
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    {% if user.user_type == 'Vendor' %}
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-primary">
+                                            {{ user.user_type }}
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    {% if user.user_type == 'Driver' %}
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-danger">
+                                            {{ user.user_type }}
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    {% if user.user_type == 'Customer' %}
+                                    <td>
+                                        <span class="badge badge-sm badge-outline badge-info">
+                                            {{ user.user_type }}
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            {% if detail.photo %}
+                                            <img alt="" class="size-11 rounded-full shrink-0"
+                                                src="{{ detail.photo.url }}">
+                                            </img>
+                                            {% else %}
+                                            <img alt="" class="h-9 rounded-full"
+                                                src="{% static 'media/avatars/blank.png' %}" />
                                             {% endif %}
-                                            {% if user.user_type == 'Vendor' %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-primary">
-                                                    {{ user.user_type }}
-                                                </span>
-                                            </td>
-                                            {% endif %}
-                                            {% if user.user_type == 'Driver' %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-danger">
-                                                    {{ user.user_type }}
-                                                </span>
-                                            </td>
-                                            {% endif %}
-                                            {% if user.user_type == 'Customer' %}
-                                            <td>
-                                                <span class="badge badge-sm badge-outline badge-info">
-                                                    {{ user.user_type }}
-                                                </span>
-                                            </td>
-                                            {% endif %}
-                                            <td>
-                                                <div class="flex items-center gap-2.5">
-                                                    {% if detail.photo %}
-                                                    <img alt="" class="size-11 rounded-full shrink-0"
-                                                        src="{{ detail.photo.url }}">
-                                                    </img>
-                                                    {% else %}
-                                                    <img alt="" class="h-9 rounded-full"
-                                                        src="{% static 'media/avatars/blank.png' %}" />
-                                                    {% endif %}
-                                                    <div class="flex flex-col gap-0.5">
-                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary"
-                                                            href="#">
-                                                            {{ user.first_name }} {{ user.last_name }}
-                                                        </a>
-                                                        <span class="text-2sm text-gray-600">
-                                                            <hr style="height: 1rem;">
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="flex items-center gap-1.5">
-                                                    <img alt="flag" class="h-4 rounded-full"
-                                                        src="{% static 'media/brand-logos/gmail-icon.svg' %}" />
-                                                    <span class="leading-none text-gray-700">
-                                                        {{ user.email }}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ user.phone_number }}
-                                               
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ detail.gender }}
-                                                
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ detail.join_date }}
-                                                
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ detail.exit_date }}
-                                                
-                                            </td>
-                                            {% if user.first_name and user.last_name %}
-                                            <td>
-                                                
+                                            <div class="flex flex-col gap-0.5">
+                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary"
+                                                    href="#">
                                                     {{ user.first_name }} {{ user.last_name }}
-                                                
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                
-                                                    {{ user.email }} 
-                                                
-                                            </td>
-                                            {% endif %}
-                                            <td>
-                                                
-                                                    {{ user.created_at }}
-                                                
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ user.updated_at }}
-                                                
-                                            </td>
-                                            <td>
-                                                
-                                                    {{ user.last_login }}
-                                                
-                                            </td>
-                                            {% if detail.aadhar_card %}
-                                            <td>
-                                                
-                                                    <a class="btn btn-link" href="{% url 'download_aadhar' detail.pk %}">
-                                                         Download
-                                                    </a>
-                                                
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                
-                                                    N/A
-                                                
-                                            </td>
-                                            {% endif %}
-                                            {% if detail.driving_licence %}
-                                            <td>
-                                                
-                                                    <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
-                                                        <!-- <i class="ki-filled ki-file-down"></i>  Download -->
-                                                        Download
-                                                    </a>
-                                                
-                                            </td>
-                                            {% else %}
-                                            <td>
-                                                
-                                                    N/A
-                                                
-                                            </td>
-                                            {% endif %}
-                                        </tr>
-                                        <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
-                                            data-modal-backdrop-static="true">
-                                            <div class="modal-content max-w-[600px] top-[10%]">
-                                                <div class="modal-header">
-                                                    <h3 class="modal-title">
-                                                        Update User Details
-                                                    </h3>
-                                                    <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                                                        <i class="ki-outline ki-cross">
-                                                        </i>
-                                                    </button>
-                                                </div>
-                                                <form method="POST" id="userUpdateForm"
-                                                    action="{% url 'user-update' pk=user.pk %}" enctype="multipart/form-data">
-                                                    {% csrf_token %}
-                                                    <div class="modal-body">
-                                                        <div class="card-body grid gap-5">
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for='fnameU'
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        First Name
-                                                                    </label>
-                                                                    <input class="input" id="fnameU" type="text"
-                                                                        value="{{ user.first_name }}" name="new_fname"
-                                                                        placeholder="Enter your first name" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for='lnameU'
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Last Name
-                                                                    </label>
-                                                                    <input class="input" id="lnameU" type="text"
-                                                                        value="{{ user.last_name }}" name="new_lname"
-                                                                        placeholder="Enter your last name" />
-                                                                </div>
-                                                            </div>
-                                                            <input type="hidden" id="userId" value="{{ user.pk }}">
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="emailU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Email
-                                                                        <span class="text-danger">
-                                                                            *
-                                                                        </span>
-                                                                    </label>
-                                                                    <input class="input" id="emailU" value="{{ user.email }}"
-                                                                        name="new_email" placeholder="Enter email address"
-                                                                        type="email" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="phoneU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Phone number
-                                                                        <span class="text-danger">
-                                                                            *
-                                                                        </span>
-                                                                    </label>
-                                                                    <input class="input" placeholder="Enter Phone Number"
-                                                                        value="{{ user.phone_number }}" type="tel" id="phoneU"
-                                                                        name="new_phone" pattern="[0-9]{10}" required
-                                                                        maxlength="10" />
-                                                                </div>
-                                                            </div>
-                                                            {% if user.user_type != "Customer" %}
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label class="form-label flex items-center gap-1 max-w-56">
-                                                                        Gender
-                                                                    </label>
-                                                                    <div class="flex flex-col w-full gap-1">
-                                                                        <select class="select" name="new_gender" id="genderU">
-                                                                            
-                                                                                {% if detail.gender %}
-                                                                                    <option selected value="{{ detail.gender }}">{{ detail.gender }}</option>
-                                                                                    {% for value, label in gender_choices %}
-                                                                                        {% if detail.gender != value %}
-                                                                                            <option value="{{ value }}">{{ label }}</option>
-                                                                                        {% endif %}
-                                                                                    {% endfor %}
-                                                                                    {% else %}
-                                                                                    <option disabled selected>Select an option</option>
-                                                                                    {% for value, label in gender_choices %}
-                                                                                            <option value="{{ value }}">{{ label }}</option>
-                                                                                    {% endfor %}
-                                                                                {% endif %}
-
-                                                                                                                                       
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label class="form-label flex items-center gap-1 max-w-56">
-                                                                        Works For
-                                                                    </label>
-                                                                    <div class="flex flex-col w-full gap-1">
-                                                                        <select class="select" name="new_works_for" id="new_works_forU">
-                                                                            {% with user.accountDetail.first as detail %}
-                                                                                {% if detail.works_for %}
-                                                                                    <option value="{{ detail.works_for.id }}" selected>{{ detail.works_for.email }}</option>
-                                                                                {% else %}
-                                                                                    <option value="" selected>Select a option</option>
-                                                                                {% endif %}
-                                                                            {% endwith %}
-                                                                            {% if works_for %}
-                                                                                {% for users in works_for %}
-                                                                                    {% if users.pk != detail.works_for.id and users.pk != user.pk %}
-                                                                                    <option value="{{ users.pk }}">
-                                                                                        {{ users }}
-                                                                                    </option>
-                                                                                    {% endif %}
-                                                                                {% endfor %}
-                                                                            
-                                                                                {% endif %}
-                                                                                <option value="">None</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="photoU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Photo
-                                                                    </label>
-                                                                    <input class="file-input" id="photoU" name="new_photo"
-                                                                        accept="image/*" type="file" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="aadhar_cardU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">Aadhar
-                                                                        Card</label>
-                                                                    <input class="form-control-file form-control-sm"
-                                                                        id="aadhar_cardU" type="file" name="new_aadhar_card"
-                                                                        accept="image/*">
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="driving_licenceU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">Driving
-                                                                        Licence</label>
-                                                                    <input class="form-control-file form-control-sm"
-                                                                        id="driving_licenceU" type="file"
-                                                                        name="new_driving_licence" accept="image/*">
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="join_dateU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Join Date
-                                                                    </label>
-                                                                    <input id="join_dateU" name="new_join_date" type="date" value=""/>
-                                                                </div>
-                                                            </div>
-                                                            <div class="w-full">
-                                                                <div
-                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                                    <label for="exit_dateU"
-                                                                        class="form-label flex items-center gap-1 max-w-56">
-                                                                        Exit Date
-                                                                    </label>
-                                                                    <input id="exit_dateU" name="new_exit_date" type="date" />
-                                                                </div>
-                                                            </div>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                    <hr>
-                                                    <div class="modal-footer">
-                                                        <div class="flex justify-end pt-2.5">
-                                                            <button class="btn btn-primary mr-2 mb-2" type="submit">
-                                                                Submit
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                                                </a>
+                                                <span class="text-2sm text-gray-600">
+                                                    <hr style="height: 1rem;">
+                                                </span>
                                             </div>
                                         </div>
-                                    {% endwith %}
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td>
-                                            <input class="checkbox checkbox-sm" data-datatable-row-check="true"
-                                                type="checkbox" id="nullCheckBox" value="null" />
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-light">
-                                                Edit
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1.5">
+                                            <img alt="flag" class="h-4 rounded-full"
+                                                src="{% static 'media/brand-logos/gmail-icon.svg' %}" />
+                                            <span class="leading-none text-gray-700">
+                                                {{ user.email }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+
+                                        {{ user.phone_number }}
+
+                                    </td>
+                                    <td>
+
+                                        {{ detail.gender }}
+
+                                    </td>
+                                    <td>
+
+                                        {{ detail.join_date }}
+
+                                    </td>
+                                    <td>
+
+                                        {{ detail.exit_date }}
+
+                                    </td>
+                                    {% if detail.works_for.first_name != '' and detail.works_for.last_name != '' %}
+                                    <td>
+
+                                        {{ detail.works_for.first_name }} {{ detail.works_for.last_name }}
+
+                                    </td>
+                                    {% else %}
+                                    <td>
+
+                                        {{ detail.works_for.email }}
+
+                                    </td>
+                                    {% endif %}
+                                    {% if detail.created_by.first_name != '' and detail.created_by.last_name != '' %}
+                                    <td>
+
+                                        {{ detail.created_by.first_name }} {{ detail.created_by.last_name }}
+
+                                    </td>
+                                    {% else %}
+                                    <td>
+
+                                        {{ detail.created_by.email }}
+
+                                    </td>
+                                    {% endif %}
+                                    <td>
+
+                                        {{ user.created_at }}
+
+                                    </td>
+                                    {% if detail.updated_by.first_name != '' and detail.updated_by.last_name != '' %}
+                                    <td>
+
+                                        {{ detail.updated_by.first_name }} {{ detail.updated_by.last_name }}
+
+                                    </td>
+                                    {% else %}
+                                    <td>
+
+                                        {{ detail.updated_by.email }}
+
+                                    </td>
+                                    {% endif %}
+                                    <td>
+
+                                        {{ user.updated_at }}
+
+                                    </td>
+                                    <td>
+
+                                        {{ user.last_login }}
+
+                                    </td>
+                                    {% if detail.aadhar_card %}
+                                    <td>
+
+                                        <a class="btn btn-link" href="{% url 'download_aadhar' detail.pk %}">
+                                            Download
+                                        </a>
+                                        <span class="btn text-primary" data-modal-toggle="#modal_aadhar-{{user.pk}}">
+                                            View
+                                        </span>
+
+                                    </td>
+                                    {% else %}
+                                    <td>
+
+                                        N/A
+
+                                    </td>
+                                    {% endif %}
+                                    {% if detail.driving_licence %}
+                                    <td>
+
+                                        <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
+                                            Download
+                                        </a>
+                                        <span class="btn text-primary" data-modal-toggle="#modal_driving_licence-{{user.pk}}">
+                                            View
+                                        </span>
+
+                                    </td>
+                                    {% else %}
+                                    <td>
+
+                                        N/A
+
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
+                                    data-modal-backdrop-static="true">
+                                    <div class="modal-content max-w-[600px] top-[10%]">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">
+                                                Update User Details
+                                            </h3>
+                                            <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                <i class="ki-outline ki-cross">
+                                                </i>
                                             </button>
-                                        </td>
-                                        <td>
-                                            <div class="flex items-center gap-2.5">
-                                                <div class="flex flex-col gap-0.5">
-                                                    <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary"
-                                                        href="#">
-                                                        N/A
-                                                    </a>
+                                        </div>
+                                        <form method="POST" id="userUpdateForm"
+                                            action="{% url 'user-update' pk=user.pk %}" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="card-body grid gap-5">
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for='fnameU'
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                First Name
+                                                            </label>
+                                                            <input class="input" id="fnameU" type="text"
+                                                                value="{{ user.first_name }}" name="new_fname"
+                                                                placeholder="Enter your first name" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for='lnameU'
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Last Name
+                                                            </label>
+                                                            <input class="input" id="lnameU" type="text"
+                                                                value="{{ user.last_name }}" name="new_lname"
+                                                                placeholder="Enter your last name" />
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" id="userId" value="{{ user.pk }}">
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="emailU"
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Email
+                                                                <span class="text-danger">
+                                                                    *
+                                                                </span>
+                                                            </label>
+                                                            <input class="input" id="emailU" value="{{ user.email }}"
+                                                                name="new_email" placeholder="Enter email address"
+                                                                type="email" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="phoneU"
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Phone number
+                                                                <span class="text-danger">
+                                                                    *
+                                                                </span>
+                                                            </label>
+                                                            <input class="input" placeholder="Enter Phone Number"
+                                                                value="{{ user.phone_number }}" type="tel" id="phoneU"
+                                                                name="new_phone" pattern="[0-9]{10}" required
+                                                                maxlength="10" />
+                                                        </div>
+                                                    </div>
+                                                    {% if user.user_type != "Customer" %}
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label class="form-label flex items-center gap-1 max-w-56">
+                                                                Gender
+                                                            </label>
+                                                            <div class="flex flex-col w-full gap-1">
+                                                                <select class="select" name="new_gender" id="genderU">
+
+                                                                    {% if detail.gender %}
+                                                                        <option selected value="{{ detail.gender }}">{{ detail.gender }}</option>
+                                                                        {% for value, label in gender_choices %}
+                                                                            {% if detail.gender != value %}
+                                                                            <option value="{{ value }}">{{ label }}</option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                        {% else %}
+                                                                            <option disabled selected>Select an option</option>
+                                                                            {% for value, label in gender_choices %}
+                                                                            <option value="{{ value }}">{{ label }}</option>
+                                                                            {% endfor %}
+                                                                    {% endif %}
+
+
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% if not request.user.user_type == 'Vendor' %}
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label class="form-label flex items-center gap-1 max-w-56">
+                                                                Works For
+                                                            </label>
+                                                            <div class="flex flex-col w-full gap-1">
+                                                                <select class="select" name="new_works_for"
+                                                                    id="new_works_forU">
+                                                                    {% with user.accountDetail.first as detail %}
+                                                                        {% if detail.works_for %}
+                                                                        <option value="{{ detail.works_for.id }}" selected>
+                                                                            {{ detail.works_for.email }}</option>
+                                                                        {% else %}
+                                                                        <option value="" selected>Select a option</option>
+                                                                        {% endif %}
+                                                                    {% endwith %}
+                                                                    {% if works_for %}
+                                                                        {% for users in works_for %}
+                                                                            {% if users.pk != detail.works_for.id and users.pk != user.pk %}
+                                                                                <option value="{{ users.pk }}">
+                                                                                    {{ users }}
+                                                                                </option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+
+                                                                    {% endif %}
+                                                                    <option value="">None</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="photoU"
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Photo
+                                                            </label>
+                                                            <input class="file-input" id="photoU" name="new_photo"
+                                                                accept="image/*" type="file" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="aadhar_cardU"
+                                                                class="form-label flex items-center gap-1 max-w-56">Aadhar
+                                                                Card</label>
+                                                            <input class="form-control-file form-control-sm"
+                                                                id="aadhar_cardU" type="file" name="new_aadhar_card"
+                                                                accept="image/*">
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="driving_licenceU"
+                                                                class="form-label flex items-center gap-1 max-w-56">Driving
+                                                                Licence</label>
+                                                            <input class="form-control-file form-control-sm"
+                                                                id="driving_licenceU" type="file"
+                                                                name="new_driving_licence" accept="image/*">
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="join_dateU"
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Join Date
+                                                            </label>
+                                                            <input id="join_dateU" name="new_join_date" type="date"
+                                                                value="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-full">
+                                                        <div
+                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                            <label for="exit_dateU"
+                                                                class="form-label flex items-center gap-1 max-w-56">
+                                                                Exit Date
+                                                            </label>
+                                                            <input id="exit_dateU" name="new_exit_date" type="date" />
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="leading-none text-gray-700">
-                                                    N/A
-                                                </span>
+                                            <hr>
+                                            <div class="modal-footer">
+                                                <div class="flex justify-end pt-2.5">
+                                                    <button class="btn btn-primary mr-2 mb-2" type="submit">
+                                                        Submit
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-success">
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal" data-modal="true" id="modal_aadhar-{{user.pk}}">
+                                    <div class="modal-content max-w-[600px] top-[20%]">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">
+                                                Aadhar Card
+                                            </h3>
+                                            <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                <i class="ki-outline ki-cross">
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% with user.accountDetail.first as detail %}
+                                                {% if detail.aadhar_card %}
+                                                <img style="display: block;margin: auto; width: 50%;height: 50%;" alt="Aadhar Card" src="{{ detail.aadhar_card.url }}">
+                                                </img>
+                                                {% else %}
+                                                    Aadhar Card Not Found
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal" data-modal="true" id="modal_driving_licence-{{user.pk}}">
+                                    <div class="modal-content max-w-[600px] top-[20%]">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">
+                                                Driving Licence
+                                            </h3>
+                                            <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                <i class="ki-outline ki-cross">
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% with user.accountDetail.first as detail %}
+                                                {% if detail.driving_licence %}
+                                                <img style="display: block;margin: auto; width: 50%;height: 50%;" alt="Aadhar Card" src="{{ detail.driving_licence.url }}">
+                                                </img>
+                                                {% else %}
+                                                Driving licence Not Found
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td>
+                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                            type="checkbox" id="nullCheckBox" value="null" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-light">
+                                            Edit
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="flex flex-col gap-0.5">
+                                                N/A
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="leading-none text-gray-700">
                                                 N/A
                                             </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-info">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-info">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-info">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-sm badge-outline badge-warning">
-                                                N/A
-                                            </span>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="leading-none text-gray-700">
+                                            N/A
+                                        </span>
+                                    </td>
+                                </tr>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -879,7 +1015,7 @@
         const checkboxes = document.querySelectorAll('#user_table input[id="checkBOX"]');
         // Filter the checked checkboxes
         const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-        if(checkedCheckboxes[0]){
+        if (checkedCheckboxes[0]) {
 
             Swal.fire({
                 title: "Are you sure?",
@@ -891,12 +1027,12 @@
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-            
+
                     // Extract values of checked checkboxes
                     const checkedValues = checkedCheckboxes.map(checkbox => checkbox.value);
-            
+
                     if (checkedValues != '') {
-            
+
                         $.ajax({
                             type: 'GET',
                             url: '/user/delete/',
@@ -917,7 +1053,7 @@
                                         text: "User has been deleted.",
                                         icon: "success"
                                     });
-            
+
                                     setTimeout(function () {
                                         location.reload();
                                     }, 2000);
@@ -925,40 +1061,46 @@
                                 }
                             },
                             error: function (error) {
-                                console.log(error)
+                                Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops..',
+                                        text: 'Something Went Wrong.',
+                                        showCloseButton: true
+                                    });
                             }
                         });
                     }
-    
+
                 }
             });
-        }    
+        }
 
     }
 
-    
-    document.addEventListener('DOMContentLoaded', function () {
 
+    document.addEventListener('DOMContentLoaded', function () {
 
         //start
         // this toggles the password block only if the radio button is on admin type
         const adminRadio = document.getElementById('adminRadio');
         const userType1 = document.getElementById('userType1');
 
-        adminRadio.addEventListener('change', function () {
-            if (adminRadio.checked) {
-                userType1.style.display = 'block';
-            }
-        });
-
-        const radios = document.querySelectorAll('input[name="user_type"]');
-        radios.forEach(radio => {
-            radio.addEventListener('change', function () {
-                if (!adminRadio.checked) {
-                    userType1.style.display = 'none';
+        if (adminRadio) {
+            adminRadio.addEventListener('change', function () {
+                if (adminRadio.checked) {
+                    userType1.style.display = 'block';
                 }
             });
-        });
+
+            const radios = document.querySelectorAll('input[name="user_type"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (!adminRadio.checked) {
+                        userType1.style.display = 'none';
+                    }
+                });
+            });
+        }
         // end
 
         //start
@@ -1000,10 +1142,18 @@
                     event.preventDefault(); // Prevent default submission
 
                     let formData = new FormData(this);
+                    let user_Type = "{{ request.user.user_type }}";
+                    let urlstr = "";
+                    if (user_Type == "Admin") {
+                        urlstr = '/admin/user-list/';
+                    }
 
+                    if (user_Type == "Vendor") {
+                        urlstr = '/vendor/user-list/';
+                    }
                     $.ajax({
                         type: 'POST',
-                        url: '/admin/user-list/',
+                        url: urlstr,
                         data: formData,
                         processData: false,
                         contentType: false,
@@ -1038,7 +1188,12 @@
                             }
                         },
                         error: function (error) {
-                            console.log(error)
+                            Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops..',
+                                        text: 'Something Went Wrong.',
+                                        showCloseButton: true
+                                });
                         }
                     });
                 }
