@@ -57,8 +57,14 @@
                                 <label for='fnameU' class="form-label flex items-center gap-1 max-w-56">
                                     First Name
                                 </label>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="input" id="fnameU" type="text" value="{{ request.user.first_name }}"
                                     name="new_fname" placeholder="Enter your first name" />
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ request.user.first_name }}
+                                </span>                                
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
@@ -66,8 +72,14 @@
                                 <label for='lnameU' class="form-label flex items-center gap-1 max-w-56">
                                     Last Name
                                 </label>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="input" id="lnameU" type="text" value="{{ request.user.last_name }}"
                                     name="new_lname" placeholder="Enter your last name" />
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ request.user.last_name }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
                         
@@ -75,25 +87,41 @@
                             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                                 <label for="emailU" class="form-label flex items-center gap-1 max-w-56">
                                     Email
+                                    {% if request.user.user_type != 'Driver' %}
                                     <span class="text-danger">
                                         *
                                     </span>
+                                    {% endif %}
                                 </label>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="input" id="emailU" value="{{ request.user.email }}" name="new_email"
                                     placeholder="Enter email address" type="email" />
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ request.user.email }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
                             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                                 <label for="phoneU" class="form-label flex items-center gap-1 max-w-56">
                                     Phone number
+                                    {% if request.user.user_type != 'Driver' %}
                                     <span class="text-danger">
                                         *
                                     </span>
+                                    {% endif %}
                                 </label>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="input" placeholder="Enter Phone Number" value="{{ request.user.phone_number }}"
                                     type="tel" id="phoneU" name="new_phone" pattern="[0-9]{10}" required
                                     maxlength="10" />
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ request.user.phone_number }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
                         
@@ -102,6 +130,7 @@
                                 <label class="form-label flex items-center gap-1 max-w-56">
                                     Gender
                                 </label>
+                                {% if request.user.user_type != 'Driver' %}
                                 <div class="flex flex-col w-full gap-1">
                                     <select class="select" name="new_gender" id="genderU">
                                         
@@ -121,14 +150,19 @@
                                         
                                     </select>
                                 </div>
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ detail.gender }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
-                        {% if not request.user.user_type == 'Driver' %}
                         <div class="w-full">
                             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                                 <label class="form-label flex items-center gap-1 max-w-56">
                                     Works For
                                 </label>
+                                {% if not request.user.user_type == 'Driver' %}
                                 <div class="flex flex-col w-full gap-1">
                                     <select class="select" name="new_works_for" id="new_works_forU">
 
@@ -153,9 +187,13 @@
                                         <option value="">None</option>
                                     </select>
                                 </div>
+                                {% else %}
+                                <span class="badge badge-lg badge-outline badge-primary">
+                                    {{ detail.works_for }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endif %}
 
                         <div class="w-full">
                             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
@@ -165,7 +203,9 @@
                                 <a class="btn btn-light btn-sm" data-modal-toggle="#modal_2">
                                     View
                                 </a>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="file-input" id="photoU" name="new_photo" accept="image/*" type="file" />
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
@@ -175,8 +215,10 @@
                                 <a class="btn btn-light btn-sm" data-modal-toggle="#modal_1">
                                     View
                                 </a>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="form-control-file form-control-sm" id="aadhar_cardU" type="file"
                                     name="new_aadhar_card" accept="image/*">
+                                {% endif %}
                             </div>
                         </div>
 
@@ -188,8 +230,10 @@
                                 <a class="btn btn-light btn-sm" data-modal-toggle="#modal_3">
                                     View
                                 </a>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input class="form-control-file form-control-sm" id="driving_licenceU" type="file"
                                     name="new_driving_licence" accept="image/*">
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
@@ -200,7 +244,9 @@
                                 <span class="badge badge-lg badge-outline badge-primary">
                                     {{ detail.join_date }}
                                 </span>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input id="join_dateU" name="new_join_date" type="date" value="" />
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
@@ -211,7 +257,9 @@
                                 <span class="badge badge-lg badge-outline badge-primary">
                                     {{ detail.exit_date }}
                                 </span>
+                                {% if request.user.user_type != 'Driver' %}
                                 <input id="exit_dateU" name="new_exit_date" type="date" />
+                                {% endif %}
                             </div>
                         </div>
                         <div class="w-full">
@@ -301,14 +349,16 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer justify-between">
-                <a class="btn btn-danger mr-2 mb-2" onclick="userdelete()">
-                    Delete
-                </a>
-                <button class="btn btn-primary mr-2 mb-2" type="submit">
-                    Update
-                </button>
-            </div>
+                {% if request.user.user_type != 'Driver' %}
+                <div class="card-footer justify-between">
+                    <a class="btn btn-danger mr-2 mb-2" onclick="userdelete()">
+                        Delete
+                    </a>
+                    <button class="btn btn-primary mr-2 mb-2" type="submit">
+                        Update
+                    </button>
+                </div>
+                {% endif %}
             {% endwith %}
         </form>
     </div>

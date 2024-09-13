@@ -208,6 +208,8 @@ class userListCreateView(View):
 
 class updateUser(View):
     def post(self,request,*args,**kwargs):
+        if request.user.user_type == 'Driver':
+            raise Http404("Bad Request")
         pk = kwargs.get('pk')
         account = get_object_or_404(Account, pk = pk)
         data = request.POST
@@ -649,6 +651,7 @@ def otp(request):
                         messages.success(request, f'Welcome {user.email} You have Registered Successfully.')
                         return redirect('vendor-home')
                         # return render(request,'adminTemplates/vendor_stepper.html')
+                        # return render(request,'adminTemplates/vendor_workflow.html')
                     else:
                         messages.error(request, "Invalid OTP")
                         return redirect('otp')
