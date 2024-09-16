@@ -29,14 +29,14 @@ def adminHome(request):
 @login_required(login_url='/auth/vendor/login/')
 def vendorHome(request):
     if request.user.user_type == "Vendor":
-        return render(request,'adminTemplates/index.html')
+        return render(request,'adminTemplates/ride_details.html')
     else:
         raise Http404("Page does not exist")
 
 @login_required(login_url="/auth/driver/login")
 def driverHome(request):
     if request.user.user_type == "Driver":
-        return render(request,'adminTemplates/index.html')
+        return render(request,'adminTemplates/ride_details.html')
     else:
         raise Http404("Page does not exist")
 
