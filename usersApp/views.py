@@ -17,6 +17,8 @@ import http.client
 import base64
 from django.http import Http404
 from django.views.decorators.cache import never_cache
+from customerApp.models import Ride, Car
+import hashlib
 # Create your views here.
 
 @login_required(login_url='/auth/admin/login/')
@@ -25,18 +27,37 @@ def adminHome(request):
         return render(request,'adminTemplates/index.html')
     else:
         raise Http404("Page does not exist")
+    
+def hash_id(objects):
+    for obj in objects:
+        obj.hashed_id = hashlib.sha256(str(obj.id).encode()).hexdigest()
+    return objects
 
 @login_required(login_url='/auth/vendor/login/')
 def vendorHome(request):
     if request.user.user_type == "Vendor":
-        return render(request,'adminTemplates/ride_details.html')
+        rides_details = Ride.objects.all()
+        drivers = Account.objects.all()
+        cars_data = Car.objects.all()
+
+        rides_details = hash_id(rides_details)
+        drivers_details = hash_id(drivers)
+        cars = hash_id(cars_data)
+        return render(request,'adminTemplates/ride_details.html',{'ridesData':rides_details,"driverData":drivers_details,"cars_data":cars})
     else:
         raise Http404("Page does not exist")
 
 @login_required(login_url="/auth/driver/login")
 def driverHome(request):
     if request.user.user_type == "Driver":
-        return render(request,'adminTemplates/ride_details.html')
+        rides_details = Ride.objects.all()
+        drivers = Account.objects.all()
+        cars_data = Car.objects.all()
+
+        rides_details = hash_id(rides_details)
+        drivers_details = hash_id(drivers)
+        cars = hash_id(cars_data)
+        return render(request,'adminTemplates/ride_details.html',{'ridesData':rides_details,"driverData":drivers_details,"cars_data":cars})
     else:
         raise Http404("Page does not exist")
 
