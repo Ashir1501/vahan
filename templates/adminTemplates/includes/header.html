@@ -101,6 +101,10 @@
                 <span class="text-gray-700">
                     New Car Type
                 </span>
+                {% elif request.resolver_match.url_name == 'rides-details-page' %}
+                <span class="text-gray-700">
+                    Details
+                </span>
                 {% elif request.resolver_match.url_name == 'ongoing-page' %}
                 <span class="text-gray-700">
                     Ongoing
