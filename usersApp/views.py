@@ -492,7 +492,7 @@ def resend_otp(request):
     
     if phone and user_type:
         otp = send_otp(request, phone, user_type)
-        print("472 resent otp: ", otp, user_type)
+        # print("472 resent otp: ", otp, user_type)
         if 'vendor_registration_data' in request.session:
             request.session.get('vendor_registration_data')['otp'] = otp
         messages.success(request, "OTP has been resent to your phone.")
@@ -528,7 +528,7 @@ def vendor_or_driver_login(request, user_type):
             return redirect(f'{user_type.lower()}_login')
 
         otp = send_otp(request, phone, user_type)
-        print('line 508 otp: ',otp,user_type)
+        # print('line 508 otp: ',otp,user_type)
         return redirect('otp')
 
     return render(request, f'adminTemplates/{user_type.lower()}_login.html')
@@ -603,7 +603,7 @@ def vendor_register(request):
         request.session['vendor_photo_name'] = photo.name
 
         otp = send_otp(request,phone, 'Vendor')
-        print('line 575 otp: ',otp)
+        # print('line 575 otp: ',otp)
         context = {
             'fname': fname,
             'lname': lname,
@@ -669,7 +669,7 @@ def otp(request):
                         request.session.pop('vendor_registration_data', None)
                 
                         auth_login(request, user)
-                        messages.success(request, f'Welcome {user.email} You have Registered Successfully.')
+                        messages.success(request, f'Welcome {user.email}.')
                         return redirect('vendor-home')
                         # return render(request,'adminTemplates/vendor_stepper.html')
                         # return render(request,'adminTemplates/vendor_workflow.html')
@@ -682,7 +682,7 @@ def otp(request):
                     if data:
                         if otp_entered == data['otp']:
                             auth_login(request, user)
-                            messages.success(request, f'Welcome {user.email} You have logged in Successfully.')
+                            messages.success(request, f'Welcome {user.email}.')
                             request.session.pop('vendor_login_otp', None)
                             return redirect('vendor-home')
                         else:
@@ -696,7 +696,7 @@ def otp(request):
                     if data:
                         if otp_entered == data['otp']:
                             auth_login(request, user)
-                            messages.success(request, f'Welcome {user.email} You have logged in Successfully.')
+                            messages.success(request, f'Welcome {user.email}.')
                             request.session.pop('driver_login_otp', None)
                             return redirect('driver-home')
                         else:
@@ -707,6 +707,21 @@ def otp(request):
         else:
             messages.error(request, "Provide OTP")
             return redirect('otp')
+    # start temporary otp alert pop up on user interface
+    otp_data = None
+    if 'vendor_registration_data' in request.session and request.session['vendor_registration_data'] and 'otp' in request.session['vendor_registration_data']:
+        otp_data = request.session['vendor_registration_data']['otp']
+    elif 'vendor_login_otp' in request.session and request.session['vendor_login_otp'] and 'otp' in request.session['vendor_login_otp']:
+        otp_data = request.session['vendor_login_otp']['otp']
+    elif 'driver_login_otp' in request.session and request.session['driver_login_otp'] and 'otp' in request.session['driver_login_otp']:
+        otp_data = request.session['driver_login_otp']['otp']
+
+    if otp_data:
+        messages.success(request, f'OTP is {otp_data}.')
+    else:
+        messages.error(request, 'No OTP.')
+    # end temp otp alert code 
+
     return render(request, 'adminTemplates/otp.html', context)
 
 
