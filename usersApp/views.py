@@ -19,6 +19,7 @@ from django.http import Http404
 from django.views.decorators.cache import never_cache
 from customerApp.models import Ride, Car
 import hashlib
+import re
 # Create your views here.
 
 @login_required(login_url='/auth/admin/login/')
@@ -227,6 +228,11 @@ class userListCreateView(View):
             return JsonResponse({'success':True})
         return JsonResponse({'success':False, 'error':'Invalid request method'})
 
+def is_valid_password(password):
+    # Regex for password validation
+    regex = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?/~]).{8,}$'
+    return re.fullmatch(regex, password) is not None
+
 class updateUser(View):
     def post(self,request,*args,**kwargs):
         if request.user.user_type == 'Driver':
@@ -317,14 +323,17 @@ class updateUser(View):
         if request.user.user_type == "Admin" and request.path.startswith('/my-profile/update/'):
             old_password = data.get('old_password').strip()
             new_password = data.get('new_password', '').strip()
-            if new_password and not old_password:
+            if (new_password and not old_password) or (old_password == ""):
                 errors['Password'] = "Please Provide Old Password!!"
             if old_password:
                 if account.check_password(old_password):
-                    if new_password and new_password != '':
-                        account.set_password(new_password)
-                        account.save()
-                        update_session_auth_hash(request, account)
+                    if new_password:
+                        if is_valid_password(new_password):
+                            account.set_password(new_password)
+                            account.save()
+                            update_session_auth_hash(request, account)
+                        else:
+                            errors['Password'] = "New password should atleast have 1 lowercase 1 uppercase, 1 digit, 1 special character and 8 characters long."
                     else:
                         errors['Password'] = "Please Provide new Password!!"
                 else:
