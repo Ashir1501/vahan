@@ -105,7 +105,7 @@
                 <div class="card-body">
                     <div data-datatable="true" data-datatable-page-size="5">
                         <div class="scrollable-x-auto">
-                            <table class="table table-auto table-border" data-datatable-table="true" id="car_type_table">
+                            <table class="table table-auto table-border" data-datatable-table="true" id="carType_table">
                             <thead>
                                 <tr>
                                     <th class="w-[60px]">
@@ -248,7 +248,7 @@
     // Get the value of the input field
     var input = document.getElementById('searcType');
     var filter = input.value.toUpperCase();
-    var table = document.getElementById('car_type_table');
+    var table = document.getElementById('carType_table');
     var tr = table.getElementsByTagName('tr');
     
     // Loop through all table rows
@@ -289,7 +289,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
             // Send the DELETE request to Django
-            const checkboxes = document.querySelectorAll('#car_type_table input[id="checkBOX"]');
+            const checkboxes = document.querySelectorAll('#carType_table input[id="checkBOX"]');
             // Filter the checked checkboxes
             const CarsTypecheckedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
 

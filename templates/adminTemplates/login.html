@@ -25,10 +25,10 @@
     <meta content="Vahan - Sign In" property="og:title" />
     <meta content="Sign in page using Tailwind CSS" property="og:description" />
     <meta content="{% static 'media/app/og-image.png' %}" property="og:image" />
-    <link href="{% static 'media/app/apple-touch-icon.png' %}" rel="apple-touch-icon" sizes="180x180" />
+    <!-- <link href="{% static 'media/app/apple-touch-icon.png' %}" rel="apple-touch-icon" sizes="180x180" />
     <link href="{% static 'media/app/favicon-32x32.png' %}" rel="icon" sizes="32x32" type="image/png" />
     <link href="{% static 'media/app/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png" />
-    <link href="{% static 'media/app/favicon.ico' %}" rel="shortcut icon" />
+    <link href="{% static 'media/app/favicon.ico' %}" rel="shortcut icon" /> -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link href="{% static 'vendors/apexcharts/apexcharts.css' %}" rel="stylesheet" />
@@ -158,26 +158,15 @@
                     </div>
                     <label class="input" data-toggle-password="true">
                         <input name="password" placeholder="Enter Password" type="password" />
-                        <button class="btn btn-icon" type="submit" data-toggle-password-trigger="true">
+                        <a class="btn btn-icon" data-toggle-password-trigger="true">
                             <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden">
                             </i>
                             <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block">
                             </i>
-                        </button>
+                        </a>
                     </label>
                 </div>
-                <div class="otp-container">
-                    <h2>Enter OTP</h2>
-                    <form action="/submit-otp" method="POST">
-                        <input type="text" name="otp1" maxlength="1" oninput="moveFocus(this, event)"  required>
-                        <input type="text" name="otp2" maxlength="1" oninput="moveFocus(this, event)" required>
-                        <input type="text" name="otp3" maxlength="1" oninput="moveFocus(this, event)" required>
-                        <input type="text" name="otp4" maxlength="1" oninput="moveFocus(this, event)" required>
-                        <br>
-                        
-                    </form>
-                </div>
-                <button class="btn btn-primary flex justify-center grow">
+                <button type="submit" class="btn btn-primary flex justify-center grow">
                     Login
                 </button>
             </form>
@@ -192,27 +181,7 @@
     <script src="{% static 'js/widgets/general.js' %}">
     </script>
     <!--end::Page scripts-->
-    <script>
-        function moveFocus(current, event) {
-            const value = current.value;
-
-            // Move to the next input if the current value is not empty
-            if (value.length === 1) {
-                const nextInput = current.nextElementSibling;
-                if (nextInput && nextInput.tagName === 'INPUT') {
-                    nextInput.focus();
-                }
-            }
-
-            // Move to the previous input if the current value is empty and the key pressed was backspace
-            if (event.inputType === 'deleteContentBackward') {
-                const prevInput = current.previousElementSibling;
-                if (prevInput && prevInput.tagName === 'INPUT') {
-                    prevInput.focus();
-                }
-            }
-        }
-    </script>
+    
 </body>
 
 </html>

@@ -17,4 +17,18 @@ urlpatterns = [
     path('cancel-ride',cancel_ride,name='cancel-ride'),
     path('add-new-extra/', add_new_extra, name='add-new-extra'),
     path('delete-extra/', delete_Extra, name='delete-extra'),
+
+
+    path('vendor-rides/', vendor_ride_details, name='vendor-rides'),
+    path('confirmed-ride-status/', confirmed_ride_status, name='confirmed_ride_status'),
+    path('vendor-suggestions/', vendor_suggestions, name='vendor-suggestions'),
+
+
+    path('driver-rides-details/', driver_ride_details, name='driver-rides-details'),
+    path('driver-ongoing/', driver_ongoing_details, name='driver-ongoing'),
+
+    path('start-ride/',start_ride, name='start-ride'),
+
+    path('create_order/', create_order, name='create_order'),
+    path('payment_success/', payment_success, name='payment_success'),
 ]

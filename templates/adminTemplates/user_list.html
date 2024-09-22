@@ -256,7 +256,7 @@
             <div class="card-body">
                 <div data-datatable="true" data-datatable-page-size="5">
                     <div class="scrollable-x-auto">
-                        <table class="table table-auto table-border" data-datatable-table="true" id="user_table">
+                        <table class="table table-auto table-border" data-datatable-table="true" id="user_account_table">
                             <thead>
                                 <tr>
                                     <th class="w-[60px]">
@@ -386,252 +386,252 @@
                             </thead>
                             <tbody>
                                 {% if users %}
-                                {% for user in users %}
-                                {% with user.accountDetail.first as detail %}
-                                <tr>
-                                    <td>
-                                        <input class="checkbox checkbox-sm" data-datatable-row-check="true"
-                                            type="checkbox" id="checkBOX" value="{{ user.pk }}" />
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-light"
-                                            data-modal-toggle="#userUpdateModal-{{ user.pk }}">
-                                            Edit
-                                        </button>
-                                    </td>
-                                    {% if user.user_type == 'Admin' %}
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-warning">
-                                            {{ user.user_type }}
-                                        </span>
-                                    </td>
-                                    {% endif %}
-                                    {% if user.user_type == 'Vendor' %}
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-primary">
-                                            {{ user.user_type }}
-                                        </span>
-                                    </td>
-                                    {% endif %}
-                                    {% if user.user_type == 'Driver' %}
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-danger">
-                                            {{ user.user_type }}
-                                        </span>
-                                    </td>
-                                    {% endif %}
-                                    {% if user.user_type == 'Customer' %}
-                                    <td>
-                                        <span class="badge badge-sm badge-outline badge-info">
-                                            {{ user.user_type }}
-                                        </span>
-                                    </td>
-                                    {% endif %}
-                                    <td>
-                                        <div class="flex items-center gap-2.5">
-                                            {% if detail.photo %}
-                                            <img alt="" class="h-9 rounded-full" src="{{ detail.photo.url }}" />
-                                            {% else %}
-                                            <img alt="" class="h-9 rounded-full"
-                                                src="{% static 'media/avatars/blank.png' %}" />
-                                            {% endif %}
-                                            <div class="flex flex-col gap-0.5">
-                                                <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary"
-                                                    href="#">
-                                                    {{ user.first_name }} {{ user.last_name }}
-                                                </a>
-                                                <span class="text-2sm text-gray-600">
-                                                    <hr style="height: 1rem;">
+                                    {% for user in users %}
+                                    {% with user.accountDetail.first as detail %}
+                                        <tr>
+                                            <td>
+                                                <input class="checkbox checkbox-sm" data-datatable-row-check="true"
+                                                    type="checkbox" id="checkBOX" value="{{ user.pk }}" />
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light"
+                                                    data-modal-toggle="#userUpdateModal-{{ user.pk }}">
+                                                    Edit
+                                                </button>
+                                            </td>
+                                            {% if user.user_type == 'Admin' %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-warning">
+                                                    {{ user.user_type }}
                                                 </span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="flex items-center gap-1.5">
-                                            <img alt="flag" class="h-4 rounded-full"
-                                                src="{% static 'media/brand-logos/gmail-icon.svg' %}" />
-                                            <span class="leading-none text-gray-700">
-                                                {{ user.email }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-
-                                        {{ user.phone_number }}
-
-                                    </td>
-                                    <td>
-
-                                        {{ detail.gender }}
-
-                                    </td>
-                                    <td>
-
-                                        {{ detail.join_date }}
-
-                                    </td>
-                                    <td>
-
-                                        {{ detail.exit_date }}
-
-                                    </td>
-                                    {% if user.first_name and user.last_name %}
-                                    <td>
-
-                                        {{ user.first_name }} {{ user.last_name }}
-
-                                    </td>
-                                    {% else %}
-                                    <td>
-
-                                        {{ user.email }}
-
-                                    </td>
-                                    {% endif %}
-                                    <td>
-
-                                        {{ user.created_at }}
-
-                                    </td>
-                                    <td>
-
-                                        {{ user.updated_at }}
-
-                                    </td>
-                                    <td>
-
-                                        {{ user.last_login }}
-
-                                    </td>
-                                    {% if detail.aadhar_card %}
-                                    <td>
-
-                                        <a class="btn btn-link" href="{% url 'download_aadhar' detail.pk %}">
-                                            Download
-                                        </a>
-
-                                    </td>
-                                    {% else %}
-                                    <td>
-
-                                        N/A
-
-                                    </td>
-                                    {% endif %}
-                                    {% if detail.driving_licence %}
-                                    <td>
-
-                                        <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
-                                            <!-- <i class="ki-filled ki-file-down"></i>  Download -->
-                                            Download
-                                        </a>
-
-                                    </td>
-                                    {% else %}
-                                    <td>
-
-                                        N/A
-
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
-                                    data-modal-backdrop-static="true">
-                                    <div class="modal-content max-w-[600px] top-[10%]">
-                                        <div class="modal-header">
-                                            <h3 class="modal-title">
-                                                Update User Details
-                                            </h3>
-                                            <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                                                <i class="ki-outline ki-cross">
-                                                </i>
-                                            </button>
-                                        </div>
-                                        <form method="POST" id="userUpdateForm"
-                                            action="{% url 'user-update' pk=user.pk %}" enctype="multipart/form-data">
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <div class="card-body grid gap-5">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                            <label for='fnameU'
-                                                                class="form-label flex items-center gap-1 max-w-56">
-                                                                First Name
-                                                            </label>
-                                                            <input class="input" id="fnameU" type="text"
-                                                                value="{{ user.first_name }}" name="new_fname"
-                                                                placeholder="Enter your first name" />
-                                                        </div>
+                                            </td>
+                                            {% endif %}
+                                            {% if user.user_type == 'Vendor' %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-primary">
+                                                    {{ user.user_type }}
+                                                </span>
+                                            </td>
+                                            {% endif %}
+                                            {% if user.user_type == 'Driver' %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-danger">
+                                                    {{ user.user_type }}
+                                                </span>
+                                            </td>
+                                            {% endif %}
+                                            {% if user.user_type == 'Customer' %}
+                                            <td>
+                                                <span class="badge badge-sm badge-outline badge-info">
+                                                    {{ user.user_type }}
+                                                </span>
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    {% if detail.photo %}
+                                                    <img alt="" class="size-11 rounded-full shrink-0"
+                                                        src="{{ detail.photo.url }}">
+                                                    </img>
+                                                    {% else %}
+                                                    <img alt="" class="h-9 rounded-full"
+                                                        src="{% static 'media/avatars/blank.png' %}" />
+                                                    {% endif %}
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <span class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">
+                                                            {{ user.first_name }} {{ user.last_name }}
+                                                    </span>
+                                                        <span class="text-2sm text-gray-600">
+                                                            <hr style="height: 1rem;">
+                                                        </span>
                                                     </div>
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                            <label for='lnameU'
-                                                                class="form-label flex items-center gap-1 max-w-56">
-                                                                Last Name
-                                                            </label>
-                                                            <input class="input" id="lnameU" type="text"
-                                                                value="{{ user.last_name }}" name="new_lname"
-                                                                placeholder="Enter your last name" />
-                                                        </div>
-                                                    </div>
-                                                    <input type="hidden" id="userId" value="{{ user.pk }}">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                            <label for="emailU"
-                                                                class="form-label flex items-center gap-1 max-w-56">
-                                                                Email
-                                                                <span class="text-danger">
-                                                                    *
-                                                                </span>
-                                                            </label>
-                                                            <input class="input" id="emailU" value="{{ user.email }}"
-                                                                name="new_email" placeholder="Enter email address"
-                                                                type="email" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                            <label for="phoneU"
-                                                                class="form-label flex items-center gap-1 max-w-56">
-                                                                Phone number
-                                                                <span class="text-danger">
-                                                                    *
-                                                                </span>
-                                                            </label>
-                                                            <input class="input" placeholder="Enter Phone Number"
-                                                                value="{{ user.phone_number }}" type="tel" id="phoneU"
-                                                                name="new_phone" pattern="[0-9]{10}" required
-                                                                maxlength="10" />
-                                                        </div>
-                                                    </div>
-                                                    {% if user.user_type != "Customer" %}
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                                                            <label class="form-label flex items-center gap-1 max-w-56">
-                                                                Gender
-                                                            </label>
-                                                            <div class="flex flex-col w-full gap-1">
-                                                                <select class="select" name="new_gender" id="genderU">
-
-                                                                    {% if detail.gender %}
-                                                                    <option selected value="{{ detail.gender }}">{{
-                                                                        detail.gender }}</option>
-                                                                    {% for value, label in gender_choices %}
-                                                                    {% if detail.gender != value %}
-                                                                    <option value="{{ value }}">{{ label }}</option>
-                                                                    {% endif %}
-                                                                    {% endfor %}
-                                                                    {% else %}
-                                                                    <option disabled selected>Select an option</option>
-                                                                    {% for value, label in gender_choices %}
-                                                                    <option value="{{ value }}">{{ label }}</option>
-                                                                    {% endfor %}
-                                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-1.5">
+                                                    <img alt="flag" class="h-4 rounded-full"
+                                                        src="{% static 'media/brand-logos/gmail-icon.svg' %}" />
+                                                    <span class="leading-none text-gray-700">
+                                                        {{ user.email }}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ user.phone_number }}
+                                               
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ detail.gender }}
+                                                
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ detail.join_date }}
+                                                
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ detail.exit_date }}
+                                                
+                                            </td>
+                                            {% if user.first_name and user.last_name %}
+                                            <td>
+                                                
+                                                    {{ user.first_name }} {{ user.last_name }}
+                                                
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                
+                                                    {{ user.email }} 
+                                                
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                
+                                                    {{ user.created_at }}
+                                                
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ user.updated_at }}
+                                                
+                                            </td>
+                                            <td>
+                                                
+                                                    {{ user.last_login }}
+                                                
+                                            </td>
+                                            {% if detail.aadhar_card %}
+                                            <td>
+                                                
+                                                    <a class="btn btn-link" href="{% url 'download_aadhar' detail.pk %}">
+                                                         Download
+                                                    </a>
+                                                
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                
+                                                    N/A
+                                                
+                                            </td>
+                                            {% endif %}
+                                            {% if detail.driving_licence %}
+                                            <td>
+                                                
+                                                    <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
+                                                        <!-- <i class="ki-filled ki-file-down"></i>  Download -->
+                                                        Download
+                                                    </a>
+                                                
+                                            </td>
+                                            {% else %}
+                                            <td>
+                                                
+                                                    N/A
+                                                
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                        <div class="modal" data-modal="true" id="userUpdateModal-{{ user.pk }}"
+                                            data-modal-backdrop-static="true">
+                                            <div class="modal-content max-w-[600px] top-[10%]">
+                                                <div class="modal-header">
+                                                    <h3 class="modal-title">
+                                                        Update User Details
+                                                    </h3>
+                                                    <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                                                        <i class="ki-outline ki-cross">
+                                                        </i>
+                                                    </button>
+                                                </div>
+                                                <form method="POST" id="userUpdateForm"
+                                                    action="{% url 'user-update' pk=user.pk %}" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <div class="modal-body">
+                                                        <div class="card-body grid gap-5">
+                                                            <div class="w-full">
+                                                                <div
+                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                    <label for='fnameU'
+                                                                        class="form-label flex items-center gap-1 max-w-56">
+                                                                        First Name
+                                                                    </label>
+                                                                    <input class="input" id="fnameU" type="text"
+                                                                        value="{{ user.first_name }}" name="new_fname"
+                                                                        placeholder="Enter your first name" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="w-full">
+                                                                <div
+                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                    <label for='lnameU'
+                                                                        class="form-label flex items-center gap-1 max-w-56">
+                                                                        Last Name
+                                                                    </label>
+                                                                    <input class="input" id="lnameU" type="text"
+                                                                        value="{{ user.last_name }}" name="new_lname"
+                                                                        placeholder="Enter your last name" />
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" id="userId" value="{{ user.pk }}">
+                                                            <div class="w-full">
+                                                                <div
+                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                    <label for="emailU"
+                                                                        class="form-label flex items-center gap-1 max-w-56">
+                                                                        Email
+                                                                        <span class="text-danger">
+                                                                            *
+                                                                        </span>
+                                                                    </label>
+                                                                    <input class="input" id="emailU" value="{{ user.email }}"
+                                                                        name="new_email" placeholder="Enter email address"
+                                                                        type="email" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="w-full">
+                                                                <div
+                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                    <label for="phoneU"
+                                                                        class="form-label flex items-center gap-1 max-w-56">
+                                                                        Phone number
+                                                                        <span class="text-danger">
+                                                                            *
+                                                                        </span>
+                                                                    </label>
+                                                                    <input class="input" placeholder="Enter Phone Number"
+                                                                        value="{{ user.phone_number }}" type="tel" id="phoneU"
+                                                                        name="new_phone" pattern="[0-9]{10}" required
+                                                                        maxlength="10" />
+                                                                </div>
+                                                            </div>
+                                                            {% if user.user_type != "Customer" %}
+                                                            <div class="w-full">
+                                                                <div
+                                                                    class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                    <label class="form-label flex items-center gap-1 max-w-56">
+                                                                        Gender
+                                                                    </label>
+                                                                    <div class="flex flex-col w-full gap-1">
+                                                                        <select class="select" name="new_gender" id="genderU">
+                                                                            
+                                                                                {% if detail.gender %}
+                                                                                    <option selected value="{{ detail.gender }}">{{ detail.gender }}</option>
+                                                                                    {% for value, label in gender_choices %}
+                                                                                        {% if detail.gender != value %}
+                                                                                            <option value="{{ value }}">{{ label }}</option>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    {% else %}
+                                                                                    <option disabled selected>Select an option</option>
+                                                                                    {% for value, label in gender_choices %}
+                                                                                            <option value="{{ value }}">{{ label }}</option>
+                                                                                    {% endfor %}
+                                                                                {% endif %}
 
 
                                                                 </select>
@@ -657,8 +657,7 @@
                                                                     {% endwith %}
                                                                     {% if works_for %}
                                                                     {% for users in works_for %}
-                                                                    {% if users.pk != detail.works_for.id and users.pk
-                                                                    != user.pk %}
+                                                                    {% if users.pk != detail.works_for.id and users.pk != user.pk %}
                                                                     <option value="{{ users.pk }}">
                                                                         {{ users }}
                                                                     </option>
@@ -860,7 +859,7 @@
         // Get the value of the input field
         var input = document.getElementById('searchUser');
         var filter = input.value.toUpperCase();
-        var table = document.getElementById('user_table');
+        var table = document.getElementById('user_account_table');
         var tr = table.getElementsByTagName('tr');
 
         // Loop through all table rows, and hide those who don't match the search query
@@ -880,7 +879,7 @@
 
 
     function userdelete() {
-        const checkboxes = document.querySelectorAll('#user_table input[id="checkBOX"]');
+        const checkboxes = document.querySelectorAll('#user_account_table input[id="checkBOX"]');
         // Filter the checked checkboxes
         const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
         if (checkedCheckboxes[0]) {
@@ -1007,7 +1006,7 @@
 
                     $.ajax({
                         type: 'POST',
-                        url: '/user-list/',
+                        url: '/admin/user-list/',
                         data: formData,
                         processData: false,
                         contentType: false,

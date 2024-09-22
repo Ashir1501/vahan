@@ -93,7 +93,7 @@ def add_new_car(request):
                 Registration_Number=registration_number,
                 rc_photo=rc_photo,
                 is_available=True,  # Set this according to your needs
-                created_by=Account.objects.get(id=1)  # Adjust according to your logic
+                created_by=Account.objects.get(id=request.user.id)   # Adjust according to your logic
             )
             new_car.save()
 
@@ -380,7 +380,7 @@ def add_route(request):
                 fare=fare_value,
                 duration=duration,
                 kms=kms,
-                created_by=Account.objects.get(id=1)  # Or however you determine the creator
+                created_by=Account.objects.get(id=request.user.id)  # Or however you determine the creator
             )
             route.save()
 

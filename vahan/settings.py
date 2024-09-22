@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,6 +33,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'vendorApp',
     "customerApp",
     "paymentApp",
+  
 ]
 
 MIDDLEWARE = [
@@ -53,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'usersApp.middleware.CleanUpSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'vahan.urls'
@@ -68,13 +72,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'vahan.context_processors.secret_keys_processor',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'vahan.wsgi.application'
-
+# WSGI_APPLICATION = 'vahan.wsgi.application'
+ASGI_APPLICATION = 'myproject.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -141,3 +151,36 @@ CAR_MEDIA_ROOT = BASE_DIR / 'car_images'
 
 USER_MEDIA_URL = '/user_images/'
 USER_MEDIA_ROOT = BASE_DIR / 'user_images'
+
+
+
+RAZORPAY_KEY_ID = 'rzp_test_NjjMVf5ZkRZxLo'
+RAZORPAY_KEY_SECRET= 'Z4opS3MON3wfrabSFHVC1WOF'
+
+# settings.py
+
+DEFAULT_FROM_EMAIL = 'no-reply@yourdomain.com'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sidaavez@gmail.com'
+EMAIL_HOST_PASSWORD = 'thoqieocmwlivxua'
+
+
+ASGI_APPLICATION = 'vahan.asgi.application'
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
+
+
+
+
+
+# $env:DJANGO_SETTINGS_MODULE="myproject.settings"    

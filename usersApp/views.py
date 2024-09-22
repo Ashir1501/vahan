@@ -11,14 +11,26 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+import random
+from django.contrib.auth import login as auth_login, logout
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 # Create your views here.
 
-@login_required(login_url='auth/login/')
+@login_required(login_url='/auth/admin/login/')
 def adminHome(request):
     return render(request,'adminTemplates/index.html')
 
+@login_required(login_url='/auth/vendor/login/')
+def vendorHome(request):
+    return render(request,'adminTemplates/index.html')
+
+@login_required(login_url="/auth/driver/login")
+def driverHome(request):
+    return render(request,'adminTemplates/index.html')
+
 class userListCreateView(LoginRequiredMixin,View):
-    login_url = 'auth/login/'
+    login_url = '/auth/admin/login/'
     def get(self, request):
         users = Account.objects.all()
         works_for = Account.objects.filter(user_type__in=['Admin', 'Vendor'])
@@ -155,11 +167,9 @@ class userListCreateView(LoginRequiredMixin,View):
             return JsonResponse({'success':True})
         return JsonResponse({'success':False, 'error':'Invalid request method'})
 
-class updateUser(LoginRequiredMixin,View):
-    login_url = 'auth/login/'
+class updateUser(View):
     def post(self,request,*args,**kwargs):
         pk = kwargs.get('pk')
-        print(pk)
         account = get_object_or_404(Account, pk = pk)
         data = request.POST
         files = request.FILES
@@ -176,7 +186,6 @@ class updateUser(LoginRequiredMixin,View):
         new_driving_licence = files.get('new_driving_licence', None)
         new_aadhar_card = files.get('new_aadhar_card', None)
         new_works_for = data.get('new_works_for', None)
-        print(new_works_for,'line 170')
 
         errors = {}
         accountDetail = account.accountDetail.first()
@@ -270,8 +279,7 @@ class updateUser(LoginRequiredMixin,View):
         return redirect('user-list')
     
     
-class deleteUser(LoginRequiredMixin,View):
-    login_url = 'auth/login/'
+class deleteUser(View):
     def get(self, request, *args, **kwargs):
         user_list = request.GET.getlist('user_list[]')
 
@@ -287,7 +295,6 @@ class deleteUser(LoginRequiredMixin,View):
                 
         return JsonResponse({'success':True})
 
-@login_required(login_url='auth/login/')
 def download_aadhar(request, image_id):
     account_detail = get_object_or_404(AccountDetail, id=image_id)
     image_path = account_detail.aadhar_card.path
@@ -297,7 +304,6 @@ def download_aadhar(request, image_id):
         response['Content-Disposition'] = f'attachment; filename="{account_detail.aadhar_card.name}"'
         return response
 
-@login_required(login_url='auth/login/')
 def download_driving_licence(request, image_id):
     account_detail = get_object_or_404(AccountDetail, id=image_id)
     image_path = account_detail.driving_licence.path
@@ -306,3 +312,192 @@ def download_driving_licence(request, image_id):
         response = HttpResponse(image_file.read(), content_type='image/jpeg')
         response['Content-Disposition'] = f'attachment; filename="{account_detail.driving_licence.name}"'
         return response
+    
+def send_otp(request, phone, user_type):
+    otp = random.randint(1000, 9999)
+    context = {'otp': otp}
+    request.session['phone'] = phone
+    if user_type == 'Vendor':
+        request.session['vendor_login_otp'] = context
+    elif user_type == 'Driver':
+        request.session['driver_login_otp'] = context
+    return otp
+
+def driver_login(request):
+    return vendor_or_driver_login(request, 'Driver')
+
+def vendor_login(request):
+    return vendor_or_driver_login(request, 'Vendor')
+
+def vendor_or_driver_login(request, user_type):
+    if request.method == 'POST':
+        phone = request.POST.get('phone', None).strip()
+        user = get_object_or_404(Account, phone_number=phone)
+
+        errors = {}
+        if not phone:
+            errors['phone'] = "Phone number is required."
+        elif not phone.isdigit() or len(phone) != 10:
+            errors['phone'] = "Phone number must be exactly 10 digits."
+        elif user.user_type != user_type:
+            errors['phone'] = f"Please Provide Your Phone Number!!"
+
+        if errors:
+            for error, description in errors.items():
+                messages.error(request, description)
+            return redirect(f'{user_type.lower()}_login')
+
+        otp = send_otp(request, phone, user_type)
+        print('line 351 otp: ',otp)
+        return redirect('otp')
+
+    return render(request, f'adminTemplates/{user_type.lower()}_login.html')
+
+def vendor_register(request):
+    if request.method == 'POST':
+        data = request.POST
+        files = request.FILES
+        email = data.get('email', None).strip()
+        phone = data.get('phone', None).strip()
+        fname = data.get('fname', None).strip()
+        lname = data.get('lname', None).strip()
+        gender = data.get('gender', None)
+        photo = files.get('photo', None)
+        terms_accepted = data.get('terms_check')
+
+        errors = {}
+
+        if not terms_accepted:
+            errors['terms_and_conditions'] = 'You must accept the terms and conditions.'
+
+        # Validate email 
+        email_validator = EmailValidator()
+        try:
+            email_validator(email)
+        except ValidationError:
+            errors['email'] = "Invalid email format."
+        else:
+            if Account.objects.filter(email=email).exists():
+                errors['email'] = "Email already exists."
+
+        # Validate phone number
+        if not phone:
+            errors['phone'] = "Phone number is required."
+        elif not phone.isdigit() or len(phone) != 10:
+            errors['phone'] = "Phone number must be exactly 10 digits."
+        elif Account.objects.filter(phone_number=phone).exists():
+            errors['phone'] = "Phone number already exists."
+
+        file_validators = {
+            'photo': FileExtensionValidator(allowed_extensions=['jpg', 'jpeg','png','webp']),
+        }
+
+        for file_key in file_validators:
+            file = files.get(file_key, None)
+            if file:
+                try:
+                    file_validators[file_key](file)
+                except ValidationError:
+                    errors[file_key] = f"Invalid file type for {file_key.replace('_', ' ')}. Only {', '.join(file_validators[file_key].allowed_extensions)} are allowed."
+            else:
+                errors['photo'] = "Please Upload photo"
+
+        if errors:
+            for error, description in errors.items():
+                messages.error(request, description)
+            return redirect('vendor_register')
+
+        fs = FileSystemStorage(location=settings.USER_MEDIA_ROOT)
+        photo_name = fs.save(photo.name, photo)
+        photo_path = f'{settings.USER_MEDIA_URL}{photo_name}'
+
+        otp = send_otp(request,phone, 'Vendor')
+        print('line 415 otp: ',otp)
+        context = {
+            'fname': fname,
+            'lname': lname,
+            'email': email,
+            'phone': phone,
+            'otp': otp,
+            'photo_path': photo_path,
+            'gender': gender
+        }
+        request.session['vendor_registration_data'] = context
+        request.session['vendor_photo_path'] = photo_path
+        # request.session['registration_in_progress'] = True
+        return redirect('otp')
+
+    return render(request, 'adminTemplates/vendor_register.html')
+
+def otp(request):
+    phone = request.session.get('phone')
+    context = {'phone': phone}
+    if request.method == "POST":
+        code = request.POST
+        if code.get('code_0') and code.get('code_1') and code.get('code_2') and code.get('code_3'):
+
+            otp_entered = int(request.POST.get('code_0') + request.POST.get('code_1') + request.POST.get('code_2') + request.POST.get('code_3'))
+
+            if phone:
+                user = Account.objects.filter(phone_number=phone).first()
+                if not user:
+                    data = request.session.get('vendor_registration_data')
+                    if otp_entered == data['otp']:
+                        user = Account.objects.create(
+                            first_name=data['fname'],
+                            last_name=data['lname'],
+                            email=data['email'],
+                            phone_number=data['phone'],
+                            OTP=data['otp'],
+                            user_type='Vendor',
+                            is_staff=True,
+                            is_active=True
+                        )
+                        user_detail = AccountDetail(
+                            user_id=user,
+                            photo=data['photo_path'],  # Assign the path saved in user_images
+                            gender=data['gender']
+                        )
+                        user_detail.save()
+
+                        # request.session['vendor_registration_complete'] = True
+                        # request.session.pop('registration_in_progress', None)
+
+                        # Clear the session data after successful registration
+                        request.session.pop('vendor_photo_path', None)
+                        request.session.pop('vendor_registration_data', None)
+
+                        auth_login(request, user)
+                        messages.success(request, f'Welcome {user.email} You have Registered Successfully.')
+                        return redirect('vendor-home')
+                    else:
+                        #this below code deletes the photo if the user fails to register
+                        # if 'photo_path' in data:
+                        #     fs = FileSystemStorage(location=settings.USER_MEDIA_ROOT)
+                        #     fs.delete(data['photo_path'].replace(settings.USER_MEDIA_URL, ''))
+                        messages.error(request, "Invalid OTP")
+                        return redirect('otp')
+
+                if user.user_type == 'Vendor':
+                    data = request.session.get('vendor_login_otp')
+                    if otp_entered == data['otp']:
+                        auth_login(request, user)
+                        messages.success(request, f'Welcome {user.email} You have logged in Successfully.')
+                        return redirect('vendor-home')
+                    else:
+                        messages.error(request, "Invalid OTP")
+                        return redirect('otp')
+
+                if user.user_type == 'Driver':
+                    data = request.session.get('driver_login_otp')
+                    if otp_entered == data['otp']:
+                        auth_login(request, user)
+                        messages.success(request, f'Welcome {user.email} You have logged in Successfully.')
+                        return redirect('vendor-home')
+                    else:
+                        messages.error(request, "Invalid OTP")
+                        return redirect('otp')
+        else:
+            messages.error(request, "Provide OTP")
+            return redirect('otp')
+    return render(request, 'adminTemplates/otp.html', context)

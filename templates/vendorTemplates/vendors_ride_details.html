@@ -1,0 +1,841 @@
+{% extends '../adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'success' %}
+<script>
+    console.log('{{message}}')
+    Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 1500
+    });
+</script>
+{% endif %}
+{% if message.tags == 'error' %}
+<script>
+    Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 2000
+    });
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+{{data}}
+<div>
+
+    <div style="margin: 10px;">
+        <div class="container-fixed">
+            <div class="grid gap-5 lg:gap-7.5">
+                <div class="card card-grid min-w-full">
+                    <div class="card-header py-5 flex-wrap">
+                        <h3 class="card-title">
+                            Rides Details  {{request.user}}
+
+                            <!-- <div style="display: inline-block;" class="ml-5">
+                                <button class="btn btn-danger btn-sm" type="button" onclick="cancelRidePending()">
+                                    <i class="ki-filled ki-cross-circle"></i>
+                                    Cancel
+                                </button>
+                            </div> -->
+
+                            <!-- <div style="display: inline-block;" class="ml-5">
+                                <button class="btn btn-light btn-sm" type="button" onclick="approvedRide()">
+                                    Approve
+                                </button>
+                            </div> -->
+                        </h3>
+                        <div class="flex gap-6">
+                            <div class="relative">
+                                <i
+                                    class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                <input class="input input-sm pl-8" onkeyup="filterTableTypevendor_ride()"
+                                    placeholder="Search" id="searchvendor_ride" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div data-datatable="true" data-datatable-page-size="5">
+                            <div class="scrollable-x-auto">
+                                <table class="table table-auto table-border" data-datatable-table="true"
+                                    id="vendor_ride_table">
+                                    <thead>
+                                        <tr>
+                                            <!-- <th class="w-[60px]">
+                                                <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                                    type="checkbox" />
+                                            </th> -->
+                                            <th class="w-[20px]"></th>
+                                            <!-- <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Status</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th> -->
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Drop</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Driver</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup date</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup at</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Return Date</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[10px]"> Ride Type</th>
+                                            <th class="w-[120px]" > Car </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Car Model</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Fare</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Duration</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">KMS</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Customer Name</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for rideData in ridesData %}
+                                        {% if rideData.ride_status == 'confirmed' or rideData.ride_status == 'approved' or rideData.ride_status == 'cancelled' or rideData.ride_status == 'assigned' %}
+                                              
+                                        
+                                        <tr>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        {% if rideData.ride_status == 'confirmed' %}
+                                                            {% if rideData.vendor_id.id == request.user.id %}
+                                                                <a class="btn btn-outline btn-info"
+                                                                    data-modal-toggle="#modal_{{ rideData.hashed_id }}_vendor_ride">
+                                                                    <i class="ki-filled ki-delivery-3"></i>Assign 
+                                                                </a>
+                                                            {% else %}
+                                                            <span class="badge badge-outline badge-secondary">
+                                                                confirmed by another vendor 
+                                                            </span>
+                                                            {% endif %}
+                                                        {% elif rideData.ride_status == 'cancelled' %}
+                                                        <span class="badge badge-outline badge-danger">
+                                                            {{ rideData.ride_status }}
+                                                        </span>
+                                                        {% elif rideData.ride_status == 'approved' %}
+                                                        <a class="btn btn-outline btn-warning"
+                                                            data-modal-toggle="#confirm_{{ rideData.hashed_id }}_vendor_ride">
+                                                            Confirm
+                                                        </a>
+                                                        {% elif rideData.ride_status == 'assigned'  %}
+                                                            {% if rideData.vendor_id.id == request.user.id %}
+                                                            <a class="btn btn-outline btn-success"
+                                                                    data-modal-toggle="#modal_{{ rideData.hashed_id }}_vendor_ride">
+                                                                    <i class="ki-filled ki-delivery-3"></i>re Assign 
+                                                                </a>
+                                                                {% else %}
+                                                            <span class="badge badge-outline badge-secondary">
+                                                                confirmed by another vendor 
+                                                            </span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.pickup_location }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.drop_location }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td title="{{ rideData.driver.email }}">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                            {{ rideData.driver.first_name }} {{ rideData.driver.last_name }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.pickup_date }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.pickup_at }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.return_date }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.trip_type }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.status }}</a>
+                                                    </div>
+                                                </div>
+                                            </td> -->
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{rideData.car.Registration_Number }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.car.Car_type.car_model }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.fare }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.duration }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.route.kms }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td title="{{ rideData.customer.email }}">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                            {{ rideData.customer.first_name }} {{ rideData.customer.last_name }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        <!-- confirm model -->
+                                        <div class="modal" data-modal="true"
+                                            id="confirm_{{ rideData.hashed_id }}_vendor_ride">
+                                            <form id="carEditForm_{{ rideData.hashed_id }}" method="post"
+                                                enctype="multipart/form-data" action="{% url 'assign-driver' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="ride_id" value="{{ rideData.hashed_id }}">
+                                                <div class="modal-content max-w-[600px] top-[10%]">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title text-lg font-semibold">
+                                                            Ride 
+                                                            <span class="text-danger">
+                                                              (Pay 
+                                                              <span class="text-red-500 font-bold">₹{{ rideData.fare_20_percent }} (20%)</span>
+                                                              for this ride to confirm)
+                                                            </span>
+                                                          </h3>
+                                                          
+                                                        <button type="button" class="btn btn-xs btn-icon btn-light"
+                                                            data-modal-dismiss="true">
+                                                            <i class="ki-outline ki-cross"></i>
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <div class="modal-body rounded-lg shadow-lg p-5 bg-white">
+                                                        <div class="grid grid-cols-3 gap-6">
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Pickup:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.route.pickup_location }}
+                                                            </div>
+                                                    
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Drop:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.route.drop_location }}
+                                                            </div>
+                                                    
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Ride Type:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.route.trip_type }}
+                                                            </div>
+                                                    
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Pickup Date:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.pickup_date }}
+                                                            </div>
+                                                    
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Pickup Time:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.pickup_at }}
+                                                            </div>
+                                                    
+                                                            {% if rideData.return_date %}
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Return Date:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.return_date }}
+                                                            </div>
+                                                            {% endif %}
+                                                    
+                                                            {% if rideData.route.duration %}
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>Duration:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.route.duration }}
+                                                            </div>
+                                                            {% endif %}
+                                                    
+                                                            {% if rideData.route.kms %}
+                                                            <div class="font-semibold text-gray-700 col-span-1">
+                                                                <strong>KMS:</strong>
+                                                            </div>
+                                                            <div class="text-gray-900 col-span-2">
+                                                                {{ rideData.route.kms }}
+                                                            </div>
+                                                            {% endif %}
+
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    <div class="modal-footer justify-end" style="margin: 10px;">
+                                                        <div class="flex gap-4">
+                                                            <button type="button" class="btn btn-light"
+                                                                data-modal-dismiss="true">Cancel</button>
+                                                                <button
+                                                                id="rzp-button-{{ rideData.hashed_id }}"
+                                                                data-hashed-id="{{ rideData.hashed_id }}"
+                                                                class="btn btn-primary">
+                                                                Pay ₹{{ rideData.fare_20_percent }} (20%)
+                                                            </button>
+                                        
+                                                            <!-- <button type="button" id="rzp-button1"
+                                                                class="btn btn-primary" onclick="makePayment('{{ rideData.fare_20_percent }}','{{rideData.hashed_id}}')">Puy</button> -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        </div>
+
+                                        <!-- Modal -->
+                                        <div class="modal" data-modal="true"
+                                            id="modal_{{ rideData.hashed_id }}_vendor_ride">
+                                            <form id="carEditForm_{{ rideData.hashed_id }}" method="post"
+                                                enctype="multipart/form-data" action="{% url 'assign-driver' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="ride_id" value="{{ rideData.hashed_id }}">
+                                                <div class="modal-content max-w-[600px] top-[10%]">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title">Ride</h3>
+                                                        <button type="button" class="btn btn-xs btn-icon btn-light"
+                                                            data-modal-dismiss="true">
+                                                            <i class="ki-outline ki-cross"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        
+                                                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                            <label class="form-label flex-shrink-0 w-full lg:w-auto">Driver<span class="text-danger">*</span></label>
+                                                            <div class="autocomplete input w-full" style="width:300px;">
+                                                                <input id="DriverInput_{{ rideData.hashed_id }}" type="text" name="DriverName" placeholder="Driver" autocomplete="off">
+                                                            </div>
+                                                            <input type="hidden" name="driver_id" id="driverId_{{ rideData.hashed_id }}">
+                                                        </div>
+                                                        
+                                                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+                                                            <label class="form-label flex-shrink-0 w-full lg:w-auto">Car<span class="text-danger">*</span></label>
+                                                            <div class="autocomplete input w-full" style="width:300px;">
+                                                                <input id="CarInput_{{ rideData.hashed_id }}" type="text" name="CarName" placeholder="Car" autocomplete="off">
+                                                                
+                                                            </div>
+                                                            <input type="hidden" name="car_id" id="carId_{{ rideData.hashed_id }}">
+                                                        </div>
+                                                        <p class="text-xs text-gray-500">Car Model Must be <strong>({{ rideData.route.car_type.car_model }})</strong></p>
+                                                        
+                                                        
+                                                    </div>
+                                                    <div class="modal-footer justify-end" style="margin: 10px;">
+                                                        <div class="flex gap-4">
+                                                            <button type="button" class="btn btn-light"
+                                                                data-modal-dismiss="true">Cancel</button>
+                                                            <button type="submit" 
+                                                                class="btn btn-primary">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div
+                                class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                <div class="flex items-center gap-2">
+                                    Show
+                                    <select class="select select-sm w-16" data-datatable-size="true"
+                                        name="perpage"></select>
+                                    per page
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span data-datatable-info="true"></span>
+                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    function filterTableTypevendor_ride() {
+        // Get the value of the input field
+        var input = document.getElementById('searchvendor_ride');
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById('vendor_ride_table');
+        var tr = table.getElementsByTagName('tr');
+
+        // Loop through all table rows
+        for (var i = 1; i < tr.length; i++) {
+            var td = tr[i].getElementsByTagName('td');
+            var rowContainsFilter = false;
+
+            // Loop through all cells in the current row
+            for (var j = 0; j < td.length; j++) {
+                var cell = td[j];
+                if (cell) {
+                    var txtValue = cell.textContent || cell.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        rowContainsFilter = true;
+                        break; // No need to check further cells if one matches
+                    }
+                }
+            }
+
+            // Display or hide the row based on whether it contains the filter text
+            if (rowContainsFilter) {
+                tr[i].style.display = '';
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+
+
+    // custom.js
+    // custom.js
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[id^="driverInput_"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var inputId = this.id;
+                var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+                var listId = 'driverList_' + modalId;
+                var hiddenInputId = 'driverId_' + modalId;
+
+                var inputElement = document.getElementById(inputId);
+                var listElement = document.getElementById(listId);
+                var hiddenInputElement = document.getElementById(hiddenInputId);
+
+                var inputValue = inputElement.value.trim().toLowerCase();
+                var options = listElement.options;
+
+                hiddenInputElement.value = ""; // Reset hidden input
+
+                // Loop through options to find a match with the input value
+                for (var i = 0; i < options.length; i++) {
+                    var optionValue = options[i].value.trim().toLowerCase();
+
+                    if (optionValue === inputValue) {
+                        hiddenInputElement.value = options[i].getAttribute('data-id');
+                        console.log("Driver ID found and set: ", hiddenInputElement.value);
+                        break;
+                    }
+                }
+
+                if (!hiddenInputElement.value) {
+                    console.log("No matching Driver ID found for input: ", inputValue);
+                }
+            });
+        });
+
+        document.querySelectorAll('input[id^="carInput_"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var inputId = this.id;
+                var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+                var listId = 'CarsList_' + modalId;
+                var hiddenInputId = 'carId_' + modalId;
+
+                var inputElement = document.getElementById(inputId);
+                var listElement = document.getElementById(listId);
+                var hiddenInputElement = document.getElementById(hiddenInputId);
+
+                if (!inputElement || !listElement || !hiddenInputElement) {
+                    console.error(`One or more elements not found: inputId=${inputId}, listId=${listId}, hiddenInputId=${hiddenInputId}`);
+                    return;
+                }
+
+                var inputValue = inputElement.value.trim().toLowerCase();
+                var options = listElement.options;
+
+                hiddenInputElement.value = ""; // Reset hidden input
+
+                // Loop through options to find a match with the input value
+                for (var i = 0; i < options.length; i++) {
+                    var optionValue = options[i].value.trim().toLowerCase();
+
+                    if (optionValue === inputValue) {
+                        hiddenInputElement.value = options[i].getAttribute('data-id');
+                        console.log("Car ID found and set: ", hiddenInputElement.value);
+                        break;
+                    }
+                }
+
+                if (!hiddenInputElement.value) {
+                    console.log("No matching Car ID found for input: ", inputValue);
+                }
+            });
+        });
+
+    });
+   
+        function makePayment(fare ,ride_id){
+            Swal.fire({
+                title: "Are you sure?",
+                text: `You won't pay ₹${fare} and confirm!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{% url "confirmed_ride_status" %}',
+                        type: 'POST',
+                        data: {
+                            'ride_id': ride_id,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Payed!",
+                                    text: "Your Ride confirmed.",
+                                    icon: "success"
+                                    });
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: response.message,
+                                    icon: "error"
+                                    });
+                            }
+                        },
+                        error: function(xhr, errmsg, err) {
+                            Swal.fire({
+                                    title: "Error!",
+                                    text: response.message,
+                                    icon: "error"
+                                    });
+                        }
+                    });
+                    
+                }
+                });
+        }
+
+        // Fetch driver and car data from the server
+fetch("{% url 'vendor-suggestions' %}")
+    .then(response => response.json())
+    .then(data => {
+        var drivers = data.drivers;
+        var cars = data.cars;
+        
+        // Apply autocomplete to DriverInput and CarInput for each ride's row
+        document.querySelectorAll('[id^="DriverInput_"]').forEach(function(driverInput) {
+            var rideHashedId = driverInput.id.split("_")[1];
+            autocomplete(driverInput, drivers, document.getElementById("driverId_" + rideHashedId));
+        });
+
+        document.querySelectorAll('[id^="CarInput_"]').forEach(function(carInput) {
+            var rideHashedId = carInput.id.split("_")[1];
+            autocomplete(carInput, cars, document.getElementById("carId_" + rideHashedId));
+        });
+    });
+
+    function autocomplete(inp, arr, hiddenInput) {
+    var currentFocus;
+    console.log("line :", inp, arr);
+
+    inp.addEventListener("input", function(e) {
+        var a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) { return false; }
+        currentFocus = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+            if (arr[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].name.substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].name.substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i].name + "'>";
+                b.innerHTML += "<input type='hidden' class='hashed_id' value='" + arr[i].hashed_id + "'>";
+                b.addEventListener("click", function(e) {
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    hiddenInput.value = this.getElementsByClassName("hashed_id")[0].value;
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+
+    inp.addEventListener("keydown", function(e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) { // Down arrow key
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) { // Up arrow key
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) { // Enter key
+            e.preventDefault();
+            if (currentFocus > -1) {
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+
+    function removeActive(x) {
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+
+    document.addEventListener("click", function(e) {
+        closeAllLists(e.target);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[id^="rzp-button-"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            var rideId = this.getAttribute('data-hashed-id'); // Get the ride hashed ID
+
+            // Fetch order details via server
+            fetch('/rides/create_order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `ride_id=${rideId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                var options = {
+                    "key": "{{ key_id }}", // Enter the Key ID generated from the Razorpay Dashboard
+                    "amount": data.amount, // Amount in paise
+                    "currency": "INR",
+                    "name": "Vaahan",
+                    "description": "Ride Payment",
+                    "image": "https://example.com/your_logo.png",
+                    "order_id": data.id, // Order ID generated from backend
+                    "handler": function (response) {
+                        // Payment successful
+                        fetch('/rides/confirmed-ride-status/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `ride_id=${rideId}&razorpay_payment_id=${response.razorpay_payment_id}&razorpay_order_id=${response.razorpay_order_id}&razorpay_signature=${response.razorpay_signature}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Payment Done',
+                                    text: "Payment Done Successfully and Ride Confirmed",
+                                    icon: 'success'
+                                }).then(() => {
+                                    // Reload the page after a successful payment
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Failed',
+                                    text: data.message
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: 'Failed to update ride status'
+                            });
+                        });
+
+                        console.log("Payment ID:", response.razorpay_payment_id);
+                        console.log("Order ID:", response.razorpay_order_id);
+                        console.log("Signature:", response.razorpay_signature);
+                        console.log("Response:", response);
+                    },
+   
+                };
+
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: 'Failed to create order'
+                });
+            });
+        });
+    });
+});
+
+</script>
+{% endblock %}

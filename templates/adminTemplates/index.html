@@ -45,9 +45,21 @@
 <div class="container-fixed">
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <div class="flex flex-col justify-center gap-2">
+            {% if request.user.user_type == 'Vendor' %}
             <h1 class="text-xl font-semibold leading-none text-gray-900">
-                Dashboard
+                Dashboard Vendor
             </h1>
+            {% endif %}
+            {% if request.user.user_type == 'Admin' %}
+            <h1 class="text-xl font-semibold leading-none text-gray-900">
+                Dashboard Admin 
+            </h1>
+            {% endif %}
+            {% if request.user.user_type == 'Driver' %}
+            <h1 class="text-xl font-semibold leading-none text-gray-900">
+                Dashboard Driver
+            </h1>
+            {% endif %}
             <div class="flex items-center gap-2 text-sm font-medium text-gray-600">
                 Central Hub for Personal Customization
             </div>
@@ -464,7 +476,7 @@
         <!-- end: grid -->
         <!-- begin: grid -->
         <div class="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 ">
                 <div class="card h-full">
                     <div class="card-body lg:p-7.5 lg:pt-6 p-5">
                         <div class="flex items-center justify-between flex-wrap gap-5 mb-7.5">
@@ -532,7 +544,7 @@
                     </div>
                 </div>
             </div>
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 ">
                 <div class="grid">
                     <div class="card card-grid h-full min-w-full">
                         <div class="card-header">
@@ -3212,6 +3224,12 @@
             </div>
         </div>
     </div>
+
 </div>
+<script src="https://unpkg.com/swapy/dist/swapy.min.js"></script>
+<script>
+  // You can then use it like this
+  const swapy = Swapy.createSwapy(container)
+</script>
 {% endblock %}
 <!--end::Page layout-->

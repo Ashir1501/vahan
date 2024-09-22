@@ -1,0 +1,863 @@
+{% extends '../adminTemplates/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'success' %}
+<script>
+    console.log('{{message}}')
+    Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 1500
+    });
+</script>
+{% endif %}
+{% if message.tags == 'error' %}
+<script>
+    Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "{{message}}",
+        showConfirmButton: false,
+        timer: 2000
+    });
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
+<!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+
+
+<div>
+
+    <div style="margin: 10px;">
+        
+        <div class="container-fixed">
+            <div class="grid gap-5 lg:gap-7.5">
+                <div class="card card-grid min-w-full">
+                    <div class="card-header py-5 flex-wrap">
+                        <h3 class="card-title">
+                            Ongoing Details  {{request.user}}
+
+                            <!-- <div style="display: inline-block;" class="ml-5">
+                                <button class="btn btn-danger btn-sm" type="button" onclick="cancelRidePending()">
+                                    <i class="ki-filled ki-cross-circle"></i>
+                                    Cancel
+                                </button>
+                            </div> -->
+
+                            <!-- <div style="display: inline-block;" class="ml-5">
+                                <button class="btn btn-light btn-sm" type="button" onclick="approvedRide()">
+                                    Approve
+                                </button>
+                            </div> -->
+                        </h3>
+                        <div class="flex gap-6">
+                            <div class="relative">
+                                <i
+                                    class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                <input class="input input-sm pl-8" onkeyup="filterTableTypeDriver_ride()"
+                                    placeholder="Search" id="searchDriver_ride" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div data-datatable="true" data-datatable-page-size="5">
+                            <div class="scrollable-x-auto">
+                                <table class="table table-auto table-border" data-datatable-table="true"
+                                    id="Driver_ride_table">
+                                    <thead>
+                                        <tr>
+                                            <!-- <th class="w-[60px]">
+                                                <input class="checkbox checkbox-sm" data-datatable-check="true"
+                                                    type="checkbox" />
+                                            </th> -->
+                                            <th class="w-[20px]"></th>
+                                            <!-- <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Status</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th> -->
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Drop</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup date</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Pickup at</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Return Date</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[10px]"> Ride Type</th>
+                                            <th class="w-[120px]" > Car </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Car Model</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Fare</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Duration</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">KMS</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                            <th class="w-[80px]">
+                                                <span class="sort asc">
+                                                    <span class="sort-label">Customer Name</span>
+                                                    <span class="sort-icon"></span>
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for rideData in rides %}
+                                       
+                                        
+                                        
+                                            
+                                        
+                                        <tr>
+                                            
+                                        
+
+                                            <!-- <td>
+                                                <a class="btn btn-sm btn-light"
+                                                    data-modal-toggle="#modal_{{ rideData.hashed_id }}_driver_id">
+                                                    <i class="ki-filled ki-delivery-3"></i>Assign
+                                                </a>
+                                            </td> -->
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="btn btn-outline btn-success"
+                                                            data-modal-toggle="#modal_{{ rideData.ride.hashed_id }}_driver_id">
+                                                            Complete 
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.pickup_location }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.drop_location }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.pickup_date }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.pickup_at }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.return_date }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.trip_type }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.status }}</a>
+                                                    </div>
+                                                </div>
+                                            </td> -->
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{rideData.ride.car.Registration_Number }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.car.Car_type.car_model }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.fare }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.duration }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">{{ rideData.ride.route.kms }}</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td title="{{ rideData.ride.customer.email }}">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                            {{ rideData.ride.customer.first_name }} {{ rideData.ride.customer.last_name }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        <!-- confirm model -->
+                                        <div class="modal" data-modal="true"
+                                            id="modal_{{ rideData.ride.hashed_id }}_driver_id">
+                                            <form id="carEditForm_{{ rideData.ride.hashed_id }}" method="post"
+                                                enctype="multipart/form-data" action="{% url 'paymen-proceed' rideData.ride.hashed_id  %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="ride_id" value="{{ rideData.ride.hashed_id }}">
+                                                <div class="modal-content max-w-[600px] top-[10%]">
+                                                    <div class="modal-header">
+                                                        <h3 class="modal-title text-lg font-semibold">
+                                                            KMS Details - <span class="font-semibold text-gray-700">Fare ₹ {{rideData.ride.fare}}</span> 
+                                                            
+                                                          </h3>
+                                                          <div id="notification"></div>
+                                                        <button type="button" class="btn btn-xs btn-icon btn-light"
+                                                            data-modal-dismiss="true">
+                                                            <i class="ki-outline ki-cross"></i>
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <div class="modal-body rounded-lg shadow-lg p-5 bg-white">
+                                                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5 border-b border-gray-200 pb-4">
+                                                            <label class="form-label flex-shrink-0 w-full lg:w-auto font-semibold text-gray-700">
+                                                                Advance Paid
+                                                            </label>
+                                                            <div class="flex-grow bg-green-50 p-3 rounded-lg text-green-700 font-bold">
+                                                                ₹{{ rideData.advance_payment }}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Remaining Payment Section -->
+                                                        <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5 border-b border-gray-200 pb-4">
+                                                            <label class="form-label flex-shrink-0 w-full lg:w-auto font-semibold text-gray-700">
+                                                                Remaining Payment
+                                                            </label>
+                                                            <div class="flex-grow bg-red-50 p-3 rounded-lg text-red-700 font-bold">
+                                                                ₹{{ rideData.remaining_fare }}
+                                                            </div>
+                                                        </div>
+                                                            <!-- <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+                                                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                    Start KMS
+                                                                    <span class="text-danger">*</span>
+                                                                </label>
+                                                                <input class="input w-full" name="startKmsInput" placeholder="Start Kms" type="number" required />
+                                                            </div> -->
+                                                            <button class="btn btn-primary mb-5" data-collapse="#end_kms_content">
+                                                                Kms Details
+                                                               </button>
+                                                               <div class="card transition-all duration-300 hidden" id="end_kms_content">
+                                                                <!-- <div class="card-header">
+                                                                 <h3 class="card-title">
+                                                                  
+                                                                 </h3>
+                                                                </div> -->
+                                                                <div class="card-body">
+                                                                    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+                                                                        <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                            END KMS
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+                                                                        <input class="input w-full" name="endKmsInput" placeholder="End Kms" type="number" required />
+                                                                    </div>
+                                                                
+                                                                    <video id="camera-stream-end-kms" autoplay style="display:none; margin: 10px;"></video>
+<canvas id="capture-canvas-end-kms" style="display:none; margin: 10px;"></canvas>
+<button class="btn btn-light" type="button" id="start-camera-button-end-kms" style="margin: 10px;">Open Camera</button>
+<button class="btn btn-info" type="button" id="switch-camera-button-end-kms" style="display:none; margin: 10px;">Switch Camera</button>
+<button class="btn btn-success" type="button" id="capture-button-end-kms" style="display:none; margin: 10px;">Capture Image</button>
+<img id="captured-image-end-kms" style="display:none; margin: 10px;" />
+<input type="hidden" id="end-kms-image-data" name="end_kms_data"/>
+
+                                                           
+                                                               </div>
+                                                               </div>
+                                                            <!-- Car Brand Input -->
+                                                            <!-- <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+                                                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                    END KMS
+                                                                    <span class="text-danger">*</span>
+                                                                </label>
+                                                                <input class="input w-full" name="endKmsInput" placeholder="End Kms" type="number" required />
+                                                            </div> -->
+
+                                                            <!-- <div class="form-group mb-5">
+                                                                <label for="startKms" class="form-label">Start KMS</label>
+                                                                <input class="form-control-file form-control-sm" id="startKms" type="file" name="start_kms_pic"
+                                                                    accept="image/*" required>
+                                                            </div> -->
+                                                            <!-- <div class="form-group mb-5">
+                                                                <label for="EndKms" class="form-label">End Kms</label>
+                                                                <input class="form-control-file form-control-sm" id="EndKms" type="file" name="end_kms_pc"
+                                                                    accept="image/*" required>
+                                                            </div> -->
+                                                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5 mt-5">
+                                                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                    Toll Fare
+                                                                    (<span class="text-info">if Any</span>)
+                                                                </label>
+                                                                <input class="input w-full" name="tollFare" placeholder="Toll" type="number" />
+                                                            </div>
+                                                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+                                                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                    Parking Fare
+                                                                    (<span class="text-info">if Any</span>)
+                                                                </label>
+                                                                <input class="input w-full" name="parkingFare" placeholder="Parking" type="number" />
+                                                            </div>
+                                                            <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 mb-5">
+                                                                <label class="form-label flex-shrink-0 w-full lg:w-auto">
+                                                                    Pending Fare
+                                                                    (<span class="text-info">if Any</span>)
+                                                                </label>
+                                                                <input class="input w-full" name="pendingFare" placeholder="Pending Fare" type="number" />
+                                                            </div>
+                                                            <div class="w-full">
+                                                                <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                                                                 <label class="form-label max-w-32">
+                                                                  Payment Detail
+                                                                 </label>
+                                                                 <select class="select" name="paymentDetail" required>
+                                                                  <option value="cash">
+                                                                   Cash
+                                                                  </option>
+                                                                  <option value="online">
+                                                                   Online
+                                                                  </option>
+                                                                  <!-- <option value="wallet">
+                                                                    wallet
+                                                                  </option> -->
+                                                                 </select>
+                                                                </div>
+                                                            </div>
+                                                            <!-- <div class="form-group mb-5">
+                                                                <label for="startKms" class="form-label">Car Front Pic</label>
+                                                                <input class="form-control-file form-control-sm" id="frontP" type="file" name="front_pic"
+                                                                    accept="image/*" required>
+                                                            </div>
+                                                            <div class="form-group mb-5">
+                                                                <label for="EndKms" class="form-label">Car Back Pic</label>
+                                                                <input class="form-control-file form-control-sm" id="backP" type="file" name="back_pic"
+                                                                    accept="image/*" required>
+                                                            </div> -->
+                                                    </div>
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    <div class="modal-footer justify-end" style="margin: 10px;">
+                                                        <div class="flex gap-4">
+                                                            <button type="button" class="btn btn-light"
+                                                                data-modal-dismiss="true">Cancel</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Ok</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        </div>
+
+                                       
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div
+                                class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                <div class="flex items-center gap-2">
+                                    Show
+                                    <select class="select select-sm w-16" data-datatable-size="true"
+                                        name="perpage"></select>
+                                    per page
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span data-datatable-info="true"></span>
+                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    function filterTableTypeDriver_ride() {
+        // Get the value of the input field
+        var input = document.getElementById('searchDriver_ride');
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById('Driver_ride_table');
+        var tr = table.getElementsByTagName('tr');
+
+        // Loop through all table rows
+        for (var i = 1; i < tr.length; i++) {
+            var td = tr[i].getElementsByTagName('td');
+            var rowContainsFilter = false;
+
+            // Loop through all cells in the current row
+            for (var j = 0; j < td.length; j++) {
+                var cell = td[j];
+                if (cell) {
+                    var txtValue = cell.textContent || cell.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        rowContainsFilter = true;
+                        break; // No need to check further cells if one matches
+                    }
+                }
+            }
+
+            // Display or hide the row based on whether it contains the filter text
+            if (rowContainsFilter) {
+                tr[i].style.display = '';
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+
+
+    // custom.js
+    // custom.js
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[id^="driverInput_"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var inputId = this.id;
+                var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+                var listId = 'driverList_' + modalId;
+                var hiddenInputId = 'driverId_' + modalId;
+
+                var inputElement = document.getElementById(inputId);
+                var listElement = document.getElementById(listId);
+                var hiddenInputElement = document.getElementById(hiddenInputId);
+
+                var inputValue = inputElement.value.trim().toLowerCase();
+                var options = listElement.options;
+
+                hiddenInputElement.value = ""; // Reset hidden input
+
+                // Loop through options to find a match with the input value
+                for (var i = 0; i < options.length; i++) {
+                    var optionValue = options[i].value.trim().toLowerCase();
+
+                    if (optionValue === inputValue) {
+                        hiddenInputElement.value = options[i].getAttribute('data-id');
+                        console.log("Driver ID found and set: ", hiddenInputElement.value);
+                        break;
+                    }
+                }
+
+                if (!hiddenInputElement.value) {
+                    console.log("No matching Driver ID found for input: ", inputValue);
+                }
+            });
+        });
+
+        document.querySelectorAll('input[id^="carInput_"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var inputId = this.id;
+                var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+                var listId = 'CarsList_' + modalId;
+                var hiddenInputId = 'carId_' + modalId;
+
+                var inputElement = document.getElementById(inputId);
+                var listElement = document.getElementById(listId);
+                var hiddenInputElement = document.getElementById(hiddenInputId);
+
+                if (!inputElement || !listElement || !hiddenInputElement) {
+                    console.error(`One or more elements not found: inputId=${inputId}, listId=${listId}, hiddenInputId=${hiddenInputId}`);
+                    return;
+                }
+
+                var inputValue = inputElement.value.trim().toLowerCase();
+                var options = listElement.options;
+
+                hiddenInputElement.value = ""; // Reset hidden input
+
+                // Loop through options to find a match with the input value
+                for (var i = 0; i < options.length; i++) {
+                    var optionValue = options[i].value.trim().toLowerCase();
+
+                    if (optionValue === inputValue) {
+                        hiddenInputElement.value = options[i].getAttribute('data-id');
+                        console.log("Car ID found and set: ", hiddenInputElement.value);
+                        break;
+                    }
+                }
+
+                if (!hiddenInputElement.value) {
+                    console.log("No matching Car ID found for input: ", inputValue);
+                }
+            });
+        });
+
+    });
+   
+        function makePayment(fare ,ride_id){
+            Swal.fire({
+                title: "Are you sure?",
+                text: `You won't pay ₹${fare} and confirm!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{% url "confirmed_ride_status" %}',
+                        type: 'POST',
+                        data: {
+                            'ride_id': ride_id,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Payed!",
+                                    text: "Your Ride confirmed.",
+                                    icon: "success"
+                                    });
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: response.message,
+                                    icon: "error"
+                                    });
+                            }
+                        },
+                        error: function(xhr, errmsg, err) {
+                            Swal.fire({
+                                    title: "Error!",
+                                    text: response.message,
+                                    icon: "error"
+                                    });
+                        }
+                    });
+                    
+                }
+                });
+        }
+
+        // Fetch driver and car data from the server
+fetch("{% url 'vendor-suggestions' %}")
+    .then(response => response.json())
+    .then(data => {
+        var drivers = data.drivers;
+        var cars = data.cars;
+        
+        // Apply autocomplete to DriverInput and CarInput for each ride's row
+        document.querySelectorAll('[id^="DriverInput_"]').forEach(function(driverInput) {
+            var rideHashedId = driverInput.id.split("_")[1];
+            autocomplete(driverInput, drivers, document.getElementById("driverId_" + rideHashedId));
+        });
+
+        document.querySelectorAll('[id^="CarInput_"]').forEach(function(carInput) {
+            var rideHashedId = carInput.id.split("_")[1];
+            autocomplete(carInput, cars, document.getElementById("carId_" + rideHashedId));
+        });
+    });
+
+    function autocomplete(inp, arr, hiddenInput) {
+    var currentFocus;
+    console.log("line :", inp, arr);
+
+    inp.addEventListener("input", function(e) {
+        var a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) { return false; }
+        currentFocus = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+            if (arr[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].name.substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].name.substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i].name + "'>";
+                b.innerHTML += "<input type='hidden' class='hashed_id' value='" + arr[i].hashed_id + "'>";
+                b.addEventListener("click", function(e) {
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    hiddenInput.value = this.getElementsByClassName("hashed_id")[0].value;
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+
+    inp.addEventListener("keydown", function(e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) { // Down arrow key
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) { // Up arrow key
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) { // Enter key
+            e.preventDefault();
+            if (currentFocus > -1) {
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+
+    function removeActive(x) {
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+
+    document.addEventListener("click", function(e) {
+        closeAllLists(e.target);
+    });
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const startCameraButton = document.getElementById('start-camera-button-end-kms');
+    const switchCameraButton = document.getElementById('switch-camera-button-end-kms');
+    const captureButton = document.getElementById('capture-button-end-kms');
+    const video = document.getElementById('camera-stream-end-kms');
+    const canvas = document.getElementById('capture-canvas-end-kms');
+    const capturedImage = document.getElementById('captured-image-end-kms');
+    const imageDataInput = document.getElementById('end-kms-image-data');
+
+    let stream;
+    let currentCamera = 'user'; // Default to front camera
+
+    // Function to start the camera
+    async function startCamera(camera = 'user') {
+        // Stop any existing camera stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        try {
+            // Access the user's camera
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camera } });
+            video.srcObject = stream;
+            video.style.display = 'block'; // Show video element
+            startCameraButton.style.display = 'none'; // Hide start button
+            switchCameraButton.style.display = 'block'; // Show switch camera button
+            captureButton.style.display = 'block'; // Show capture button
+        } catch (error) {
+            console.error('Error accessing the camera:', error);
+            alert('Could not access the camera. Please check your device and browser settings.');
+        }
+    }
+
+    // Start the camera
+    startCameraButton.addEventListener('click', () => {
+        startCamera(currentCamera);
+    });
+
+    // Switch camera
+    switchCameraButton.addEventListener('click', () => {
+        currentCamera = (currentCamera === 'user') ? 'environment' : 'user'; // Toggle between front and back
+        startCamera(currentCamera); // Restart camera with the new facing mode
+    });
+
+    // Capture an image from the video feed
+    captureButton.addEventListener('click', () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth; // Set canvas width to video width
+        canvas.height = video.videoHeight; // Set canvas height to video height
+        context.drawImage(video, 0, 0, canvas.width, canvas.height); // Draw video frame onto canvas
+
+        // Convert canvas image to Base64 data URL
+        const dataURL = canvas.toDataURL('image/jpeg'); // Change to 'image/png' if needed
+        capturedImage.src = dataURL; // Set the image src to data URL
+        capturedImage.style.display = 'block'; // Show the captured image
+        imageDataInput.value = dataURL; // Set the hidden input value to the image data URL
+
+        // Hide video and capture button after capture
+        video.style.display = 'none';
+        captureButton.style.display = 'none';
+        
+        // Stop the stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    });
+
+    // Optionally handle the collapsible button
+    const collapsibleButton = document.querySelector('[data-collapse]');
+    if (collapsibleButton) {
+        collapsibleButton.addEventListener('click', function() {
+            const targetSelector = this.getAttribute('data-collapse');
+            const target = document.querySelector(targetSelector);
+            if (target) {
+                target.classList.toggle('hidden');
+            }
+        });
+    }
+});
+
+
+
+// Setup WebSocket
+const userId = "{{ user.id }}";  // Ensure this is correctly passed from your template
+const wsUrl = `ws://${window.location.host}/ws/notify/${userId}/`;
+console.log(`Connecting to WebSocket at ${wsUrl}`);
+const notifySocket = new WebSocket(wsUrl);
+
+
+// On socket open
+notifySocket.onopen = function (e) {
+    console.log('Socket successfully connected.');
+};
+
+// On socket close
+notifySocket.onclose = function (e) {
+    console.log('Socket closed unexpectedly.');
+};
+
+// On receiving a message
+notifySocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    const message = data.message;
+    console.log(data.message);
+    
+    if (message === 'Payment link is Sharing') {
+        Swal.fire({
+        position: "center",
+        icon: "info",
+        title: message,
+        showConfirmButton: false,
+        timer: 2000
+    });
+    } else if (message === 'Payment link shared') {
+        Swal.fire({
+        position: "center",
+        icon: "info",
+        title: message,
+        showConfirmButton: false,
+        timer: 2000
+    });
+        
+    } else if (message === 'Payment done') {
+        Swal.fire({
+        position: "center",
+        icon: "success",
+        title: message,
+        showConfirmButton: false,
+        timer: 2000
+    });
+        
+    } else if (message === 'Payment failed' || message === 'Payment pending') {
+        Swal.fire({
+        position: "center",
+        icon: "error",
+        title: message,
+        showConfirmButton: false,
+        timer: 2000
+    });
+    }
+};
+
+// Load the saved payment status when the page loads
+
+
+
+</script>
+{% endblock %}

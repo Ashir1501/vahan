@@ -74,10 +74,10 @@
                                                             <span class="sort-icon"></span>
                                                         </span>
                                                     </th>
-                                                    <th></th>
+                                                    <th> Car </th>
                                                     <th class="w-[80px]">
                                                         <span class="sort asc">
-                                                            <span class="sort-label">Car Type</span>
+                                                            <span class="sort-label">Car Model</span>
                                                             <span class="sort-icon"></span>
                                                         </span>
                                                     </th>
@@ -109,7 +109,7 @@
                                             </thead>
                                             <tbody>
                                                 {% for rideData in ridesData %}
-                                                    {% if rideData.ride_status == 'Started' %}
+                                                    {% if rideData.ride_status == 'Started' and rideData.vendor_id.id == request.user.id %}
                                                         <tr>
                                                             
                                                             <td>
@@ -166,14 +166,14 @@
                                                             <td>
                                                                 <div class="flex items-center gap-2.5">
                                                                     <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.status }}</a>
+                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.car.Registration_Number }}</a>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <div class="flex items-center gap-2.5">
                                                                     <div class="flex flex-col gap-0.5">
-                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.car_type.car_type }}</a>
+                                                                        <a class="leading-none font-semibold text-sm text-gray-900 hover:text-primary">{{ rideData.route.car_type.car_model }}</a>
                                                                     </div>
                                                                 </div>
                                                             </td>

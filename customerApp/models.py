@@ -35,6 +35,8 @@ class Ride(models.Model):
     toll_fare = models.IntegerField(null=True,blank=True)
     parking_fare = models.IntegerField(null=True,blank=True)
     is_extra = models.BooleanField(default=False)
+    vendor_id = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='vendor_details',null=True, blank=True)
+    payment_status = models.CharField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.customer.first_name}-{self.route}-{self.pickup_date}"

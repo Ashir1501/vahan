@@ -10,13 +10,31 @@ from datetime import datetime, timedelta
 from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from collections.abc import Iterable
+from django.db.models import Q
+from paymentApp.models import *
+import uuid
+import razorpay
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.files.base import ContentFile
+import base64
 # Create your views here.
+
+client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 # ===============================================================Rides views============================================
             # --------------------Pending Rides Views-------------------------
 
+
 def hash_id(objects):
-    for obj in objects:
-        obj.hashed_id = hashlib.sha256(str(obj.id).encode()).hexdigest()
+    if isinstance(objects, Iterable) and not isinstance(objects, str):  # Check if it's an iterable (excluding strings)
+        for obj in objects:
+            obj.hashed_id = hashlib.sha256(str(obj.id).encode()).hexdigest()
+    else:  # Handle single object
+        objects.hashed_id = hashlib.sha256(str(objects.id).encode()).hexdigest()
+    
     return objects
 
 def decode_hashed_id(hashed_id, model_class):
@@ -29,9 +47,12 @@ def decode_hashed_id(hashed_id, model_class):
             return obj.id
     print(f"No match found for hashed ID: {hashed_id}")
     return None
+
+
 # method to render pending rides page
 @login_required(login_url='auth/login/')
 def Pending_rides_page(request):
+    print("3 5 :",request.user.user_type)
     rides_details = Ride.objects.all()
     drivers = Account.objects.all()
     cars_data = Car.objects.all()
@@ -80,41 +101,43 @@ def assign_driver(request):
             ride_id = decode_hashed_id(hashed_ride_id, Ride)
             driver_id = decode_hashed_id(hashed_driver_id, Account)
             car_id = decode_hashed_id(hashed_car_id,Car)
-            print(7555 , car_id)
+            print(7555 , car_id,driver_id,ride_id)
             if ride_id and driver_id:
                 try:
                     ride_instance = get_object_or_404(Ride, id=ride_id)
                     driver = get_object_or_404(Account, id=driver_id)
                     car = get_object_or_404(Car,id = car_id)
+                    print("line  92")
                     if Ride.objects.filter(driver=driver, pickup_date=ride_instance.pickup_date).exclude(id=ride_instance.id).exists():
                         messages.error(request, f"The driver {driver} is already assigned to another ride on {ride_instance.pickup_date}.")
-                        return redirect('rides-details-page')
+                        return redirect('vendor-rides')
                     if Ride.objects.filter(car=car, pickup_date=ride_instance.pickup_date).exclude(id=ride_instance.id).exists():
                         messages.error(request,f"The car {car} is already assigned to another ride on {ride_instance.pickup_date}.")
-                        return redirect('rides-details-page')
+                        return redirect('vendor-rides')
                     ride_instance.driver = driver
                     ride_instance.car = car
                     
-                    if ride_instance.ride_status == 'pending':
-                        ride_instance.ride_status = 'confirmed'
+                    if ride_instance.ride_status == 'confirmed':
+                        ride_instance.ride_status = 'assigned'
                     
                     ride_instance.save()
                     
-                    messages.success(request, f"Ride Assigned to {driver.first_name} {driver.last_name} with Car {car.car_model} {car.car_brand}")
-                    return redirect('rides-details-page')
-                except:
+                    messages.success(request, f"Ride Assigned to {driver.first_name} {driver.last_name} with Car {car.Car_type.car_model} {car.Car_type.car_brand}")
+                    return redirect('vendor-rides')
+                except Exception as e:
+                    print("line 110 :",e)
                     messages.error(request, 'Invalid Driver or Ride Data')
-                    return redirect('rides-details-page')
+                    return redirect('vendor-rides')
             else:
                 messages.error(request, 'Invalid Driver or Ride Data')
-                return redirect('rides-details-page')
+                return redirect('vendor-rides')
         else:
             messages.error(request, "Invalid Data")
-            return redirect('rides-details-page')
+            return redirect('vendor-rides')
         
-        return redirect('rides-details-page')
+       
     
-    return redirect('rides-details-page')
+    return redirect('vendor-rides')
 
 @login_required(login_url='auth/login/')
 def approved_ride(request):
@@ -130,30 +153,71 @@ def approved_ride(request):
             pass
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 # method to render ongoing page
-@login_required(login_url='auth/login/')
-def ongoing_rides_page(request):
-    rides_details = Ride.objects.all()
-    for ride_detail in rides_details:
-        ride_detail.hashed_id = hashlib.sha256(str(ride_detail.id).encode()).hexdigest()
 
+def ongoing_rides_page(request):
+    if request.user:
+        if request.user.is_superuser:
+            
+            rides_details = Ride.objects.all()
+        elif request.user.user_type == 'Vendor':
+            try:
+                rides_details = Ride.objects.filter(vendor_id = request.user.id)
+            except:
+                rides_details = []
+        elif request.user.user_type == 'Driver':
+            try:
+                rides_details = Ride.objects.filter(vendor_id = request.user.id)
+            except:
+                rides_details = []
+        else:
+            raise Http404("Page Not Found")
+        for ride_detail in rides_details:
+            ride_detail.hashed_id = hashlib.sha256(str(ride_detail.id).encode()).hexdigest()
+        
+    else:
+        raise Http404("Page Not Found")
+    print("line 149 :",rides_details,request.user.id)
     return render(request,'adminTemplates/ongoing.html',{'ridesData':rides_details})
 
  # -------------------------Completed Ride ----------------------------
 @login_required(login_url='auth/login/')
 def completed_or_past_rides(request):
     today = date.today()
+
+    # Filter rides based on user type
+    if request.user.user_type == 'Admin':
+        rides = Ride.objects.filter(
+            Q(ride_status='completed') | Q(pickup_date__lt=today)
+        )
+    elif request.user.user_type == 'Vendor':
+        rides = Ride.objects.filter(
+            (Q(ride_status='completed') | Q(pickup_date__lt=today)) & Q(vendor_id=request.user.id)
+        )
+    elif request.user.user_type == 'Driver':
+        rides = Ride.objects.filter(
+            (Q(ride_status='completed') | Q(pickup_date__lt=today)) & Q(driver=request.user.id)
+        )
+    else:
+        raise Http404("Page Not Found")
+
+    # Attach payment details and hashed_id to each ride
+    for ride in rides:
+        try:
+            
+            ride.payment_detail = Payment.objects.get(ride=ride)
+        except Payment.DoesNotExist:
+            ride.payment_detail = None
+        # ride.hashed_id = hashlib.sha256(str(ride.id).encode()).hexdigest()
+    rides = hash_id(rides)
+    # Debugging output
+    for ride in rides:
+        try:
+            print(f"Ride ID: {ride.hashed_id}, Payment Detail: {ride.payment_detail.id}")
+        except:
+            pass
     
-    # Filter rides with status 'completed' or with pickup_date in the past
-    rides = Ride.objects.filter(
-        ride_status='completed'
-    ) | Ride.objects.filter(
-        pickup_date__lt=today
-    )
-    for ride_detail in rides:
-        ride_detail.hashed_id = hashlib.sha256(str(ride_detail.id).encode()).hexdigest()
-
+    
     return render(request, 'adminTemplates/previous.html', {'ridesData': rides})
-
 
 # ---cancel Ride ------- 
 @login_required(login_url='auth/login/')
@@ -297,13 +361,7 @@ def add_new_extra(request):
 
     return HttpResponse("Invalid request", status=400)
 
-
-# HASHED_ID_TO_ORIGINAL_ID = {
-#     hashlib.sha256(str(extra.id).encode()).hexdigest(): extra.id
-#     for extra in Extra.objects.all()
-# }
-# @csrf_exempt
-@login_required(login_url='auth/login/')  
+@login_required(login_url='auth/vendor/login/')  
 def delete_Extra(request):
     if request.method == 'POST':
         hashed_ids = request.POST.getlist('extra_ids[]')  # Get the list of car IDs
@@ -331,12 +389,331 @@ def delete_Extra(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
+@login_required(login_url='auth/vendor/login/') 
 def vendor_ride_details(request):
+    
     rides_details = Ride.objects.all()
     drivers = Account.objects.all()
     cars_data = Car.objects.all()
-
     rides_details = hash_id(rides_details)
     drivers_details = hash_id(drivers)
     cars = hash_id(cars_data)
-    return render(request,'vendorTemplates/vendor_ride_details.html',{'ridesData':rides_details,"driverData":drivers_details,"cars_data":cars})
+    for ride in rides_details:
+        ride.fare_20_percent = round(float(ride.fare) * 0.2, 2)
+    return render(request, 'vendorTemplates/vendors_ride_details.html', {
+        'ridesData': rides_details,
+        'driverData': drivers_details,
+        'cars_data': cars
+    })
+
+# from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+# from django.contrib.auth.decorators import login_required
+# from .models import Ride, Account
+# Make sure this function is properly implemented
+
+@csrf_exempt
+@login_required
+def confirmed_ride_status(request):
+    if request.method == 'POST':
+        ride_id_hashed = request.POST.get('ride_id')
+        ride_id = decode_hashed_id(ride_id_hashed, Ride)
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+        print(razorpay_payment_id)
+        print(razorpay_order_id)
+        print(razorpay_signature)
+        try:
+            ride = Ride.objects.get(id=ride_id)
+            ride.ride_status = 'confirmed'
+            ride.vendor_id = Account.objects.get(id=request.user.id)
+            ride.save()
+            
+            # Optionally verify payment signature with Razorpay server here
+            # response = verify_payment_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature)
+            # if not response['status'] == 'success':
+            #     return JsonResponse({'success': False, 'message': 'Payment verification failed'})
+            
+            return JsonResponse({'success': True, 'message': 'Ride status updated to confirmed'})
+        except Ride.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Ride not found'})
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+
+def vendor_suggestions(request):
+    # Fetch drivers data and hash their IDs
+    drivers = hash_id(Account.objects.all())
+    driver_data = [
+        {
+            "name": f"{driver.first_name} | {driver.last_name} | {driver.email}",
+            "hashed_id": driver.hashed_id,
+        }
+        for driver in drivers
+    ]
+
+    # Fetch car data and hash their IDs
+    cars = hash_id(Car.objects.all())
+    car_data = [
+        {
+            "name": f"{car.Car_type.car_model} | {car.Registration_Number} | {car.Car_type.car_type}",
+            "hashed_id": car.hashed_id,
+        }
+        for car in cars
+    ]
+
+    return JsonResponse({"drivers": driver_data, "cars": car_data}, safe=False)
+
+
+
+def driver_ride_details(request):
+    if request.user.user_type == 'Driver':
+        # Filter rides by the current driver's ID and assigned status
+        rides = Ride.objects.filter(
+            Q(driver=request.user.id) & Q(ride_status="assigned")
+        )
+        print("441  : ",request.user)
+        ride_details = []
+        # Assuming hash_id function correctly modifies the queryset
+        rides = hash_id(rides)
+
+        for ride in rides:
+            # Get the payment details for the ride
+            payment = Payment.objects.filter(ride=ride).first()  # Get the first payment entry
+
+            # Calculate remaining fare
+            if payment and payment.advance_payment is not None and ride.fare is not None:
+                remaining_fare = ride.fare - payment.advance_payment
+            else:
+                remaining_fare = ride.fare if ride.fare is not None else 0
+
+            # Add ride details and payment info
+            ride_details.append({
+                'ride': ride,
+                'advance_payment': payment.advance_payment if payment else None,
+                'remaining_fare': remaining_fare
+            })
+
+        print("line 454:", ride_details)
+        return render(request, 'driverTemplates/driver_ride_details.html', {'rides': ride_details})
+
+    else:
+        raise Http404("Page Not Found")
+def driver_ongoing_details(request):
+    if request.user.user_type == 'Driver':
+        rides = Ride.objects.filter(driver=request.user.id, ride_status="Started")
+        
+        # Hash the IDs of the rides
+        rides = hash_id(rides)
+        
+        ride_details = []
+
+        for ride in rides:
+            # Fetch the related payment, if it exists
+            payment = Payment.objects.filter(ride=ride).first()
+            
+            # Calculate remaining fare
+            advance_payment = payment.advance_payment if payment else 0
+            remaining_fare = ride.fare - (advance_payment or 0) if ride.fare else 0
+
+
+            # Append ride details with additional information
+            ride_details.append({
+                'ride': ride,
+                # 'ride_id_hashed': ride.hashed_id,  # Use the hashed ID
+                'advance_payment': advance_payment,
+                'remaining_fare': remaining_fare
+            })
+        print(ride_details)
+        return render(request, 'driverTemplates/driver_ongoing_details.html', {'rides': ride_details})
+    else:
+        raise Http404("Page Not Found")
+
+    
+
+@csrf_exempt  # Use with caution; ensure you handle CSRF properly in production
+def start_ride(request):
+    if request.method == 'POST' and request.user.user_type == 'Driver':
+        hashed_id = request.POST.get('ride_id')
+        front_car_image = request.POST.get("front_car_image_data")
+        back_car_image = request.POST.get("back_car_image_data")
+        selfie_image_data = request.POST.get("selfie_image_data")
+        kms_image_data = request.POST.get("kms_image_data")
+        start_kms_input = request.POST.get("start_kms_input")
+        print("line 448:", hashed_id)
+
+        # Decode the hashed_id to get the original ride ID
+        ride_id = decode_hashed_id(hashed_id, Ride)
+        print("line 449:", ride_id)
+        
+        # Check if the driver already has any ride with the status "Started"
+        existing_started_ride = Ride.objects.filter(driver=request.user.id, ride_status="Started").exists()
+        print("501 ::", existing_started_ride)
+
+        if existing_started_ride:
+            return JsonResponse({'status': 'error', 'message': 'You already have a started ride. Complete it before starting a new one.'}, status=400)
+
+        # Decode and save the car image
+        front_car_image_file = None
+        if front_car_image:
+            format, imgstr = front_car_image.split(';base64,')
+            ext = format.split('/')[-1]
+            front_car_image_file = ContentFile(base64.b64decode(imgstr), name=f'car_{ride_id}.{ext}')
+            print("Decoded car image:", front_car_image_file)
+
+        back_car_image_file = None
+        if back_car_image:
+            format, imgstr = back_car_image.split(';base64,')
+            ext = format.split('/')[-1]
+            back_car_image_file = ContentFile(base64.b64decode(imgstr), name=f'car_{ride_id}.{ext}')
+            print("Decoded car image:", back_car_image_file)
+
+        # Decode and save the selfie image
+        selfie_image_file = None
+        if selfie_image_data:
+            format, imgstr = selfie_image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            selfie_image_file = ContentFile(base64.b64decode(imgstr), name=f'selfie_{ride_id}.{ext}')
+            print("Decoded selfie image:", selfie_image_file)
+        else:
+            messages.error(request, "Selfie required to start the ride.")
+            return redirect('driver-rides-details')
+
+        # Decode and save the KMS image
+        kms_image_file = None
+        if kms_image_data:
+            format, imgstr = kms_image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            kms_image_file = ContentFile(base64.b64decode(imgstr), name=f'kms_{ride_id}.{ext}')
+            print("Decoded KMS image:", kms_image_file)
+
+        try:
+            # Attempt to retrieve the ride with the given ID and driver (ignore the status)
+            ride = Ride.objects.get(id=ride_id, driver=request.user.id)
+            print(ride)
+            
+            # Update the ride status to "Started"
+            ride.ride_status = "Started"
+            
+            # Assign the decoded images to the respective fields in the Ride model
+            if selfie_image_file:
+                ride.selfie = selfie_image_file
+            else:
+                messages.error(request, 'Selfie Image is mandatory')
+                return redirect('driver-rides-details')
+            if front_car_image_file:
+                ride.Front_pic = front_car_image_file
+            else:
+                messages.error(request, 'Front Car Image is mandatory')
+                return redirect('driver-rides-details')
+            
+            if back_car_image_file:
+                ride.Back_pic = back_car_image_file
+            else:
+                messages.error(request, 'Back Car Image is mandatory')
+                return redirect('driver-rides-details')
+            if kms_image_file:
+                ride.opening_kms_screen = kms_image_file
+            else:
+                messages.error(request, 'Kms Image is mandatory')
+                return redirect('driver-rides-details')
+            if start_kms_input:
+                ride.opening_kms_input = start_kms_input
+            else:
+                messages.error(request, 'Kms Input is mandatory')
+                return redirect('driver-rides-details')
+            
+            ride.save()  # Save the instance with updated fields
+            messages.success(request, 'Ride started successfully.')
+            return redirect('driver-rides-details')
+        except Ride.DoesNotExist:
+            messages.error(request, 'Ride not found or you are not authorized to start this ride.')
+            return redirect('driver-rides-details')
+
+    messages.error(request, 'Invalid request')
+    return redirect('driver-rides-details')
+
+
+@csrf_exempt
+def create_order(request):
+    if request.method == "POST":
+        print("line 549 :",request.POST)
+        # data = request.POST   round(float(ride.fare) * 0.2, 2)
+        # amount = request.POST.get('amount')
+        ride_id = request.POST.get('ride_id')
+        ride_id = decode_hashed_id(ride_id,Ride)
+        ride = Ride.objects.get(id = ride_id)
+        # print("line 557 :",ride.fare,amount)
+        amount = (round(float(ride.fare) * 0.2, 2))* 100  # amount in paise
+        print("line 559 :",amount)
+        # if int(amount) != expected_amount:
+        #     return JsonResponse({'error': 'Invalid amount'}, status=400)
+        unique_reference_id = f"{ride_id}-{uuid.uuid4()}"
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        order = client.order.create({
+            'amount': amount,  # Amount in paise
+            'currency': 'INR',
+            'payment_capture': '1'
+        })
+
+        # payment_link = client.payment_link.create({
+        #     "amount": amount,
+        #     "currency": "INR",
+        #     "accept_partial": False,
+        #     "reference_id": unique_reference_id,
+        #     "description": "Payment for your ride with Vaahan",
+        #     "customer": {
+        #         "name": "Customer Name",
+        #         "email": "customer@example.com",
+        #         "contact": "9372004279"
+        #     },
+        #     "notify": {
+        #         "sms": True,
+        #         "email": True
+        #     },
+        #     "reminder_enable": True,
+        #     "callback_url": "http://127.0.0.1:8000/rides/vendor-rides/",
+        #     "callback_method": "get"
+        # })
+        # send_mail(
+        #     subject='Complete Your Ride Payment',
+        #     message=f'Please complete your payment for the ride by clicking on the link: {payment_link["short_url"]}',
+        #     from_email=settings.DEFAULT_FROM_EMAIL,
+        #     recipient_list=['fcgaavez@gmail.com'],
+        #     fail_silently=False,
+        # )
+
+        # print("Line 568 :",order)
+        return JsonResponse(order)
+
+    return HttpResponse(status=405)
+
+@csrf_exempt
+def payment_callback(request):
+    if request.method == 'POST':
+        payment_id = request.POST.get('razorpay_payment_id')
+        order_id = request.POST.get('razorpay_order_id')
+        signature = request.POST.get('razorpay_signature')
+        
+        # Verify the signature
+        data = {
+            'razorpay_order_id': order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        try:
+            print("line 587 :",client.utility.verify_payment_signature(data))
+            client.utility.verify_payment_signature(data)
+            # Payment is verified
+            return JsonResponse({'status': 'success'})
+        except razorpay.errors.SignatureVerificationError:
+            # Invalid signature
+            return JsonResponse({'status': 'failure'})
+    return JsonResponse({'status': 'error'}, status=400)
+@csrf_exempt
+def payment_success(request):
+    # Handle payment success logic here
+    return HttpResponse("Payment successful")
