@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vahaan Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #1e3a8a; 
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+            text-align: left;
+        }
+        .content h2 {
+            margin-top: 0;
+        }
+        .total {
+            font-size: 30px;
+            font-weight: bold;
+            color: #111827;
+        }
+        .details {
+            background-color: #f9fafb;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+        .details .payment-id {
+            background-color: #d1e7ff;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .ride-details {
+            margin-top: 20px;
+        }
+
+        
+        
+        .driver-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .driver-details .driver-info {
+            display: flex;
+            align-items: center;
+        }
+        .driver-details .driver-info img {
+            border-radius: 50%;
+            width: 40px;
+            margin-right: 10px;
+        }
+        .footer {
+            background-color: #e5e7eb;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+        .rate-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* .timeline {
+    position: relative;
+    margin: 40px 0;
+    padding: 0; 
+}
+
+.marker {
+    width: 40px;
+    height: 40px;
+    background-color: #2d3748;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 10px; 
+    left: 50%; 
+    transform: translateX(-50%);
+}
+
+.left-marker {
+    left: calc(50% - 25%); 
+}
+
+.right-marker {
+    left: calc(50% + 25%); 
+}
+
+.event {
+    display: flex;
+    justify-content: flex-start; 
+    margin-bottom: 40px; 
+    position: relative;
+}
+
+.contentL {
+    background-color: #e2e8f0; 
+    border-radius: 8px;
+    padding: 20px;
+    width: 45%; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event.left {
+    flex-direction: row; 
+}
+
+.event.right {
+    flex-direction: row-reverse; 
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%; 
+    width: 2px;
+    height: calc(100% + 20px);
+    background-color: rgba(45, 55, 72, 0.2); 
+    transform: translateX(-50%);
+} */
+
+/* h3 {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #2d3748; 
+}
+
+p {
+    color: #4a5568;
+} */
+
+/* .timeline {
+    position: relative;
+    margin: 20px 0;
+    padding: 0;
+    border-left: 2px solid rgba(45, 55, 72, 0.2);
+} */
+.event {
+    margin: 20px 0;
+    position: relative;
+    padding-left: 30px;
+}
+.marker {
+    width: 20px;
+    height: 20px;
+    background-color: #2d3748; /* Dark Gray */
+    border-radius: 50%;
+    position: absolute;
+    left: -10px; /* Center the marker on the line */
+    top: 10px; /* Adjust position */
+}
+.contentL {
+    background-color: #e2e8f0; /* Light Gray */
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    
+}
+     </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Vahaan Receipt</h1>
+            
+            {% if admin %}
+                <h2> <strong style="font-size: 30px;">Hi Admin</strong></h2>
+                <p>Kindly find the Ride recipt</p>
+
+            {% elif vendor_name %}
+                <h2><strong style="font-size: 30px;">Hi Vendor</strong></h2>
+                <p>Kindly find the Ride recipt</p>
+            {% else %}
+                <h2><strong style="font-size: 30px;">{{customer_first_name}} {{customer_last_name}}</strong>, thanks for using Vahaan!</h2>
+                <p>We hope you enjoyed your ride today. Below are the details of your trip.</p>
+            {% endif %}
+        </div>
+        <div class="content">
+            
+
+            <p class="total mt-3">Total: ₹{{total_fare}}</p>
+
+            <div class="details bg-blue-50 shadow-lg p-4 rounded-lg">
+                {% if admin and vendor_name %}
+                    <p><strong>Customer Name:</strong> {{customer_first_name}} {{customer_last_name}}</p>
+                {% endif %}
+                    <p><strong>Ride Price:</strong> ₹{{ride_fare}}</p>
+                {% if toll_fare %}
+                    <p><strong>Toll Fare:</strong> ₹{{toll_fare}}</p>
+                {% endif %}
+                {% if parking_fare %}
+                    <p><strong>Parking Fare:</strong> ₹{{parking_fare}}</p>
+                {% endif %}
+                <p class="payment-id">Payment ID: <strong>{{payment_id}} </strong></p>
+            </div>
+
+            <div class="ride-details">
+                <hr>
+                <h3>Ride Details:</h3>
+
+                <hr> 
+                <!-- <div class="container mx-auto px-4 py-8">
+                    <div class="relative wrap overflow-hidden">
+                        <div class="border-2-2 absolute border-opacity-20 border-gray-700 h-full border left-1/2"></div>
+                        <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-12 h-12 rounded-full">
+                                <h1 class="mx-auto font-semibold text-lg text-white"><i class="fas fa-map-marker-alt icon"></i></h1>
+                            </div>
+                            <div class="order-1 bg-gray-400 rounded-lg  w-5/12 px-6 py-4 bg-blue-50 shadow-lg p-4 rounded-lg">
+                                <h3 class="mb-3 font-bold text-gray-800 text-xl">Pick up</h3>
+                                <p class="text-gray-700 leading-tight">{{pick_up}}</p>
+                            </div>
+                        </div>
+                        <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                            <div class="order-1 w-5/12"></div>
+                            <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-12 h-12 rounded-full">
+                                <h1 class="mx-auto font-semibold text-lg text-white"><i class="fas fa-map-marker-alt icon"></i></h1>
+                            </div>
+                            <div class="order-1 bg-gray-400 rounded-lg  w-5/12 px-6 py-4 bg-blue-50 shadow-lg p-4 rounded-lg">
+                                <h3 class="mb-3 font-bold text-gray-800 text-xl" >Drop</h3>
+                                <p class="text-gray-700 leading-tight">{{drop}}</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div> -->
+                <!-- <div class="timeline"> -->
+                    <div class="event">
+                        <!-- <div class="marker"></div> -->
+                        <div class="contentL">
+                            <h3>Pick up</h3>
+                            <p>{{pick_up}}</p>
+                        </div>
+                    </div>
+                    <div class="event">
+                        <!-- <div class="marker"></div> -->
+                        <div class="contentL">
+                            <h3>Drop</h3>
+                            <p>{{drop}}</p>
+                        </div>
+                    </div>
+                <!-- </div> -->
+                <!-- <div class="container">
+                    <div class="timeline">
+                        <div class="event left">
+                            <div class="marker">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contentL">
+                                <h3>Pick up</h3>
+                                <p>{{pick_up}}</p>
+                            </div>
+                        </div>
+                        <div class="event right">
+                            <div class="marker">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contentL">
+                                <h3>Drop</h3>
+                                <p>{{drop}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div> -->
+                
+                
+                
+            </div>
+            <hr>
+            <hr>
+            <!-- <hr><hr> -->
+            <div class="driver-details mb-2">
+                <h3 class="mb-2">Driver Details:</h3>
+                <div class="driver-info">
+                    <img src="https://via.placeholder.com/40" alt="Driver Image">
+                    <p><strong>{{driver_name}}</strong> - {{car_model}} {{car_type}}</p>
+                </div>
+                <!-- <a href="#" class="rate-button">Rate Denis</a> -->
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Vahaan, All rights reserved.</p>
+            <p><a href="#">Visit our website</a></p>
+        </div>
+    </div>
+</body>
+</html>

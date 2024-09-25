@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-lg max-w-md mx-auto p-8">
+        <div class="text-center">
+            <svg class="w-16 h-16 mx-auto text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <h1 class="text-3xl font-bold mt-4 text-gray-800">Payment Failed!</h1>
+            <p class="text-gray-600 mt-2">We're sorry, but your payment could not be processed. Please try again.</p>
+
+            <div class="mt-4 bg-yellow-100 p-4 rounded-lg">
+                <p class="font-semibold text-yellow-800">A new payment link has been shared with you.</p>
+            </div>
+
+            <div class="mt-6">
+                <h4 class="font-semibold text-gray-800">Possible Reasons:</h4>
+                <ul class="list-disc list-inside text-gray-600 mt-2">
+                    <li>Insufficient funds in your account</li>
+                    <li>Card details entered incorrectly</li>
+                    <li>Your card has expired</li>
+                </ul>
+            </div>
+
+            <!-- <a href="{{ payment_link }}" class="mt-6 inline-block bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-600 transition duration-200">Try Again</a> -->
+
+            <div class="mt-8 bg-gray-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-gray-800">Customer Support:</h4>
+                <p class="text-blue-600"><strong>Phone:</strong> [Customer Support Phone Number]</p>
+                <p class="text-blue-600"><strong>Email:</strong> [Customer Support Email]</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

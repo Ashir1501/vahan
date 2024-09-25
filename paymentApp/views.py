@@ -18,7 +18,9 @@ import hmac
 import hashlib
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 # Create your views here.
@@ -62,20 +64,20 @@ def payment_callback(request):
             payment_method = payment_details.get('method', 'unknown')  # Get the payment method (upi, card, etc.)
         except razorpay.errors.BadRequestError as e:
             payment_method = 'unknown'
-            print(f"Error fetching payment details: {e}")
+            
         if payment_method == 'upi':
             
             payment.pending_paymeny_Type = 'upi'
-            print("Payment made using UPI")
+            
         elif payment_method == 'card':
             payment.pending_paymeny_Type = 'card'
-            print("Payment made using Card")
+            
         elif payment_method == 'netbanking':
             payment.pending_paymeny_Type = 'netbanking'
-            print("Payment made using Net Banking")
+            
         elif payment_method == 'wallet':
             payment.pending_paymeny_Type = 'wallet'
-            print("Payment made using Wallet")
+            
  
         if razorpay_payment_link_status == 'success':
             payment.pending_payment_status = 'Success'
@@ -105,10 +107,104 @@ def payment_callback(request):
                 'message': message
             }
         )
+        if razorpay_payment_link_status == 'paid':
+            subject = 'Payment recipt'
+            
+            # customer email=========
+            html_contentC = render_to_string('driverTemplates/payment_success_email.html', {
+                'customer_first_name': ride.customer.first_name,
+                'customer_last_name': ride.customer.last_name,
+                'payment_id': razorpay_payment_id,
+                'total_fare':payment.total_fare,
+                'toll_fare':ride.toll_fare,
+                'parking_fare':ride.parking_fare,
+                'ride_fare':payment.pending_payment,
+                'driver_name':ride.driver.first_name,
+                'car_model':ride.car.Car_type.car_model,
+                'car_type':ride.car.Car_type.car_type,
+                'pick_up':ride.route.pickup_location,
+                'drop':ride.route.drop_location,
+            })
+            text_contentC = strip_tags(html_contentC)  
+            
+            emailC = EmailMultiAlternatives(subject, text_contentC, settings.DEFAULT_FROM_EMAIL, ['fcgaavez@gmail.com'])  # Replace with actual customer email
+            emailC.attach_alternative(html_contentC, "text/html")
+            emailC.send()
+            # vendor email ===================
+            html_contentV = render_to_string('driverTemplates/payment_success_email.html', {
+                'customer_first_name': ride.customer.first_name,
+                'customer_last_name': ride.customer.last_name,
+                'payment_id': razorpay_payment_id,
+                'total_fare':payment.total_fare,
+                'toll_fare':ride.toll_fare,
+                'parking_fare':ride.parking_fare,
+                'vendor_name' : True,
+                'ride_fare':payment.pending_payment,
+                'driver_name':ride.driver.first_name,
+                'car_model':ride.car.Car_type.car_model,
+                'car_type':ride.car.Car_type.car_type,
+                'pick_up':ride.route.pickup_location,
+                'drop':ride.route.drop_location,
+            })
+            text_contentV = strip_tags(html_contentV)  
+            
+            emailV = EmailMultiAlternatives(subject, text_contentV, settings.DEFAULT_FROM_EMAIL, ['aavezsid@gmail.com'])  # Replace with actual customer email
+            emailV.attach_alternative(html_contentV, "text/html")
+            emailV.send()
 
-        return render(request, 'driverTemplates/payment_done.html')
+            # admin email==================
+            html_contentA = render_to_string('driverTemplates/payment_success_email.html', {
+                'customer_first_name': ride.customer.first_name,
+                'customer_last_name': ride.customer.last_name,
+                'payment_id': razorpay_payment_id,
+                'total_fare':payment.total_fare,
+                'toll_fare':ride.toll_fare,
+                'parking_fare':ride.parking_fare,
+                'admin' : True,
+                'ride_fare':payment.pending_payment,
+                'driver_name':ride.driver.first_name,
+                'car_model':ride.car.Car_type.car_model,
+                'car_type':ride.car.Car_type.car_type,
+                'pick_up':ride.route.pickup_location,
+                'drop':ride.route.drop_location,
+            })
+            text_contentA = strip_tags(html_contentV)  
+            
+            emailA = EmailMultiAlternatives(subject, text_contentA, settings.DEFAULT_FROM_EMAIL, ['sidaavez@gmail.com'])  # Replace with actual customer email
+            emailA.attach_alternative(html_contentA, "text/html")
+            emailA.send()
 
-    return render(request, 'driverTemplates/payment_done.html')
+            return render(request, 'driverTemplates/payment_done.html')
+        else:
+            unique_reference_id = f"{ride_id}-{uuid.uuid4()}"
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            payment_link = client.payment_link.create({
+                "amount": (int(payment.total_fare)) * 100,
+                "currency": "INR",
+                "accept_partial": False,
+                "reference_id": unique_reference_id,
+                "description": "Payment for your ride with Vaahan",
+                "customer": {
+                    "name": "Customer Name",
+                    "email": "fcgaavez@gmail.com",
+                    "contact": "9372004279"
+                },
+                "notify": {"sms": True, "email": True},
+                "reminder_enable": True,
+                "callback_url": f"http://127.0.0.1:8000/payment/callback/?ride_id={ride_id}&reference_id={unique_reference_id}",
+                "callback_method": "get"
+            })
+            async_to_sync(channel_layer.group_send)(
+            f'driver_{ride.id}_group',  # Unique group for the specific driver
+            {
+                'type': 'send_notification',
+                'message': "Payment link shared again"
+            }
+            )
+            payment.pending_paymeny_Type = 'online'
+            return render(request, 'driverTemplates/payment_failed.html')
+
+    return JsonResponse(request, 'Invalid request')
 
 def ride_payment(request, hashed_id):
     # Decode ride ID from the hashed_id
@@ -123,6 +219,7 @@ def ride_payment(request, hashed_id):
         toll_fare = request.POST.get('tollFare') or '0'
         parking_fare = request.POST.get('parkingFare') or '0'
         pending_fare = request.POST.get('pendingFare') or '0'
+        
         paymentType = request.POST.get('paymentDetail')
         # Process the image if provided
         end_kms_image_file = None
@@ -191,13 +288,19 @@ def ride_payment(request, hashed_id):
             
             payment.pending_payment_status = 'paid'
             payment.pending_paymeny_Type = 'cash'
-            payment.save()
+            
         # Update ride status
+
+        ride.toll_fare = toll_fare
+        ride.parking_fare = parking_fare
         ride.closing_kms_input = end_kms
         ride.closing_kms_screen = end_kms_image_file
         ride.ride_status = 'completed'
         ride.save()
 
+        payment.pending_payment = pending_fare
+        payment.total_fare = total_fare
+        payment.save()
         # Notify driver of link creation
 
         
