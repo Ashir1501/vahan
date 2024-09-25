@@ -351,7 +351,7 @@ class updateUser(View):
         if request.user.user_type == "Admin" and request.path.startswith('/my-profile/update/'):
             old_password = data.get('old_password').strip()
             new_password = data.get('new_password', '').strip()
-            if (new_password and not old_password) or (old_password == ""):
+            if (new_password) and (not old_password or old_password == ""):
                 errors['Password'] = "Please Provide Old Password!!"
             if old_password:
                 if account.check_password(old_password):
