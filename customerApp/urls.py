@@ -24,7 +24,7 @@ urlpatterns = [
     path('vendor-suggestions/', vendor_suggestions, name='vendor-suggestions'),
 
 
-    path('driver-rides-details/', driver_ride_details, name='driver-rides-details'),
+    # path('driver-rides-details/', driver_ride_details, name='driver-rides-details'),
     path('driver-ongoing/', driver_ongoing_details, name='driver-ongoing'),
 
     path('start-ride/',start_ride, name='start-ride'),

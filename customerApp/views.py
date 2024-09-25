@@ -155,10 +155,13 @@ def approved_ride(request):
 # method to render ongoing page
 
 def ongoing_rides_page(request):
+    print("line 158 =:",request.user.user_type)
     if request.user:
-        if request.user.is_superuser:
-            
+       
+        if request.user.user_type == "Admin":
+            print("if Admin Condition")
             rides_details = Ride.objects.all()
+            print(rides_details)
         elif request.user.user_type == 'Vendor':
             try:
                 rides_details = Ride.objects.filter(vendor_id = request.user.id)
@@ -166,7 +169,7 @@ def ongoing_rides_page(request):
                 rides_details = []
         elif request.user.user_type == 'Driver':
             try:
-                rides_details = Ride.objects.filter(vendor_id = request.user.id)
+                rides_details = Ride.objects.filter(driver = request.user.id)
             except:
                 rides_details = []
         else:
@@ -469,39 +472,40 @@ def vendor_suggestions(request):
 
 
 
-def driver_ride_details(request):
-    if request.user.user_type == 'Driver':
-        # Filter rides by the current driver's ID and assigned status
-        rides = Ride.objects.filter(
-            Q(driver=request.user.id) & Q(ride_status="assigned")
-        )
-        print("441  : ",request.user)
-        ride_details = []
-        # Assuming hash_id function correctly modifies the queryset
-        rides = hash_id(rides)
+# def driver_ride_details(request):
+#     if request.user.user_type == 'Driver':
+#         # # Filter rides by the current driver's ID and assigned status
+#         # rides = Ride.objects.filter(
+#         #     Q(driver=request.user.id) & Q(ride_status="assigned")
+#         # )
+#         # print("441  : ",request.user)
+#         # ride_details = []
+#         # # Assuming hash_id function correctly modifies the queryset
+#         # rides = hash_id(rides)
 
-        for ride in rides:
-            # Get the payment details for the ride
-            payment = Payment.objects.filter(ride=ride).first()  # Get the first payment entry
+#         # for ride in rides:
+#         #     # Get the payment details for the ride
+#         #     payment = Payment.objects.filter(ride=ride).first()  # Get the first payment entry
 
-            # Calculate remaining fare
-            if payment and payment.advance_payment is not None and ride.fare is not None:
-                remaining_fare = ride.fare - payment.advance_payment
-            else:
-                remaining_fare = ride.fare if ride.fare is not None else 0
+#         #     # Calculate remaining fare
+#         #     if payment and payment.advance_payment is not None and ride.fare is not None:
+#         #         remaining_fare = ride.fare - payment.advance_payment
+#         #     else:
+#         #         remaining_fare = ride.fare if ride.fare is not None else 0
 
-            # Add ride details and payment info
-            ride_details.append({
-                'ride': ride,
-                'advance_payment': payment.advance_payment if payment else None,
-                'remaining_fare': remaining_fare
-            })
+#         #     # Add ride details and payment info
+#         #     ride_details.append({
+#         #         'ride': ride,
+#         #         'advance_payment': payment.advance_payment if payment else None,
+#         #         'remaining_fare': remaining_fare
+#         #     })
 
-        print("line 454:", ride_details)
-        return render(request, 'driverTemplates/driver_ride_details.html', {'rides': ride_details})
+#         # print("line 454:", ride_details)
+#         # return render(request, 'driverTemplates/driver_ride_details.html', {'rides': ride_details})
+#         return redirect('driver-home')
+#     else:
+#         raise Http404("Page Not Found")
 
-    else:
-        raise Http404("Page Not Found")
 def driver_ongoing_details(request):
     if request.user.user_type == 'Driver':
         rides = Ride.objects.filter(driver=request.user.id, ride_status="Started")
@@ -580,7 +584,7 @@ def start_ride(request):
             print("Decoded selfie image:", selfie_image_file)
         else:
             messages.error(request, "Selfie required to start the ride.")
-            return redirect('driver-rides-details')
+            return redirect('driver-home')
 
         # Decode and save the KMS image
         kms_image_file = None
@@ -603,38 +607,38 @@ def start_ride(request):
                 ride.selfie = selfie_image_file
             else:
                 messages.error(request, 'Selfie Image is mandatory')
-                return redirect('driver-rides-details')
+                return redirect('driver-home')
             if front_car_image_file:
                 ride.Front_pic = front_car_image_file
             else:
                 messages.error(request, 'Front Car Image is mandatory')
-                return redirect('driver-rides-details')
+                return redirect('driver-home')
             
             if back_car_image_file:
                 ride.Back_pic = back_car_image_file
             else:
                 messages.error(request, 'Back Car Image is mandatory')
-                return redirect('driver-rides-details')
+                return redirect('driver-home')
             if kms_image_file:
                 ride.opening_kms_screen = kms_image_file
             else:
                 messages.error(request, 'Kms Image is mandatory')
-                return redirect('driver-rides-details')
+                return redirect('driver-home')
             if start_kms_input:
                 ride.opening_kms_input = start_kms_input
             else:
                 messages.error(request, 'Kms Input is mandatory')
-                return redirect('driver-rides-details')
+                return redirect('driver-home')
             
             ride.save()  # Save the instance with updated fields
             messages.success(request, 'Ride started successfully.')
-            return redirect('driver-rides-details')
+            return redirect('driver-home')
         except Ride.DoesNotExist:
             messages.error(request, 'Ride not found or you are not authorized to start this ride.')
-            return redirect('driver-rides-details')
+            return redirect('driver-ongoing')
 
     messages.error(request, 'Invalid request')
-    return redirect('driver-rides-details')
+    return redirect('driver-home')
 
 
 @csrf_exempt

@@ -238,7 +238,10 @@ p {
                 {% if parking_fare %}
                     <p><strong>Parking Fare:</strong> ₹{{parking_fare}}</p>
                 {% endif %}
+                <p><strong>Payment Type:</strong> ₹{{payment_type}}</p>
+                {% if not payment_type == "Cash" %}
                 <p class="payment-id">Payment ID: <strong>{{payment_id}} </strong></p>
+                {% endif %}
             </div>
 
             <div class="ride-details">

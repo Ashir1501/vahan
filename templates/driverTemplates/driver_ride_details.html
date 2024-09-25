@@ -296,6 +296,7 @@
                                                                             <video id="camera-stream-front-car" autoplay style="display:none;"></video>
                                                                             <canvas id="capture-canvas-front-car" style="display:none;"></canvas>
                                                                             <button class="btn btn-light" type="button" id="start-camera-button-front-car">Open Camera</button>
+                                                                            <button class="btn btn-light" type="button" id="switch-camera-button-front-car" style="display:none;">Switch Camera</button>
                                                                             <button class="btn btn-success" type="button" id="capture-button-front-car" style="display:none;">Capture Image</button>
                                                                             <img id="captured-image-front-car" style="display:none;" />
                                                                             <input type="hidden" id="front-car-image-data" />
@@ -313,6 +314,7 @@
                                                                             <video id="camera-stream-back-car" autoplay style="display:none;"></video>
                                                                             <canvas id="capture-canvas-back-car" style="display:none;"></canvas>
                                                                             <button class="btn btn-light" type="button" id="start-camera-button-back-car">Open Camera</button>
+                                                                            <button class="btn btn-light" type="button" id="switch-camera-button-back-car" style="display:none;">Switch Camera</button>
                                                                             <button class="btn btn-success" type="button" id="capture-button-back-car" style="display:none;">Capture Image</button>
                                                                             <img id="captured-image-back-car" style="display:none;" />
                                                                             <input type="hidden" id="back-car-image-data" />
@@ -330,6 +332,7 @@
                                                                             <video id="camera-stream-selfie" autoplay style="display:none;"></video>
                                                                             <canvas id="capture-canvas-selfie" style="display:none;"></canvas>
                                                                             <button class="btn btn-light" type="button" id="start-camera-button-selfie">Open Camera</button>
+                                                                            <button class="btn btn-light" type="button" id="switch-camera-button-selfie" style="display:none;">Switch Camera</button>
                                                                             <button class="btn btn-success" type="button" id="capture-button-selfie" style="display:none;">Capture Image</button>
                                                                             <img id="captured-image-selfie" style="display:none;" />
                                                                             <input type="hidden" id="selfie-image-data" />
@@ -348,6 +351,7 @@
                                                                             <video id="camera-stream-kms" autoplay style="display:none;"></video>
                                                                             <canvas id="capture-canvas-kms" style="display:none;"></canvas>
                                                                             <button class="btn btn-light" type="button" id="start-camera-button-kms">Open Camera</button>
+                                                                            <button class="btn btn-light" type="button" id="switch-camera-button-kms" style="display:none;">Switch Camera</button>
                                                                             <button class="btn btn-success" type="button" id="capture-button-kms" style="display:none;">Capture Image</button>
                                                                             <img id="captured-image-kms" style="display:none;" />
                                                                             <input type="hidden" id="kms-image-data" />
@@ -441,11 +445,35 @@
     const captureCanvas = document.querySelector(`#${section} #capture-canvas-${sectionPrefix}`);
     const capturedImage = document.querySelector(`#${section} #captured-image-${sectionPrefix}`);
     const capturedImageDataInput = document.querySelector(`#${sectionPrefix}-image-data`);
-
+    const switchCameraButton = document.querySelector(`#${section} #switch-camera-button-${sectionPrefix}`);
+    
     let stream;
+    let usingFrontCamera = true;  // Initially use the front camera
 
     startCameraButton.addEventListener('click', () => {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        startCamera();
+        switchCameraButton.style.display = "block";  // Show switch camera button after camera starts
+    });
+
+    captureButton.addEventListener('click', () => {
+        captureImage();
+        stopStream();
+    });
+
+    switchCameraButton.addEventListener('click', () => {
+        // Toggle between front and back camera
+        usingFrontCamera = !usingFrontCamera;
+        stopStream(); // Stop the current stream
+        startCamera(); // Start the camera with the new configuration
+    });
+
+    function startCamera() {
+        const constraints = {
+            video: {
+                facingMode: usingFrontCamera ? 'user' : { exact: 'environment' }
+            }
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
             .then(mediaStream => {
                 stream = mediaStream;
                 cameraStream.style.display = "block";
@@ -455,12 +483,7 @@
             .catch(err => {
                 console.error('Error accessing camera: ', err);
             });
-    });
-
-    captureButton.addEventListener('click', () => {
-        captureImage();
-        stopStream();
-    });
+    }
 
     function captureImage() {
         const context = captureCanvas.getContext('2d');
@@ -477,7 +500,9 @@
     }
 
     function stopStream() {
-        stream.getTracks().forEach(track => track.stop());
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
         cameraStream.style.display = "none";
         captureButton.style.display = "none";
     }
@@ -488,7 +513,6 @@ setupAccordionCapture('accordion_1_item_1', 'front-car');
 setupAccordionCapture('accordion_1_item_2', 'back-car');
 setupAccordionCapture('accordion_1_item_3', 'selfie');
 setupAccordionCapture('accordion_1_item_4', 'kms');
-
 
 
         // function sendImageToBackend(imageData) {

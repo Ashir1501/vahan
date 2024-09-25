@@ -64,11 +64,27 @@
                 Central Hub for Personal Customization
             </div>
         </div>
+        {% if request.user.user_type == 'Admin' %}
         <div class="flex items-center gap-2.5">
-            <a class="btn btn-sm btn-light" href="html/demo1/public-profile/profiles/default.html">
+            <a class="btn btn-sm btn-light" href="{% url 'admin-my-profile' %}">
                 View Profile
             </a>
         </div>
+        {% endif %}
+        {% if request.user.user_type == 'Vendor' %}
+        <div class="flex items-center gap-2.5">
+            <a class="btn btn-sm btn-light" href="{% url 'vendor-my-profile' %}">
+                View Profile
+            </a>
+        </div>
+        {% endif %}
+        {% if request.user.user_type == 'Driver' %}
+        <div class="flex items-center gap-2.5">
+            <a class="btn btn-sm btn-light" href="{% url 'driver-my-profile' %}">
+                View Profile
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
 <!-- end: container -->

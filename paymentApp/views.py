@@ -42,6 +42,75 @@ def decode_hashed_id(hashed_id, model_class):
     return None
 
 
+def email_temp(ride,payment,payment_method,razorpay_payment_id=None):
+    subject = 'Payment recipt'
+    print("line 47 :",ride)
+    # customer email=========
+    html_contentC = render_to_string('driverTemplates/payment_success_email.html', {
+        'customer_first_name': ride.customer.first_name,
+        'customer_last_name': ride.customer.last_name,
+        'payment_id': razorpay_payment_id,
+        'total_fare':payment.total_fare,
+        'toll_fare':ride.toll_fare,
+        'parking_fare':ride.parking_fare,
+        'ride_fare':payment.pending_payment,
+        'driver_name':ride.driver.first_name,
+        'car_model':ride.car.Car_type.car_model,
+        'car_type':ride.car.Car_type.car_type,
+        'pick_up':ride.route.pickup_location,
+        'drop':ride.route.drop_location,
+        'payment_type':payment_method,
+    })
+    text_contentC = strip_tags(html_contentC)  
+    
+    emailC = EmailMultiAlternatives(subject, text_contentC, settings.DEFAULT_FROM_EMAIL, ['fcgaavez@gmail.com'])  # Replace with actual customer email
+    emailC.attach_alternative(html_contentC, "text/html")
+    emailC.send()
+    # vendor email ===================
+    html_contentV = render_to_string('driverTemplates/payment_success_email.html', {
+        'customer_first_name': ride.customer.first_name,
+        'customer_last_name': ride.customer.last_name,
+        'payment_id': razorpay_payment_id,
+        'total_fare':payment.total_fare,
+        'toll_fare':ride.toll_fare,
+        'parking_fare':ride.parking_fare,
+        'vendor_name' : True,
+        'ride_fare':payment.pending_payment,
+        'driver_name':ride.driver.first_name,
+        'car_model':ride.car.Car_type.car_model,
+        'car_type':ride.car.Car_type.car_type,
+        'pick_up':ride.route.pickup_location,
+        'drop':ride.route.drop_location,
+        'payment_type':payment_method,
+    })
+    text_contentV = strip_tags(html_contentV)  
+    
+    emailV = EmailMultiAlternatives(subject, text_contentV, settings.DEFAULT_FROM_EMAIL, ['aavezsid@gmail.com'])  # Replace with actual customer email
+    emailV.attach_alternative(html_contentV, "text/html")
+    emailV.send()
+
+    # admin email==================
+    html_contentA = render_to_string('driverTemplates/payment_success_email.html', {
+        'customer_first_name': ride.customer.first_name,
+        'customer_last_name': ride.customer.last_name,
+        'payment_id': razorpay_payment_id,
+        'total_fare':payment.total_fare,
+        'toll_fare':ride.toll_fare,
+        'parking_fare':ride.parking_fare,
+        'admin' : True,
+        'ride_fare':payment.pending_payment,
+        'driver_name':ride.driver.first_name,
+        'car_model':ride.car.Car_type.car_model,
+        'car_type':ride.car.Car_type.car_type,
+        'pick_up':ride.route.pickup_location,
+        'drop':ride.route.drop_location,
+        'payment_type':payment_method,
+    })
+    text_contentA = strip_tags(html_contentV)  
+    
+    emailA = EmailMultiAlternatives(subject, text_contentA, settings.DEFAULT_FROM_EMAIL, ['sidaavez@gmail.com'])  # Replace with actual customer email
+    emailA.attach_alternative(html_contentA, "text/html")
+    emailA.send()
 
 def payment_callback(request):
     if request.method == "GET":
@@ -108,72 +177,7 @@ def payment_callback(request):
             }
         )
         if razorpay_payment_link_status == 'paid':
-            subject = 'Payment recipt'
-            
-            # customer email=========
-            html_contentC = render_to_string('driverTemplates/payment_success_email.html', {
-                'customer_first_name': ride.customer.first_name,
-                'customer_last_name': ride.customer.last_name,
-                'payment_id': razorpay_payment_id,
-                'total_fare':payment.total_fare,
-                'toll_fare':ride.toll_fare,
-                'parking_fare':ride.parking_fare,
-                'ride_fare':payment.pending_payment,
-                'driver_name':ride.driver.first_name,
-                'car_model':ride.car.Car_type.car_model,
-                'car_type':ride.car.Car_type.car_type,
-                'pick_up':ride.route.pickup_location,
-                'drop':ride.route.drop_location,
-            })
-            text_contentC = strip_tags(html_contentC)  
-            
-            emailC = EmailMultiAlternatives(subject, text_contentC, settings.DEFAULT_FROM_EMAIL, ['fcgaavez@gmail.com'])  # Replace with actual customer email
-            emailC.attach_alternative(html_contentC, "text/html")
-            emailC.send()
-            # vendor email ===================
-            html_contentV = render_to_string('driverTemplates/payment_success_email.html', {
-                'customer_first_name': ride.customer.first_name,
-                'customer_last_name': ride.customer.last_name,
-                'payment_id': razorpay_payment_id,
-                'total_fare':payment.total_fare,
-                'toll_fare':ride.toll_fare,
-                'parking_fare':ride.parking_fare,
-                'vendor_name' : True,
-                'ride_fare':payment.pending_payment,
-                'driver_name':ride.driver.first_name,
-                'car_model':ride.car.Car_type.car_model,
-                'car_type':ride.car.Car_type.car_type,
-                'pick_up':ride.route.pickup_location,
-                'drop':ride.route.drop_location,
-            })
-            text_contentV = strip_tags(html_contentV)  
-            
-            emailV = EmailMultiAlternatives(subject, text_contentV, settings.DEFAULT_FROM_EMAIL, ['aavezsid@gmail.com'])  # Replace with actual customer email
-            emailV.attach_alternative(html_contentV, "text/html")
-            emailV.send()
-
-            # admin email==================
-            html_contentA = render_to_string('driverTemplates/payment_success_email.html', {
-                'customer_first_name': ride.customer.first_name,
-                'customer_last_name': ride.customer.last_name,
-                'payment_id': razorpay_payment_id,
-                'total_fare':payment.total_fare,
-                'toll_fare':ride.toll_fare,
-                'parking_fare':ride.parking_fare,
-                'admin' : True,
-                'ride_fare':payment.pending_payment,
-                'driver_name':ride.driver.first_name,
-                'car_model':ride.car.Car_type.car_model,
-                'car_type':ride.car.Car_type.car_type,
-                'pick_up':ride.route.pickup_location,
-                'drop':ride.route.drop_location,
-            })
-            text_contentA = strip_tags(html_contentV)  
-            
-            emailA = EmailMultiAlternatives(subject, text_contentA, settings.DEFAULT_FROM_EMAIL, ['sidaavez@gmail.com'])  # Replace with actual customer email
-            emailA.attach_alternative(html_contentA, "text/html")
-            emailA.send()
-
+            email_temp(ride,payment,payment_method,razorpay_payment_id)
             return render(request, 'driverTemplates/payment_done.html')
         else:
             unique_reference_id = f"{ride_id}-{uuid.uuid4()}"
@@ -288,6 +292,7 @@ def ride_payment(request, hashed_id):
             
             payment.pending_payment_status = 'paid'
             payment.pending_paymeny_Type = 'cash'
+            email_temp(ride,payment,"Cash")
             
         # Update ride status
 

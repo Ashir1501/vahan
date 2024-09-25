@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full" data-theme="true" data-theme-mode="light" lang="en">
+
+<head>
+    <base href="../../../../">
+    <title>
+        Vahan - Vendor Workflow
+    </title>
+    <meta charset="utf-8" />
+    <meta content="follow, index" name="robots" />
+    <link href="https://keenthemes.com/metronic" rel="canonical" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <meta content="Sign in page using Tailwind CSS" name="description" />
+    <meta content="@keenthemes" name="twitter:site" />
+    <meta content="@keenthemes" name="twitter:creator" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Vahan - Sign In" name="twitter:title" />
+    <meta content="Sign in page using Tailwind CSS" name="twitter:description" />
+    <meta content="{% static 'media/app/og-image.png' %}" name="twitter:image" />
+    <meta content="https://keenthemes.com/metronic" property="og:url" />
+    <meta content="en_US" property="og:locale" />
+    <meta content="website" property="og:type" />
+    <meta content="@keenthemes" property="og:site_name" />
+    <meta content="Vahan - Sign In" property="og:title" />
+    <meta content="Sign in page using Tailwind CSS" property="og:description" />
+    <meta content="{% static 'media/app/og-image.png' %}" property="og:image" />
+    <!-- <link href="{% static 'media/app/apple-touch-icon.png' %}" rel="apple-touch-icon" sizes="180x180" />
+    <link href="{% static 'media/app/favicon-32x32.png' %}" rel="icon" sizes="32x32" type="image/png" />
+    <link href="{% static 'media/app/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png" />
+    <link href="{% static 'media/app/favicon.ico' %}" rel="shortcut icon" /> -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="{% static 'vendors/apexcharts/apexcharts.css' %}" rel="stylesheet" />
+    <link href="{% static 'vendors/keenicons/styles.bundle.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- Metronic CSS -->
+</head>
+
+<body class="flex h-full dark:bg-coal-500">
+    {% if messages %}
+    <script>
+        let successMessages = [];
+        let errorMessages = [];
+
+        "{% for message in messages %}"
+        "{% if message.tags == 'success' %}"
+        successMessages.push('{{ message }}');
+        "{% elif message.tags == 'error' %}"
+        errorMessages.push('{{ message }}');
+        "{% endif %}"
+        "{% endfor %}"
+
+        if (successMessages.length > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: successMessages.join('<br>'),  // Concatenate messages with a line break
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        if (errorMessages.length > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops..',
+                html: errorMessages.join('<br>'),  // Concatenate messages with a line break
+                showCloseButton: true
+            });
+        }
+    </script>
+    {% endif %}
+    <!--begin::Theme mode setup on page load-->
+    <script>
+        const defaultThemeMode = 'light'; // light|dark|system
+        let themeMode;
+
+        if (document.documentElement) {
+            if (localStorage.getItem('theme')) {
+                themeMode = localStorage.getItem('theme');
+            } else if (document.documentElement.hasAttribute('data-theme-mode')) {
+                themeMode = document.documentElement.getAttribute('data-theme-mode');
+            } else {
+                themeMode = defaultThemeMode;
+            }
+
+            if (themeMode === 'system') {
+                themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            document.documentElement.classList.add(themeMode);
+        }
+    </script>
+    <!--end::Theme mode setup on page load-->
+    <!--begin::Page layout-->
+    <style>
+        .page-bg {
+            background-image: url('/static/metronic-tailwind-html/dist/assets/media/images/2600x1200/bg-10.png');
+        }
+
+        .dark .page-bg {
+            background-image: url('/static/metronic-tailwind-html/dist/assets/media/images/2600x1200/bg-10-dark.png');
+        }
+    </style>
+        <form action="#" class="w-full" method="post">
+            <div data-stepper="true">
+             <div class="card">
+              <div class="card-header flex justify-between items-center gap-4 py-8">
+               <div class="active flex gap-2.5 items-center" data-stepper-item="#stepper_1">
+                <div class="rounded-full size-10 flex items-center justify-center text-md font-semibold bg-primary-light text-primary stepper-item-active:bg-primary stepper-item-active:text-primary-inverse stepper-item-completed:bg-success stepper-item-completed:text-success-inverse">
+                 <span class="stepper-item-completed:hidden" data-stepper-number="true">
+                  1
+                 </span>
+                 <i class="ki-outline ki-check text-xl hidden stepper-item-completed:inline">
+                 </i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                 <h4 class="text-sm font-medium text-gray-900 stepper-item-completed:text-gray-600">
+                  Step 1
+                 </h4>
+                 <span class="text-2sm text-gray-700 stepper-item-completed:text-gray-400">
+                  Description
+                 </span>
+                </div>
+               </div>
+               <div class="flex gap-2.5 items-center" data-stepper-item="#stepper_2">
+                <div class="rounded-full size-10 flex items-center justify-center text-md font-semibold bg-primary-light text-primary stepper-item-active:bg-primary stepper-item-active:text-primary-inverse stepper-item-completed:bg-success stepper-item-completed:text-success-inverse">
+                 <span class="stepper-item-completed:hidden" data-stepper-number="true">
+                  2
+                 </span>
+                 <i class="ki-outline ki-check text-xl hidden stepper-item-completed:inline">
+                 </i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                 <h4 class="text-sm font-medium text-gray-900 stepper-item-completed:text-gray-600">
+                  Step 2
+                 </h4>
+                 <span class="text-2sm text-gray-700 stepper-item-completed:text-gray-400">
+                  Description
+                 </span>
+                </div>
+               </div>
+               <div class="flex gap-2.5 items-center" data-stepper-item="#stepper_3">
+                <div class="rounded-full size-10 flex items-center justify-center text-md font-semibold bg-primary-light text-primary stepper-item-active:bg-primary stepper-item-active:text-primary-inverse stepper-item-completed:bg-success stepper-item-completed:text-success-inverse">
+                 <span class="stepper-item-completed:hidden" data-stepper-number="true">
+                  3
+                 </span>
+                 <i class="ki-outline ki-check text-xl hidden stepper-item-completed:inline">
+                 </i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                 <h4 class="text-sm font-medium text-gray-900 stepper-item-completed:text-gray-600">
+                  Step 3
+                 </h4>
+                 <span class="text-2sm text-gray-700 stepper-item-completed:text-gray-400">
+                  Description
+                 </span>
+                </div>
+               </div>
+               <div class="flex gap-2.5 items-center" data-stepper-item="#stepper_4">
+                <div class="rounded-full size-10 flex items-center justify-center text-md font-semibold bg-primary-light text-primary stepper-item-active:bg-primary stepper-item-active:text-primary-inverse stepper-item-completed:bg-success stepper-item-completed:text-success-inverse">
+                 <span class="stepper-item-completed:hidden" data-stepper-number="true">
+                  4
+                 </span>
+                 <i class="ki-outline ki-check text-xl hidden stepper-item-completed:inline">
+                 </i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                 <h4 class="text-sm font-medium text-gray-900 stepper-item-completed:text-gray-600">
+                  Step 4
+                 </h4>
+                 <span class="text-2sm text-gray-700 stepper-item-completed:text-gray-400">
+                  Description
+                 </span>
+                </div>
+               </div>
+              </div>
+              <div class="card-body py-16">
+               <div class="" id="stepper_1">
+                <div class="flex items-center justify-center text-3xl font-semibold text-gray-900">
+                 Step 1
+                </div>
+               </div>
+               <div class="hidden" id="stepper_2">
+                <div class="flex items-center justify-center text-3xl font-semibold text-gray-900">
+                 Step 2
+                </div>
+               </div>
+               <div class="hidden" id="stepper_3">
+                <div class="flex items-center justify-center text-3xl font-semibold text-gray-900">
+                 Step 3
+                </div>
+               </div>
+               <div class="hidden" id="stepper_4">
+                <div class="flex items-center justify-center text-3xl font-semibold text-gray-900">
+                 Step 4
+                </div>
+               </div>
+              </div>
+              <div class="card-footer py-8 flex justify-between">
+               <div>
+                <button class="btn btn-light stepper-first:hidden" data-stepper-back="true">
+                 Back
+                </button>
+               </div>
+               <div>
+                <button class="btn btn-light stepper-last:hidden" data-stepper-next="true">
+                 Next
+                </button>
+                <button class="btn btn-primary hidden stepper-last:inline-flex">
+                 Submit
+                </button>
+               </div>
+              </div>
+             </div>
+            </div>
+           </form>
+    <!--end::Page layout-->
+    <!--begin::Page scripts-->
+    <script src="{% static 'js/core.bundle.js' %}">
+    </script>
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}">
+    </script>
+    <script src="{% static 'js/widgets/general.js' %}">
+    </script>
+    <!--end::Page scripts-->
+</body>
+
+</html>

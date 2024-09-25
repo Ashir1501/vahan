@@ -109,7 +109,7 @@
                                             </thead>
                                             <tbody>
                                                 {% for rideData in ridesData %}
-                                                    {% if rideData.ride_status == 'Started' and rideData.vendor_id.id == request.user.id %}
+                                                    {% if rideData.ride_status == 'Started' %}
                                                         <tr>
                                                             
                                                             <td>

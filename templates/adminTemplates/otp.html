@@ -36,11 +36,7 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <!-- Metronic CSS -->
-    <link href="path/to/metronic/css/style.bundle.css" rel="stylesheet" />
 
-    <!-- Metronic JS -->
-    <script src="path/to/metronic/js/scripts.bundle.js"></script>
 </head>
 
 <body class="flex h-full dark:bg-coal-500">
@@ -61,8 +57,8 @@
             Swal.fire({
                 icon: 'success',
                 title: successMessages.join('<br>'),  // Concatenate messages with a line break
-                showConfirmButton: false,
-                timer: 2000
+                showConfirmButton: true, //set it to false after msg91 integration
+                // timer: 2000  //uncomment this after you integrate msg91
             });
         }
 
@@ -130,26 +126,27 @@
                 <div class="flex flex-wrap justify-center gap-2.5">
                     <input
                         class="input focus:border-primary-clarity focus:ring focus:ring-primary-clarity size-10 shrink-0 px-0 text-center"
-                        maxlength="1" pattern="[0-9]{1}" id="code_0" name="code_0" type="text" 
-                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off"/>
+                        maxlength="1" pattern="[0-9]{1}" id="code_0" name="code_0" type="text"
+                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off" />
                     <input
                         class="input focus:border-primary-clarity focus:ring focus:ring-primary-clarity size-10 shrink-0 px-0 text-center"
-                        maxlength="1" pattern="[0-9]{1}" id="code_1" name="code_1" type="text" 
-                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off"/>
+                        maxlength="1" pattern="[0-9]{1}" id="code_1" name="code_1" type="text"
+                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off" />
                     <input
                         class="input focus:border-primary-clarity focus:ring focus:ring-primary-clarity size-10 shrink-0 px-0 text-center"
-                        maxlength="1" pattern="[0-9]{1}" id="code_2" name="code_2" type="text" 
-                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off"/>
+                        maxlength="1" pattern="[0-9]{1}" id="code_2" name="code_2" type="text"
+                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off" />
                     <input
                         class="input focus:border-primary-clarity focus:ring focus:ring-primary-clarity size-10 shrink-0 px-0 text-center"
-                        maxlength="1" pattern="[0-9]{1}" id="code_3" name="code_3" type="text" 
-                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off"/>
+                        maxlength="1" pattern="[0-9]{1}" id="code_3" name="code_3" type="text"
+                        oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off" />
                 </div>
-                <button class="btn btn-primary flex justify-center grow">
+                <button type="submit" class="btn btn-primary flex justify-center grow">
                     Continue
                 </button>
+                <a id="resend-otp-link" class="btn btn-outline btn-info flex justify-center grow" href="{% url 'resend_OTP' %}">Resend OTP (<span id="countdown">30</span>s)</a>
             </form>
-            
+
         </div>
     </div>
     <!--end::Page layout-->
@@ -180,9 +177,36 @@
                 }
             }
         }
-        window.onload = function() {
-        document.getElementById("code_0").focus();
-    };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Disable the link and start countdown when the page loads
+            startCountdown(30);
+        });
+
+        function startCountdown(seconds) {
+            var resendLink = document.getElementById("resend-otp-link");
+            var countdownSpan = document.getElementById("countdown");
+
+            resendLink.classList.add("disabled-link");
+            resendLink.style.pointerEvents = "none";  // Disable the link click
+            resendLink.style.opacity = "0.5";  // Make it look disabled
+
+            // Update countdown every second
+            var interval = setInterval(function () {
+                countdownSpan.innerText = seconds;  // Update countdown display
+                seconds--;
+
+                if (seconds < 0) {
+                    clearInterval(interval);
+                    resendLink.classList.remove("disabled-link");
+                    resendLink.style.pointerEvents = "auto";  // Enable the link again
+                    resendLink.style.opacity = "1";  // Reset the opacity
+                    resendLink.innerHTML = 'Resend OTP';  // Reset button text
+                }
+            }, 1000);
+        }
+
+
     </script>
     <!--end::Page scripts-->
 </body>
