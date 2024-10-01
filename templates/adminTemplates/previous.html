@@ -195,7 +195,7 @@
                                                         <tr>
                                                             <td>
                                                                 <a class="btn btn-outline btn-light"
-                                                                data-modal-toggle="#modal_{{ rideData.hashed_id }}_driver_id">
+                                                                data-modal-toggle="#modal_{{ rideData.hashed_id }}_driver_id" style="background-color: #00b0c3; color: white;"> 
                                                                 Payment 
                                                                 </a>
 
@@ -308,11 +308,11 @@
                                                             <td>
                                                                 {% if rideData.opening_kms_screen %}
                                                                 <a href="{{ rideData.opening_kms_screen.url }}" target="_blank">
-                                                                    <img alt="flag" class="h-4 rounded-full" src="{{ rideData.opening_kms_screen.url }}" />
+                                                                    <img alt="flag" class="h-9 rounded-full" src="{{ rideData.opening_kms_screen.url }}" />
                                                                 </a>
-                                                                <br />
+                                                                <!-- <br /> -->
                                                                 <a href="{{ rideData.opening_kms_screen.url }}" download>
-                                                                    <button class="mt-2 text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
                                                                 </a>
                                                                 {% else %}
                                                                 N/A
@@ -323,11 +323,11 @@
                                                             <td>
                                                                 {% if rideData.closing_kms_screen %}
                                                                 <a href="{{ rideData.closing_kms_screen.url }}" target="_blank">
-                                                                    <img alt="flag" class="h-4 rounded-full" src="{{ rideData.closing_kms_screen.url }}" />
+                                                                    <img alt="flag" class="h-9 rounded-full" src="{{ rideData.closing_kms_screen.url }}" />
                                                                 </a>
-                                                                <br />
+                                                                <!-- <br /> -->
                                                                 <a href="{{ rideData.closing_kms_screen.url }}" download>
-                                                                    <button class="mt-2 text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
                                                                 </a>
                                                                 {% else %}
                                                                 N/A
@@ -347,11 +347,11 @@
                                                             <td>
                                                                 {% if rideData.Front_pic %}
                                                                 <a href="{{ rideData.Front_pic.url }}" target="_blank">
-                                                                    <img alt="flag" class="h-4 rounded-full" src="{{ rideData.Front_pic.url }}" />
+                                                                    <img alt="flag" class="h-9 rounded-full" src="{{ rideData.Front_pic.url }}" />
                                                                 </a>
-                                                                <br />
+                                                                <!-- <br /> -->
                                                                 <a href="{{ rideData.Front_pic.url }}" download>
-                                                                    <button class="mt-2 text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
                                                                 </a>
                                                                 {% else %}
                                                                 N/A
@@ -362,11 +362,11 @@
                                                             <td>
                                                                 {% if rideData.Back_pic %} 
                                                                 <a href="{{ rideData.Back_pic.url }}" target="_blank">
-                                                                    <img alt="flag" class="h-4 rounded-full" src="{{ rideData.Back_pic.url }}" />
+                                                                    <img alt="flag" class="h-9 rounded-full" src="{{ rideData.Back_pic.url }}" />
                                                                 </a>
-                                                                <br />
+                                                                <!-- <br /> -->
                                                                 <a href="{{ rideData.Back_pic.url }}" download>
-                                                                    <button class="mt-2 text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
                                                                 </a>
                                                                 {% else %}
                                                                 N/A
@@ -377,11 +377,11 @@
                                                             <td>
                                                                 {% if rideData.selfie %}  
                                                                 <a href="{{ rideData.selfie.url }}" target="_blank">
-                                                                    <img alt="flag" class="h-4 rounded-full" src="{{ rideData.selfie.url }}" />
+                                                                    <img alt="flag" class="h-9 rounded-full" src="{{ rideData.selfie.url }}" />
                                                                 </a>
-                                                                <br />
+                                                                <!-- <br /> -->
                                                                 <a href="{{ rideData.selfie.url }}" download>
-                                                                    <button class="mt-2 text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
                                                                 </a>
                                                                 {% else %}
                                                                 N/A

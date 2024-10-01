@@ -31,9 +31,7 @@
 </script>
 {% endif %}
 {% endfor %}
-
 {% endif %}
-
 <div>
     <div>
         <div>
@@ -44,8 +42,6 @@
                 <div class="card-header">
                     <h3 class="card-title">New Car</h3>
                 </div>
-
-
                 <div class="card-body">
                     <form action="{% url 'add-route' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -54,38 +50,35 @@
                                 <label class="form-label flex-shrink-0 w-full lg:w-auto">
                                     Trip Type<span class="text-danger">*</span>
                                 </label>
-                                <select class="select w-full" name="tripType">
-                                    <option value="oneway">Oneway</option>
+                                <select class="select w-full border border-gray-300 p-2 rounded-md transition duration-300 ease-in-out hover:bg-[#00b0c3] hover:text-white" name="tripType">
+                                    <option value="oneway" >Oneway</option>
                                     <option value="roundtrip">Roundtrip</option>
                                     <option value="local">Local</option>
                                     <option value="airport_pickup">Airport Pickup</option>
                                     <option value="airport_drop">Airport Drop</option>
                                 </select>
+                                
                             </div>
-
-
                             <!-- Pickup Input -->
                             <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                 <label class="form-label flex-shrink-0 w-full lg:w-auto">
                                     Pickup
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="select-input input w-full pickup" name="pickup" onkeyup="processChange()"
+                                <input class="select-input input w-full pickup" name="pickup" onkeyup="processChange()" autocomplete="off"
                                     placeholder="pickup" type="text" required />
                                 <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                             </div>
-
                             <!-- Drop Off Input -->
                             <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                 <label class="form-label flex-shrink-0 w-full lg:w-auto">
                                     Drop Off
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input class="select-input input w-full pickup" onkeyup="processChange()" name="DropOff"
+                                <input class="select-input input w-full pickup" onkeyup="processChange()" name="DropOff" autocomplete="off"
                                     placeholder="Drop Off" type="text" />
                                 <div class="select-dropdown autocomplete-results dropdown-menu"></div>
                             </div>
-
                             <!-- Duration Input -->
                             <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                 <label class="form-label flex-shrink-0 w-full lg:w-auto">
@@ -98,7 +91,6 @@
                                     <option value="12 hrs 120 km">12 hrs 120 km</option>
                                 </select>
                             </div>
-
                             <!-- KMS Input -->
                             <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
                                 <label class="form-label flex-shrink-0 w-full lg:w-auto">
@@ -107,7 +99,6 @@
                                 </label>
                                 <input class="input w-full" name="Kilometers" placeholder="Kilometers" type="number" />
                             </div>
-
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
                                 <!-- Car Type and Fare Input Rows Container -->
                                 <div class="col-span-2 lg:col-span-4 p-4" id="car-fare-container"
@@ -141,24 +132,17 @@
                                     </div>
                                 </div>
                             </div>
-
-
                             <!-- Submit Button -->
                             <div class="flex justify-end mt-4">
-                                <button class="btn btn-sm btn-primary" type="submit">
+                                <button class="btn btn-sm btn-primary" type="submit" style="background-color: #00b0c3; color: white;">
                                     Add Route
                                 </button>
                             </div>
                         </div>
                     </form>
-
-
                 </div>
-
-
             </div>
         </div>
-
     </div>
     <!-- end: container -->
     <div class="container-fixed">
@@ -308,17 +292,12 @@
 
 
                                         </td>
-
-
                                         <td>{{ routeData.fare }}</td>
                                         <td>{{routeData.duration}}</td>
                                         <td>{{routeData.kms}}</td>
                                         <td title="{{routeData.created_by}}">{{routeData.created_by.name}}(<span
                                                 class="text-2sm text-gray-600">{{routeData.created_by}}</span>)</td>
                                     </tr>
-
-
-
                                     <div class="modal" data-modal="true" id="CarsUpdateModal-{{routeData.id}}">
                                         <form id="carEditForm" method="post" enctype="multipart/form-data"
                                             action="{% url 'edit-routes' %}">
@@ -426,14 +405,12 @@
                                                     <div class="flex gap-4">
                                                         <button type="button" class="btn btn-light"
                                                             data-modal-dismiss="true">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                        <button type="submit" class="btn btn-primary" style="background-color: #00b0c3; color: white;">Submit</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
-
-
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -453,7 +430,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

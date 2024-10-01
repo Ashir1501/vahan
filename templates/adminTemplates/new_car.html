@@ -139,7 +139,7 @@
                             accept="image/*">
                     </div>
                 </div>
-                <button class="btn btn-sm btn-primary" type="submit" style="margin: 10px;">
+                <button class="btn btn-sm btn-primary" type="submit" style="margin: 10px; background-color: #00b0c3; color: white;">
                     Add Car
                 </button>
             </div>
@@ -318,18 +318,34 @@
                                         {% endif %}
                                         <td>
                                             {% if CarsData.Front_pic %}
-                                            <img alt="flag" class="h-4 rounded-full"
-                                                src="{{ CarsData.Front_pic.url }}" />
+                                                <a href="{{ CarsData.Front_pic.url }}" target="_blank">
+                                                    <img alt="flag" class="h-9 rounded-full" src="{{ CarsData.Front_pic.url }}" />
+                                                </a>
+                                                
+                                                <a href="{{ CarsData.Front_pic.url }}" download>
+                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                </a>
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if CarsData.Back_pic %}
-                                            <img alt="flag" class="h-4 rounded-full"
-                                                src="{{ CarsData.Back_pic.url }}" />
+                                                <a href="{{ CarsData.Back_pic.url }}" target="_blank">
+                                                    <img alt="flag" class="h-9 rounded-full" src="{{ CarsData.Back_pic.url }}" />
+                                                </a>
+                                                <a href="{{ CarsData.Back_pic.url }}" download>
+                                                    <button class="text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                </a>
                                             {% endif %}
                                         </td>
-                                        <td><img alt="flag" class="h-4 rounded-full"
-                                                src="{{ CarsData.rc_photo.url }}" /></td>
+                                        <td>                                            
+                                                <a href="{{ CarsData.rc_photo.url }}" target="_blank">
+                                                    <img alt="flag" class="h-9 rounded-full" src="{{ CarsData.rc_photo.url }}" />
+                                                </a>
+                                                <a href="{{ CarsData.rc_photo.url }}" download>
+                                                    <button class=" text-blue-500 hover:underline" style="color: blue;">Download</button>
+                                                </a>
+                                            
+                                        </td>
                                     </tr>
 
 
@@ -459,7 +475,7 @@
                                                     <div class="flex gap-4">
                                                         <button type="button" class="btn btn-light"
                                                             data-modal-dismiss="true">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                        <button type="submit" class="btn btn-primary" style="background-color: #00b0c3; color: white;">Submit</button>
                                                     </div>
                                                 </div>
                                             </div>

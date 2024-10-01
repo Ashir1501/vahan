@@ -141,7 +141,7 @@
                         maxlength="1" pattern="[0-9]{1}" id="code_3" name="code_3" type="text"
                         oninput="moveFocus(this, event)" onkeydown="moveFocus(this, event)" autocomplete="off" />
                 </div>
-                <button type="submit" class="btn btn-primary flex justify-center grow">
+                <button type="submit" class="btn btn-primary flex justify-center grow" style="background-color: #00b0c3; color: white;">
                     Continue
                 </button>
                 <a id="resend-otp-link" class="btn btn-outline btn-info flex justify-center grow" href="{% url 'resend_OTP' %}">Resend OTP (<span id="countdown">30</span>s)</a>

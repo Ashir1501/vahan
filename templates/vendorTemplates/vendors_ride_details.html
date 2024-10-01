@@ -38,7 +38,7 @@
                 <div class="card card-grid min-w-full">
                     <div class="card-header py-5 flex-wrap">
                         <h3 class="card-title">
-                            Rides Details  {{request.user}}
+                            Rides Details  
 
                             <!-- <div style="display: inline-block;" class="ml-5">
                                 <button class="btn btn-danger btn-sm" type="button" onclick="cancelRidePending()">
@@ -313,7 +313,7 @@
                                                             Ride 
                                                             <span class="text-danger">
                                                               (Pay 
-                                                              <span class="text-red-500 font-bold">₹{{ rideData.fare_20_percent }} (20%)</span>
+                                                              <span class="text-red-500 font-bold" >₹{{ rideData.fare_20_percent }} (20%)</span>
                                                               for this ride to confirm)
                                                             </span>
                                                           </h3>
@@ -402,7 +402,7 @@
                                                                 <button
                                                                 id="rzp-button-{{ rideData.hashed_id }}"
                                                                 data-hashed-id="{{ rideData.hashed_id }}"
-                                                                class="btn btn-primary">
+                                                                class="btn btn-primary" style="background-color: #00b0c3; color: white;">
                                                                 Pay ₹{{ rideData.fare_20_percent }} (20%)
                                                             </button>
                                         
@@ -458,7 +458,7 @@
                                                             <button type="button" class="btn btn-light"
                                                                 data-modal-dismiss="true">Cancel</button>
                                                             <button type="submit" 
-                                                                class="btn btn-primary">Submit</button>
+                                                                class="btn btn-primary" style="background-color: #00b0c3; color: white;">Submit</button>
                                                         </div>
                                                     </div>
                                                 </div>

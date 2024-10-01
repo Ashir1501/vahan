@@ -7,6 +7,7 @@ from django.contrib import messages
 from .models import *
 from customerApp.models import *
 from vendorApp.models import *
+from usersApp.models import *
 import uuid
 import razorpay
 from django.core.mail import send_mail
@@ -42,7 +43,7 @@ def decode_hashed_id(hashed_id, model_class):
     return None
 
 
-def email_temp(ride,payment,payment_method,razorpay_payment_id=None):
+def email_temp(ride,payment,payment_method,driver_photo,razorpay_payment_id=None):
     subject = 'Payment recipt'
     print("line 47 :",ride)
     # customer email=========
@@ -60,6 +61,7 @@ def email_temp(ride,payment,payment_method,razorpay_payment_id=None):
         'pick_up':ride.route.pickup_location,
         'drop':ride.route.drop_location,
         'payment_type':payment_method,
+        'driver_photo':driver_photo
     })
     text_contentC = strip_tags(html_contentC)  
     
@@ -82,6 +84,7 @@ def email_temp(ride,payment,payment_method,razorpay_payment_id=None):
         'pick_up':ride.route.pickup_location,
         'drop':ride.route.drop_location,
         'payment_type':payment_method,
+        'driver_photo':driver_photo
     })
     text_contentV = strip_tags(html_contentV)  
     
@@ -105,6 +108,7 @@ def email_temp(ride,payment,payment_method,razorpay_payment_id=None):
         'pick_up':ride.route.pickup_location,
         'drop':ride.route.drop_location,
         'payment_type':payment_method,
+        'driver_photo':driver_photo
     })
     text_contentA = strip_tags(html_contentV)  
     
@@ -176,8 +180,12 @@ def payment_callback(request):
                 'message': message
             }
         )
+        try:
+            driver_photo = AccountDetail.objects.get(user_id=ride.driver)
+        except:
+            driver_photo = ""
         if razorpay_payment_link_status == 'paid':
-            email_temp(ride,payment,payment_method,razorpay_payment_id)
+            email_temp(ride,payment,payment_method,driver_photo.photo,razorpay_payment_id)
             return render(request, 'driverTemplates/payment_done.html')
         else:
             unique_reference_id = f"{ride_id}-{uuid.uuid4()}"
@@ -289,10 +297,14 @@ def ride_payment(request, hashed_id):
                 return redirect('driver-ongoing')
         
         else:
-            
+            try:
+                driver_photo = AccountDetail.objects.get(user_id =ride.driver)
+                 
+            except:
+                driver_photo = ""
             payment.pending_payment_status = 'paid'
             payment.pending_paymeny_Type = 'cash'
-            email_temp(ride,payment,"Cash")
+            email_temp(ride,payment,"Cash",driver_photo.photo)
             
         # Update ride status
 

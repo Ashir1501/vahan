@@ -4,10 +4,12 @@
     {% if request.user.user_type == 'Admin' %}
    <a class="dark:hidden" href="{% url 'adminHome' %}">
     <img width="40px" height="40px" src="{% static 'media/brand-logos/vahan_logo.ico' %}"/>
+    
    </a>
     <a class="hidden dark:block" href="{% url 'adminHome' %}">
      <img width="40px" height="40px" src="{% static 'media/brand-logos/vahan_logo.ico' %}"/>
     </a>
+    
    {% endif %}
     {% if request.user.user_type == 'Vendor' %}
    <a class="dark:hidden" href="{% url 'vendor-home' %}">
@@ -59,7 +61,7 @@
            <span class="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary">
            </span>
            <span class="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-            User
+            User 
            </span>
           </a>
          </div>
@@ -69,7 +71,7 @@
            <span class="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary">
            </span>
            <span class="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-            Drivers
+            Drivers 
            </span>
           </a>
          </div>

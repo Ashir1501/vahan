@@ -324,6 +324,9 @@
             text-align: center;
             display: none; /* Hide by default */
         }
+
+       
+
     </style>
 </head>
 
@@ -340,6 +343,19 @@
     </div>
 
     <script>
+
+const selectElement = document.getElementById("select");
+
+selectElement.addEventListener("mouseover", function() {
+    selectElement.style.backgroundColor = "#00b0c3";
+    selectElement.style.color = "white";
+});
+
+selectElement.addEventListener("mouseout", function() {
+    selectElement.style.backgroundColor = "";
+    selectElement.style.color = "";
+});
+
         const defaultThemeMode = 'light'; // light|dark|system
         let themeMode;
 
@@ -369,7 +385,24 @@
 
             
 
-    
+            document.addEventListener('keydown', function(event) {
+            
+            if (event.ctrlKey && event.altKey  && event.key === 't') {
+                event.preventDefault(); // Prevent default action (optional)
+                {% if request.user.user_type == 'Admin' %}
+                    window.location.href = "{% url 'rides-details-page' %}"; // Redirect to the page
+                {% elif request.user.user_type == 'Vendor' %}
+                    window.location.href = "{% url 'vendor-home' %}";
+                {% endif %}
+            }
+            {% if request.user.user_type == 'Admin' %}
+            if (event.ctrlKey && event.altKey && event.key === 'p' ) {
+                window.location.href = "{% url 'payment-page' %}";
+
+            }
+            {% endif %}
+
+        });
 
 
     </script>

@@ -411,9 +411,6 @@ def vendor_ride_details(request):
 
 # from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-# from django.contrib.auth.decorators import login_required
-# from .models import Ride, Account
-# Make sure this function is properly implemented
 
 @csrf_exempt
 @login_required
@@ -424,9 +421,6 @@ def confirmed_ride_status(request):
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_signature = request.POST.get('razorpay_signature')
-        print(razorpay_payment_id)
-        print(razorpay_order_id)
-        print(razorpay_signature)
         try:
             ride = Ride.objects.get(id=ride_id)
             ride.ride_status = 'confirmed'
@@ -446,29 +440,35 @@ def confirmed_ride_status(request):
 
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
-
 def vendor_suggestions(request):
     # Fetch drivers data and hash their IDs
-    drivers = hash_id(Account.objects.all())
-    driver_data = [
-        {
-            "name": f"{driver.first_name} | {driver.last_name} | {driver.email}",
-            "hashed_id": driver.hashed_id,
-        }
-        for driver in drivers
-    ]
+    drivers = Account.objects.all()
+    driver_data = []  # Initialize list for driver data
+
+    for driver in drivers:
+        account_details = AccountDetail.objects.filter(user_id=driver.id, works_for=request.user.id)
+        # Hash the account details
+        hashed_details = hash_id(account_details)
+
+        for detail in hashed_details:  # Ensure we are iterating over the hashed details
+            driver_data.append({
+                "name": f"{driver.first_name} | {driver.last_name} | {driver.email}",
+                "hashed_id": detail.hashed_id,  # Use the hashed_id from the detail
+            })
 
     # Fetch car data and hash their IDs
-    cars = hash_id(Car.objects.all())
-    car_data = [
-        {
+    cars = Car.objects.filter(Vender_id=request.user.id)
+    car_data = []  # Initialize list for car data
+    print(cars)
+    hashed_cars = hash_id(cars)  # Hash the car objects
+    for car in hashed_cars:  # Iterate over the hashed cars
+        car_data.append({
             "name": f"{car.Car_type.car_model} | {car.Registration_Number} | {car.Car_type.car_type}",
-            "hashed_id": car.hashed_id,
-        }
-        for car in cars
-    ]
+            "hashed_id": car.hashed_id,  # Use the hashed_id from the car object
+        })
 
     return JsonResponse({"drivers": driver_data, "cars": car_data}, safe=False)
+
 
 
 
