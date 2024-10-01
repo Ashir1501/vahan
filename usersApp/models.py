@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 # Create your models here.
 class MyAccountManager(BaseUserManager):
-    def create_user(self, phone_number,user_type,email=None,OTP=None,password=None, first_name=None, last_name=None):
+    def create_user(self, phone_number,user_type,email=None,password=None, first_name=None, last_name=None):
         
 
         if not phone_number:
@@ -13,7 +13,6 @@ class MyAccountManager(BaseUserManager):
             first_name = first_name,
             last_name = last_name,
             phone_number = phone_number,
-            OTP = OTP,
             user_type = user_type,
         )
 
@@ -26,7 +25,6 @@ class MyAccountManager(BaseUserManager):
         user = self.create_user(
             email = self.normalize_email(email),
             phone_number = phone_number,
-            OTP = None,
             user_type = "Admin",
             first_name=first_name,
             last_name = last_name,
@@ -46,7 +44,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length = 150, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length = 10, unique=True)
-    OTP = models.PositiveIntegerField(null=True)
 
     vendor = 'Vendor'
     admin = "Admin"

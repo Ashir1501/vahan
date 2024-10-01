@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Vahan Duty Slip</title>
+    <style type="text/css">
+        body{
+            font-family: Arial, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            text-indent: 0;
+        }
+        table{
+            border-collapse: collapse;
+            margin: 1.2rem auto;
+            width: 100%;
+        }
+        td,th{
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="margin: 2.5rem;">
+        <h1 style="text-align: center; margin-bottom: 1rem; text-decoration: underline;">VAHAN CAR RENTALS</h1>
+        <p style="text-align: center; font-size: 1.2rem;">
+            Address: A-303, Raj Exotica Building, near GCC Club, 
+        </p>
+        <p style="text-align: center; font-size: 1.2rem;">
+            Mira Road (East), Mumbai 401107.
+        </p>
+        <p style="float: left; font-size: 1.2rem; margin-left: 0.5rem;">Email:Support@vahancarrentals.com</p> <p style="float: right; font-size: 1.2rem; margin-right: 0.5rem;">Mobile: +91-9137517508 / 9892299604 </p>
+        <hr style="border: 1px solid black; clear: both;">
+        <h3 style="text-align: center;">DUTY SLIP</h3>
+        <hr style="border: 1px solid black; margin-bottom: 0.5rem;">
+        <div style="padding: 0 2rem 0 2rem;">
+            <div style="display: flex; margin-bottom: 1.5rem;">
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Guest Name:<span style="font-weight: lighter;"> {{ ride.customer.first_name }} {{ ride.customer.last_name }}</span></p>
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Guest Phone: <span style="font-weight: lighter;"> {{ ride.customer.phone_number }}</span> </p>
+            </div>
+            <div style="display: flex; margin-bottom: 1.5rem">
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Date: <span style="font-weight: lighter;"> {{ ride.pickup_date }}</span> </p>
+                {% if ride.route.trip_type == 'airport_pickup' %}
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Duty Type: <span style="font-weight: lighter;"> Airport Pickup</span> </p>
+                {% elif ride.route.trip_type == 'airport_drop' %}
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Duty Type: <span style="font-weight: lighter;"> Airport Drop</span> </p>
+                {% elif ride.route.trip_type == 'local' %}
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Duty Type: <span style="font-weight: lighter;"> Local</span> </p>
+                {% elif ride.route.trip_type == 'roundtrip' %}
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Duty Type: <span style="font-weight: lighter;"> Round Trip</span> </p>
+                {% elif ride.route.trip_type == 'oneway' %}
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Duty Type: <span style="font-weight: lighter;"> One-Way Trip</span> </p>
+                {% endif %}
+            </div>
+            <div style="display: flex; margin-bottom: 1.5rem">
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Reporting Time: <span style="font-weight: lighter;"> {{ ride.pickup_at }}</span> </p>
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Vehicle Number: <span style="font-weight: lighter;"> {{ ride.car.Registration_Number }}</span> </p>
+            </div>
+            <div style="display: flex; margin-bottom: 1.5rem">
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Vehicle Group: <span style="font-weight: lighter;"> {{ ride.vendor_id.first_name }} {{ ride.vendor_id.last_name }}</span> </p>
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Driver: <span style="font-weight: lighter;"> {{ ride.driver.first_name }} {{ ride.driver.last_name }}</span> </p>
+            </div>
+            <div style="display: flex;">
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Reporting Address: <span style="font-weight: lighter;"> {{ ride.route.pickup_location }}</span> </p>
+                <p style="font-size: 1.1rem; width: 50%; font-weight: bold;">Destination: <span style="font-weight: lighter;"> {{ ride.route.drop_location }}</span> </p>
+            </div>
+        </div>
+        
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <p style="padding: 1rem 1rem 0 1rem; text-align: center; font-weight: bold;">Date</p>
+                </td>
+                <td colspan="2">
+                    <p style="padding: 1rem 1rem 0.2rem 1rem; text-align: center; font-weight: bold;">Start</p>
+                </td>
+                <td colspan="2">
+                    <p style="padding: 1rem 1rem 0.2rem 1rem; text-align: center; font-weight: bold;">End
+                    </p>
+                </td>
+                <td colspan="2">
+                    <p style="padding: 1rem 1rem 0.2rem 1rem; text-align: center; font-weight: bold;">Total
+                    </p>
+                </td>
+                <td colspan="2">
+                    <p style="padding: 1rem 1rem 0.2rem 1rem; text-align: center; font-weight: bold;">Extra
+                    </p>
+                </td>
+                <td rowspan="2">
+                    <p style="padding: 1rem 1rem 0 1rem; text-align: center; font-weight: 600;">Signature</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">Kilometers</p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">Time</p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">
+                        Kilometers
+                    </p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">Time</p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">
+                        Kilometers
+                    </p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">Time
+                    </p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">
+                        Kilometers
+                    </p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 0 0 0; text-align: center; font-size: 1rem;">Time
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+                <td>
+                    <p style="text-indent: 0pt;text-align: left;"><br /></p>
+                </td>
+            </tr>
+        </table>
+        
+        <table>
+            <tr>
+                <td>
+                    <p style="padding: 1rem 1rem 0 1rem; text-align: center; font-weight: bold;">Item
+                    </p>
+                </td>
+                <td>
+                    <p style="padding: 1rem 1rem 0 1rem; text-align: center; font-weight: bold;">Amount
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="padding-left: 0.5rem;text-align: left;"> Toll</p>
+                </td>
+                <td>
+                    <p style="padding-left: 0.5rem;text-align: left;"> {{ ride.toll_fare }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="padding-left: 0.5rem;text-align: left;"> Parking
+                    </p>
+                </td>
+                <td>
+                    <p style="padding-left: 0.5rem; text-align: left;"> {{ ride.parking_fare }}</p>
+                </td>
+            </tr>
+        </table>
+        
+        <div style="width: 100%;">
+            <div style="border: 2px solid black;">
+                <p style="text-align: left; font-weight: bold; padding: 0.5rem 0 0.5rem 1rem;">
+                    Feedback:
+                    <span style="font-weight: lighter; font-size: 1rem;">Very Poor / Poor / Good / Very Good / Excellent</span>
+                </p>
+            </div>
+            <div style="display: flex; border-left: 2px solid black; border-right: 2px solid black;">         
+                <p style="border-right: 2px solid black; min-height: 5rem; text-align: left; font-weight: bold; padding: 0.5rem 0 0.5rem 1rem; width: 50%;">Remarks:
+                </p>
+                <p style="min-height: 5rem; text-align: left; font-weight: bold; padding: 0.5rem 0 0.5rem 1rem; width: 50%;">
+                    Signature:
+                </p>      
+            </div>
+            <div style="border: 2px solid black; font-weight: bold; padding-left: 1rem;">
+                Note:
+                <div style="padding-left: 1.5rem;">
+                    <ol type="1">
+                        <li>
+                            Timing and Mileage are calculated from Garage to Garage.</p>
+                        </li>
+                        <li>
+                            Hereby, I Allow Vahan Car Rentals Team to send Booking and Payment Notifications via
+                            WhatsApp, Email or Regular SMS.
+                        </li>
+                        <li>
+                            Personal
+                            Belonging
+                            are at your Risk. Vahan Car Rentals is not liable for any loss/damage of client’s
+                            belongings. 
+                        </li>
+                    </ol>
+                </div>    
+            </div>
+        </div>
+        <p style="padding-top: 4pt;padding-left: 7pt;text-indent: 0pt;text-align: center;">--- Safety at Your Service: Vahan Car Rentals with Care ---</p>
+    </div>
+</body>
+
+</html>

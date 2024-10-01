@@ -1,7 +1,8 @@
 from django.db import models
 from vendorApp.models import Route, Car
 from usersApp.models import Account
-from datetime import timedelta
+from datetime import timedelta, datetime
+from django.utils.text import slugify
 # Create your models here.
 
 class Ride(models.Model):
@@ -14,6 +15,15 @@ class Ride(models.Model):
         ('cancelled','cancelled'),
         ('Started','Started'),
         ('completed','completed')
+    )
+    Extra_PAYMENT_TYPE_CHOICE=(
+        ('online','online'),
+        ('cash','cash'),
+        ('wallet','wallet')
+    )
+    PAYMENT_STATUS_CHOICE=(
+        ('Pending','Pending'),
+        ('Received','Received')
     )
 
     driver = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='driver_rides',null=True, blank=True)
@@ -36,7 +46,17 @@ class Ride(models.Model):
     parking_fare = models.IntegerField(null=True,blank=True)
     is_extra = models.BooleanField(default=False)
     vendor_id = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='vendor_details',null=True, blank=True)
-    payment_status = models.CharField(null=True, blank=True)
+    payment_status = models.CharField(null= True, blank=True ,max_length=20, choices=PAYMENT_STATUS_CHOICE,default=PAYMENT_STATUS_CHOICE[0])
+    payment_type = models.CharField(max_length=20, choices=Extra_PAYMENT_TYPE_CHOICE)
+    rideSlug = models.SlugField(max_length=100, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Format the date and combine it with customer name to create the slug
+        if not self.rideSlug:
+            formatted_date = self.pickup_date.strftime('%Y-%m-%d')  # Format date as needed
+            slug_base = f"{self.customer.first_name}-{self.customer.last_name}-{formatted_date}-trip"
+            self.rideSlug = slugify(slug_base)  # Create a slugified version
+        super(Ride, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.customer.first_name}-{self.route}-{self.pickup_date}"
