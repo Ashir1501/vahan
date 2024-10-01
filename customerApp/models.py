@@ -21,6 +21,10 @@ class Ride(models.Model):
         ('cash','cash'),
         ('wallet','wallet')
     )
+    PAYMENT_STATUS_CHOICE=(
+        ('Pending','Pending'),
+        ('Received','Received')
+    )
 
     driver = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='driver_rides',null=True, blank=True)
     customer = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -42,7 +46,7 @@ class Ride(models.Model):
     parking_fare = models.IntegerField(null=True,blank=True)
     is_extra = models.BooleanField(default=False)
     vendor_id = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='vendor_details',null=True, blank=True)
-    payment_status = models.CharField(null=True, blank=True)
+    payment_status = models.CharField(null= True, blank=True ,max_length=20, choices=PAYMENT_STATUS_CHOICE,default=PAYMENT_STATUS_CHOICE[0])
     payment_type = models.CharField(max_length=20, choices=Extra_PAYMENT_TYPE_CHOICE)
     rideSlug = models.SlugField(max_length=100, null=True, blank=True)
 
