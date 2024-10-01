@@ -13,11 +13,15 @@ def loginAdmin(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-        user = get_object_or_404(Account, email=email)
-        if user.check_password(password):
-            auth_login(request,user)
-            messages.success(request,f'Welcome {email} You have logged in Successfully.')
-            return redirect('adminHome')
+        # user = get_object_or_404(Account, email=email)
+        user = Account.objects.filter(email=email).first()
+        if user:
+            if user.check_password(password):
+                auth_login(request,user)
+                messages.success(request,f'Welcome {email} You have logged in Successfully.')
+                return redirect('adminHome')
+            else:
+                messages.error(request,"Invalid login credentials")
         else:
             messages.error(request,"Invalid login credentials")
     return render(request,'adminTemplates/login.html')
