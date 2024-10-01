@@ -1,0 +1,1656 @@
+{% extends 'adminTemplates/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <script>
+                console.log('{{message}}')
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "{{message}}",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        {% endif %}
+        {% if message.tags == 'error' %}
+            <script>
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "{{message}}",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{{data}}
+<div>
+    <div>
+        <div>
+            <!-- Tab Buttons -->
+            <div class="tabs mb-5 ms-5" data-tabs="true">
+                <button class="tab active" data-tab-toggle="#AirportPage"><b>Airport</b></button>
+                <button class="tab" data-tab-toggle="#LocalPage"><b>Local</b></button>
+                <button class="tab" data-tab-toggle="#OneWayTripPage"><b>One-Way Trip</b></button>
+                <button class="tab" data-tab-toggle="#RoundTripPage"><b>Round Trip</b></button>
+            </div>
+            <!-- Pending Tab Start -->
+            <div class="" id="AirportPage">
+                <div style="margin: 20px;">
+                    
+                    <div style="margin: 10px;">
+                        <div class="container-fixed">
+                            <div class="grid gap-5 lg:gap-7.5">
+                                <div class="card card-grid min-w-full">
+                                    <div class="card-header py-5 flex-wrap">
+                                        <h3 class="card-title">
+                                            Airport Trip
+                                        </h3>
+                                        <div class="flex gap-6">
+                                            <div class="relative">
+                                                <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                                <input class="input input-sm pl-8" onkeyup="filterTableTypeAirport()" placeholder="Search" id="searchAirport" type="text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div data-datatable="true" data-datatable-page-size="5">
+                                            <div class="scrollable-x-auto">
+                                                <table class="table table-auto table-border" data-datatable-table="true" id="Airport_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="w-[60px]">
+                                                                Sr No
+                                                            </th>
+                                                            <th class="w-[60px]">Duty Slip PDF</th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Trip Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Mobile</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vendor</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Report Time</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vehical Reg No</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Start Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Closing Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Toll Charge</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Parking</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Sub Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Mode</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for ride in rides %}
+                                                            {% if  ride.route.trip_type == "airport_pickup" or ride.route.trip_type == "airport_drop" %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>{{ ride.id }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-link" href="/rides/ride_details_pdf/{{ ride.rideSlug }}" target="_blank">
+                                                                            Download
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                {% if  ride.ride_status == 'approved' %}
+                                                                                <span class="badge badge-outline badge-info">{{ ride.ride_status }}</span>
+                                                                                {% else %}
+                                                                                <span class="badge badge-outline badge-warning">
+                                                                                    {{ ride.ride_status }}
+                                                                                   </span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.first_name }} {{ ride.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.phone_number }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.vendor_id.first_name }} {{ ride.vendor_id.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Registration_Number }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.opening_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.closing_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.closing_kms_input|subtract:ride.opening_kms_input }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.toll_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.parking_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.toll_fare ride.parking_fare ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                        
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                                <div class="flex items-center gap-2">
+                                                    Show
+                                                    <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                                    per page
+                                                </div>
+                                                <div class="flex items-center gap-4">
+                                                    <span data-datatable-info="true"></span>
+                                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Confirmed Tab Start -->
+            <div class="hidden" id="LocalPage">
+                <div style="margin: 20px;">
+                    
+                    <div style="margin: 10px;">
+                        <div class="container-fixed">
+                            <div class="grid gap-5 lg:gap-7.5">
+                                <div class="card card-grid min-w-full">
+                                    <div class="card-header py-5 flex-wrap">
+                                        <h3 class="card-title">
+                                            Local Trip
+                                        </h3>
+                                        <div class="flex gap-6">
+                                            <div class="relative">
+                                                <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                                <input class="input input-sm pl-8" onkeyup="filterTableTypeLocal()" placeholder="Search" id="searchLocal" type="text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div data-datatable="true" data-datatable-page-size="5">
+                                            <div class="scrollable-x-auto">
+                                                <table class="table table-auto table-border" data-datatable-table="true" id="Local_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="w-[60px]">
+                                                                Sr No
+                                                            </th>
+                                                            <th class="w-[60px]">PDF</th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Trip Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Mobile</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vendor</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Report Time</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vehical Reg No</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Package hrs</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Start Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Closing Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Toll Charge</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Parking</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Sub Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Mode</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for ride in rides %}
+                                                            {% if  ride.route.trip_type == "local" %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>{{ ride.id }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-link" href="/rides/ride_details_pdf/{{ ride.rideSlug }}" target="_blank">
+                                                                            Download
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                {% if  ride.ride_status == 'approved' %}
+                                                                                <span class="badge badge-outline badge-info">{{ ride.ride_status }}</span>
+                                                                                {% else %}
+                                                                                <span class="badge badge-outline badge-warning">
+                                                                                    {{ ride.ride_status }}
+                                                                                   </span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.first_name }} {{ ride.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.phone_number }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.vendor_id.first_name }} {{ ride.vendor_id.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Registration_Number }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.duration }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.opening_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.closing_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.closing_kms_input|subtract:ride.opening_kms_input }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.toll_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.parking_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.toll_fare ride.parking_fare ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                        
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                                <div class="flex items-center gap-2">
+                                                    Show
+                                                    <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                                    per page
+                                                </div>
+                                                <div class="flex items-center gap-4">
+                                                    <span data-datatable-info="true"></span>
+                                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Cancelled Tab Start -->
+            <div class="hidden" id="OneWayTripPage">
+                <div style="margin: 20px;">
+                    
+                    <div style="margin: 10px;">
+                        <div class="container-fixed">
+                            <div class="grid gap-5 lg:gap-7.5">
+                                <div class="card card-grid min-w-full">
+                                    <div class="card-header py-5 flex-wrap">
+                                        <h3 class="card-title">
+                                            One Way Trip
+                                        </h3>
+                                        <div class="flex gap-6">
+                                            <div class="relative">
+                                                <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                                <input class="input input-sm pl-8" onkeyup="filterTableTypeOneWay()" placeholder="Search" id="searchOneWay" type="text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div data-datatable="true" data-datatable-page-size="5">
+                                            <div class="scrollable-x-auto">
+                                                <table class="table table-auto table-border" data-datatable-table="true" id="OneWay_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="w-[60px]">
+                                                                Sr No
+                                                            </th>
+                                                            <th class="w-[60px]">PDF</th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Trip Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Mobile</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vendor</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Report Time</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vehical Reg No</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Start Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Closing Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Toll Charge</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Parking</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Sub Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Mode</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for ride in rides %}
+                                                            {% if  ride.route.trip_type == "oneway" %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>{{ ride.id }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-link" href="/rides/ride_details_pdf/{{ ride.rideSlug }}" target="_blank">
+                                                                            Download
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                {% if  ride.ride_status == 'approved' %}
+                                                                                <span class="badge badge-outline badge-info">{{ ride.ride_status }}</span>
+                                                                                {% else %}
+                                                                                <span class="badge badge-outline badge-warning">
+                                                                                    {{ ride.ride_status }}
+                                                                                   </span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.first_name }} {{ ride.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.phone_number }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.vendor_id.first_name }} {{ ride.vendor_id.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Registration_Number }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.opening_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.closing_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.closing_kms_input|subtract:ride.opening_kms_input }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.toll_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.parking_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.toll_fare ride.parking_fare ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                        
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                                <div class="flex items-center gap-2">
+                                                    Show
+                                                    <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                                    per page
+                                                </div>
+                                                <div class="flex items-center gap-4">
+                                                    <span data-datatable-info="true"></span>
+                                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden" id="RoundTripPage">
+                <div style="margin: 20px;">
+                    
+                    <div style="margin: 10px;">
+                        <div class="container-fixed">
+                            <div class="grid gap-5 lg:gap-7.5">
+                                <div class="card card-grid min-w-full">
+                                    <div class="card-header py-5 flex-wrap">
+                                        <h3 class="card-title">
+                                            Round Trip
+                                        </h3>
+                                        <div class="flex gap-6">
+                                            <div class="relative">
+                                                <i class="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
+                                                <input class="input input-sm pl-8" onkeyup="filterTableTypeRoundTrip()" placeholder="Search" id="searchRoundTrip" type="text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div data-datatable="true" data-datatable-page-size="5">
+                                            <div class="scrollable-x-auto">
+                                                <table class="table table-auto table-border" data-datatable-table="true" id="RoundTrip_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="w-[60px]">
+                                                                Sr No
+                                                            </th>
+                                                            <th class="w-[60px]">PDF</th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup date</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Trip Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Name</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Customer Mobile</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Driver</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vendor</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Report Time</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Pickup</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Drop</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Car Type</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Vehical Reg No</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Start Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Closing Kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total kms</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Toll Charge</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Parking</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Sub Total</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Mode</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                            <th class="w-[80px]">
+                                                                <span class="sort asc">
+                                                                    <span class="sort-label">Payment Status</span>
+                                                                    <span class="sort-icon"></span>
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for ride in rides %}
+                                                            {% if  ride.route.trip_type == "roundtrip" %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>{{ ride.id }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a class="btn btn-link" href="/rides/ride_details_pdf/{{ ride.rideSlug }}" target="_blank">
+                                                                            Download
+                                                                        </a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_date }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                {% if  ride.ride_status == 'approved' %}
+                                                                                <span class="badge badge-outline badge-info">{{ ride.ride_status }}</span>
+                                                                                {% else %}
+                                                                                <span class="badge badge-outline badge-warning">
+                                                                                    {{ ride.ride_status }}
+                                                                                   </span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.first_name }} {{ ride.customer.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.customer.phone_number }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td title="{{ rideData.customer.email }}">
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.vendor_id.first_name }} {{ ride.vendor_id.last_name }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.pickup_at }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.pickup_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.route.drop_location }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Car_type.car_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.car.Registration_Number }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.opening_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.closing_kms_input }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">
+                                                                                    {{ ride.closing_kms_input|subtract:ride.opening_kms_input }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.toll_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.parking_fare }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{% addmulti ride.toll_fare ride.parking_fare ride.route.fare %}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_type }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="flex items-center gap-2.5">
+                                                                            <div class="flex flex-col gap-0.5">
+                                                                                <a class="leading-none font-semibold text-sm text-gray-900 ">{{ ride.payment_status }}</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                        
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
+                                            <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
+                                                <div class="flex items-center gap-2">
+                                                    Show
+                                                    <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
+                                                    per page
+                                                </div>
+                                                <div class="flex items-center gap-4">
+                                                    <span data-datatable-info="true"></span>
+                                                    <div class="pagination" data-datatable-pagination="true"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Cancelled Tab End -->
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+function filterTableTypeAirport() {
+    // Get the value of the input field
+    var input = document.getElementById('searchAirport');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('Airport_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+
+function filterTableTypeLocal() {
+    // Get the value of the input field
+    var input = document.getElementById('searchLocal');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('Local_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+
+function filterTableTypeOneWay() {
+    // Get the value of the input field
+    var input = document.getElementById('searchOneWay');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('OneWay_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+function filterTableTypeRoundTrip() {
+    // Get the value of the input field
+    var input = document.getElementById('searchRoundTrip');
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById('RoundTrip_table');
+    var tr = table.getElementsByTagName('tr');
+    
+    // Loop through all table rows
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName('td');
+        var rowContainsFilter = false;
+
+        // Loop through all cells in the current row
+        for (var j = 0; j < td.length; j++) {
+            var cell = td[j];
+            if (cell) {
+                var txtValue = cell.textContent || cell.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rowContainsFilter = true;
+                    break; // No need to check further cells if one matches
+                }
+            }
+        }
+
+        // Display or hide the row based on whether it contains the filter text
+        if (rowContainsFilter) {
+            tr[i].style.display = '';
+        } else {
+            tr[i].style.display = 'none';
+        }
+    }
+}
+
+// custom.js
+// custom.js
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[id^="driverInput_"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+        var inputId = this.id;
+        var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+        var listId = 'driverList_' + modalId;
+        var hiddenInputId = 'driverId_' + modalId;
+
+        var inputElement = document.getElementById(inputId);
+        var listElement = document.getElementById(listId);
+        var hiddenInputElement = document.getElementById(hiddenInputId);
+
+        var inputValue = inputElement.value.trim().toLowerCase();
+        var options = listElement.options;
+
+        hiddenInputElement.value = ""; // Reset hidden input
+
+        // Loop through options to find a match with the input value
+        for (var i = 0; i < options.length; i++) {
+            var optionValue = options[i].value.trim().toLowerCase();
+
+            if (optionValue === inputValue) {
+                hiddenInputElement.value = options[i].getAttribute('data-id');
+                console.log("Driver ID found and set: ", hiddenInputElement.value);
+                break;
+            }
+        }
+
+        if (!hiddenInputElement.value) {
+            console.log("No matching Driver ID found for input: ", inputValue);
+        }
+    });
+});
+
+document.querySelectorAll('input[id^="carInput_"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+        var inputId = this.id;
+        var modalId = inputId.split('_')[1]; // Extract unique identifier from ID
+        var listId = 'CarsList_' + modalId;
+        var hiddenInputId = 'carId_' + modalId;
+
+        var inputElement = document.getElementById(inputId);
+        var listElement = document.getElementById(listId);
+        var hiddenInputElement = document.getElementById(hiddenInputId);
+
+        if (!inputElement || !listElement || !hiddenInputElement) {
+            console.error(`One or more elements not found: inputId=${inputId}, listId=${listId}, hiddenInputId=${hiddenInputId}`);
+            return;
+        }
+
+        var inputValue = inputElement.value.trim().toLowerCase();
+        var options = listElement.options;
+
+        hiddenInputElement.value = ""; // Reset hidden input
+
+        // Loop through options to find a match with the input value
+        for (var i = 0; i < options.length; i++) {
+            var optionValue = options[i].value.trim().toLowerCase();
+
+            if (optionValue === inputValue) {
+                hiddenInputElement.value = options[i].getAttribute('data-id');
+                console.log("Car ID found and set: ", hiddenInputElement.value);
+                break;
+            }
+        }
+
+        if (!hiddenInputElement.value) {
+            console.log("No matching Car ID found for input: ", inputValue);
+        }
+    });
+});
+
+});
+
+
+</script>
+{% endblock %}

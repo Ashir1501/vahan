@@ -31,4 +31,6 @@ urlpatterns = [
 
     path('create_order/', create_order, name='create_order'),
     path('payment_success/', payment_success, name='payment_success'),
+    path('all-trips/',allRides,name='all-trips-page'),
+    path('ride_details_pdf/<slug:slug>/',ride_details_pdf,name='ride_details_pdf'),
 ]

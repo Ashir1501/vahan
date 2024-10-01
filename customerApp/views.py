@@ -20,6 +20,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.files.base import ContentFile
 import base64
+from django.template.loader import get_template, render_to_string
+import pdfkit
 # Create your views here.
 
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -721,3 +723,46 @@ def payment_callback(request):
 def payment_success(request):
     # Handle payment success logic here
     return HttpResponse("Payment successful")
+
+def allRides(reqest):
+    if reqest.user.is_authenticated:
+        if reqest.user.user_type == 'Admin':
+            rides = Ride.objects.all()
+            return render(reqest,'adminTemplates/all_rides.html',{"rides":rides})
+    raise Http404('Bad Request')
+
+# note: make sure to install this lib 
+# sudo apt install wkhtmltopdf -> linux command
+# pip install pdfkit -> linux command
+# which wkhtmltopdf  # On Linux/MacOS provides the path and paste it in below code
+
+pdfkit_config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+
+def render_to_pdf(template_src, context_dict):
+    # Render the HTML content from template and context
+    html = render_to_string(template_src, context_dict)
+
+    # Generate PDF using wkhtmltopdf
+    pdf = pdfkit.from_string(html, False, configuration=pdfkit_config)  # The `False` means the output is returned as a byte string
+
+    # Create the HTTP response with PDF as an attachment
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="duty_slip.pdf"'
+    
+    return response
+
+def ride_details_pdf(request, slug):
+    if request.user.is_authenticated:
+        if request.user.user_type == 'Admin':
+            # Fetch the ride data
+            ride = get_object_or_404(Ride, rideSlug=slug)
+
+            # Prepare the context for the template
+            context = {
+                'ride': ride
+            }
+
+            # Render the template to PDF
+            # return render(request,'adminTemplates/duty_slip.html', context) #to test
+            return render_to_pdf('adminTemplates/duty_slip.html', context)
+    raise Http404("Bad Request")
