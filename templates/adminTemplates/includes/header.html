@@ -114,6 +114,10 @@
                 <span class="text-gray-700">
                     Previous
                 </span>
+                {% elif request.resolver_match.url_name == 'all-trips-page' %}
+                <span class="text-gray-700">
+                    All Trips
+                </span>
                 {% elif request.resolver_match.url_name == 'extra-page' %}
                 <a href="{% url 'previous-page' %}"><span class="text-gray-700">
                         Previous

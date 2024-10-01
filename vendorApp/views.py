@@ -11,6 +11,7 @@ from usersApp.models import *
 from customerApp.models import *
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage #new import for aws s3 storage
 
 
 @csrf_exempt

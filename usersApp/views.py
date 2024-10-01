@@ -349,13 +349,13 @@ class updateUser(View):
                     errors[file_key] = f"Invalid file type for {file_key.replace('_', ' ')}. Only {', '.join(file_validators[file_key].allowed_extensions)} are allowed."
 
         if request.user.user_type == "Admin" and request.path.startswith('/my-profile/update/'):
-            old_password = data.get('old_password').strip()
-            new_password = data.get('new_password', '').strip()
+            old_password = data.get('old_password')
+            new_password = data.get('new_password')
             if (new_password) and (not old_password or old_password == ""):
                 errors['Password'] = "Please Provide Old Password!!"
             if old_password:
-                if account.check_password(old_password):
-                    if new_password:
+                if new_password:
+                    if account.check_password(old_password):
                         if is_valid_password(new_password):
                             account.set_password(new_password)
                             account.save()
@@ -363,9 +363,9 @@ class updateUser(View):
                         else:
                             errors['Password'] = "New password should atleast have 1 lowercase 1 uppercase, 1 digit, 1 special character and 8 characters long."
                     else:
-                        errors['Password'] = "Please Provide new Password!!"
+                        errors['Password'] = "Old Password should match to Update password!!"
                 else:
-                    errors['Password'] = "Old Password should match to Update password!!"
+                    errors['Password'] = "Please Provide new Password!!"
 
         if errors:
             for error, description in errors.items():
@@ -440,7 +440,7 @@ class deleteUser(View):
                 user.delete()
 
                 if user_type == 'Admin':
-                    redirect_url = '/admin/'
+                    redirect_url = '/admin-home/'
                 elif user_type == 'Driver':
                     redirect_url = '/driver-home/'
                 elif user_type == 'Vendor':
@@ -471,23 +471,6 @@ class deleteUser(View):
                 
         return JsonResponse({'success':True})
 
-def download_aadhar(request, image_id):
-    account_detail = get_object_or_404(AccountDetail, id=image_id)
-    image_path = account_detail.aadhar_card.path
-
-    with default_storage.open(image_path, 'rb') as image_file:
-        response = HttpResponse(image_file.read(), content_type='image/jpeg')
-        response['Content-Disposition'] = f'attachment; filename="{account_detail.aadhar_card.name}"'
-        return response
-
-def download_driving_licence(request, image_id):
-    account_detail = get_object_or_404(AccountDetail, id=image_id)
-    image_path = account_detail.driving_licence.path
-
-    with default_storage.open(image_path, 'rb') as image_file:
-        response = HttpResponse(image_file.read(), content_type='image/jpeg')
-        response['Content-Disposition'] = f'attachment; filename="{account_detail.driving_licence.name}"'
-        return response
     
 def send_otp(request, phone, user_type):
     otp = random.randint(1000, 9999)
@@ -683,7 +666,6 @@ def otp(request):
                             last_name=data['lname'],
                             email=data['email'],
                             phone_number=data['phone'],
-                            OTP=data['otp'],
                             user_type='Vendor',
                             is_staff=True,
                             is_active=True

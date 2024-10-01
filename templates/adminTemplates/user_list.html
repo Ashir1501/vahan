@@ -579,8 +579,7 @@
                                     </td>
                                     {% if detail.aadhar_card %}
                                     <td>
-
-                                        <a class="btn btn-link" href="{% url 'download_aadhar' detail.pk %}">
+                                        <a class="btn btn-link" href="{{ detail.aadhar_card.url }}" download>
                                             Download
                                         </a>
                                         <span class="btn text-primary" data-modal-toggle="#modal_aadhar-{{user.pk}}">
@@ -597,8 +596,7 @@
                                     {% endif %}
                                     {% if detail.driving_licence %}
                                     <td>
-
-                                        <a class="btn btn-link" href="{% url 'download_driving_licence' detail.pk %}">
+                                        <a class="btn btn-link" href="{{ detail.driving_licence.url }}" download>
                                             Download
                                         </a>
                                         <span class="btn text-primary" data-modal-toggle="#modal_driving_licence-{{user.pk}}">
@@ -1145,7 +1143,7 @@
                     let user_Type = "{{ request.user.user_type }}";
                     let urlstr = "";
                     if (user_Type == "Admin") {
-                        urlstr = '/admin/user-list/';
+                        urlstr = '/admin-home/user-list/';
                     }
 
                     if (user_Type == "Vendor") {
